@@ -58,21 +58,6 @@ ii = 1:n^2; ii([n^2-n-1 n^2-n n^2-1 n^2]) = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%% DEFINE BOUNDARY NODES %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [XX, YY] = chebpts2(n);          % Chebyshev points and grid.
-% ii = abs(XX) < 1 & abs(YY) < 1;  % Interior indicies.
-% ii([1,end],[1,end]) = true;      % Treat corners as interior.
-% ee = ~ii;                        % Boundary indicies.
-% leftIdx  = XX(ee) == -1;         % Left boundary indicies.
-% rightIdx = XX(ee) ==  1;         % Right boundary indicies.
-% downIdx  = YY(ee) == -1;         % Bottom boundary indicies.
-% upIdx    = YY(ee) ==  1;         % Top boundary indicies.
-% leftIdx  = 1:oneBdyDOF;
-% rightIdx = 1:oneBdyDOF +   oneBdyDOF;
-% downIdx  = 1:oneBdyDOF + 2*oneBdyDOF;
-% upIdx    = 1:oneBdyDOF + 3*oneBdyDOF;
-% leftIdx  = sub2ind([n n], (2:n-1).',   ones(oneBdyDOF,1));
-% rightIdx = sub2ind([n n], (2:n-1).', n*ones(oneBdyDOF,1));
-% downIdx  = sub2ind([n n],   ones(oneBdyDOF,1), (2:n-1).');
-% upIdx    = sub2ind([n n], n*ones(oneBdyDOF,1), (2:n-1).');
 leftIdx  = sub2ind([n n], (1:n).', ones(n,1));
 rightIdx = sub2ind([n n], (1:n).', n*ones(n,1));
 downIdx  = sub2ind([n n], ones(n,1), (1:n).');
