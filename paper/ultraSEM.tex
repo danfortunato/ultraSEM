@@ -56,8 +56,8 @@
 \usepackage{cite}
 
 \title{The ultraspherical spectral element method\thanks{Submitted to the editors \today.
-\funding{This work is supported by National Science Foundation grant no.~1818757.}}}
-\author{Dan Fortunato\thanks{} \and Nick Hale \and Alex Townsend\thanks{Department of Mathematics, Cornell University, Ithaca, NY  14853. (\email{townsend@cornell.edu})}}
+\funding{This work is supported by National Science Foundation grant no.~1818757 and the National Defense Science and Engineering Graduate Fellowship.}}}
+\author{Dan Fortunato\thanks{School of Engineering and Applied Sciences, Harvard University, Cambridge, MA 02138. (\email{dfortunato@g.harvard.edu})} \and Nick Hale\thanks{} \and Alex Townsend\thanks{Department of Mathematics, Cornell University, Ithaca, NY 14853. (\email{townsend@cornell.edu})}}
 \headers{ultraSEM}{Dan Fortunato, Nick Hale, and Alex Townsend}
 \begin{document}
 \newcommand{\R}[0]{\mathbb{R}}
@@ -74,6 +74,17 @@
 \end{AMS}
 
 \section{Introduction}\label{sec:introduction}
+
+\subsection{Advantages}
+\begin{enumerate}
+\item Complexity is $\mathcal{O}(p^4/h^3)$ instead of $\mathcal{O}(p^6/h^3)$.
+\item Closer to ``true" $hp$-adaptivity, since this allows for $p$ in the hundreds.
+\item Stability?
+\item Robust to skinny elements.
+\item Storage of solution operator allows for fast solves with multiple RHSs/BCs (e.g. time-stepping).
+\item Hierarchical Poincar\'{e}--Steklov can be used as an element method (i.e. it doesn't have to look like nested dissection).
+\item No mapping between grids to deal with corners.
+\end{enumerate}
 
 \section*{Acknowledgements}
 
