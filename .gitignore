@@ -1,0 +1,97 @@
+# Mac OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.bz2
+*.xz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Matlab autosaves
+*.~
+*.asv
+
+# Matlab MEX
+*.o
+*.mexmaci64
+
+# Compiled Object files
+*.o
+*.ko
+*.obj
+*.slo
+*.lo
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Compiled dynamic libraries
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Compiled static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.out
+*.blg
+*.log
+*.thm
+*.spl
+*.fdb_latexmk
+*.fls
+*.dvi
+*.nav
+*.snm
+*.vrb
+*.brf
+*.toc
+*.synctex
+*.synctex.gz
+*-converted-to.*
+
+# Sublime Text
+*.sublime-workspace
+# Project files should be checked into the repository, unless a significant
+# proportion of contributors will probably not be using Sublime Text
+# *.sublime-project
