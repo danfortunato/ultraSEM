@@ -41,22 +41,21 @@ classdef ultraSEMBC
             % Get boundary points:
             xy = S.patches{1}.xy;
 
-            % Initialize boundary data. We should have n-2 coefficients for
+            % Initialize boundary data. We should have n coefficients for
             % each boundary.
             obj.coeffs = cell(size(S.patches{1}.xy));
             if ( ~isnumeric(bc) )
-                % Evaluate the RHS if given a function handle:
+                % Evaluate the BC if given a function handle:
                 for k = 1:size(obj.coeffs, 1)
                     vals = feval(bc, xy{k}(:,1), xy{k}(:,2));
                     % Convert from values to coeffs:
                     obj.coeffs{k} = chebtech2.vals2coeffs(vals);
-                    obj.coeffs{k} = obj.coeffs{k}(1:end-2);
                 end
             elseif ( isscalar(bc) )
                 % Convert a scalar to coeffs:
                 for k = 1:size(obj.coeffs, 1)
                     n = size(xy{k}, 1);
-                    obj.coeffs{k} = [bc ; zeros(n-3, 1)];
+                    obj.coeffs{k} = [bc ; zeros(n-1, 1)];
                 end
             else
                 error('ULTRASEM:ULTRASEMBC:badBC', ...

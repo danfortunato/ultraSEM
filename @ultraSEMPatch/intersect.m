@@ -61,6 +61,9 @@ elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
         x4 = single(max(a.domain(1), b.domain(1))) + shift;
         i4a = find(axy(:,1) == x4);
         i4b = find(bxy(:,1) == x4);
+        % Make sure the ordering of the indicies is correct:
+        [~,i1] = sort(axy(i4a,2)); i4a = i4a(i1);
+        [~,i2] = sort(bxy(i4b,2)); i4b = i4b(i2);
         newDom = [ min(a.domain(1), b.domain(1)), ...
                    max(a.domain(2), b.domain(2)), ...
                    a.domain(3:4)];
@@ -70,6 +73,9 @@ elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
         y4 = single(max(a.domain(3), b.domain(3))) + shift;
         i4a = find(axy(:,2) == y4);
         i4b = find(bxy(:,2) == y4);
+        % Make sure the ordering of the indicies is correct:
+        [~,i1] = sort(axy(i4a,1)); i4a = i4a(i1);
+        [~,i2] = sort(bxy(i4b,1)); i4b = i4b(i2);
         newDom = [ a.domain(1:2), ...
                    min(a.domain(3), b.domain(3)), ...
                    max(a.domain(4), b.domain(4)) ];
@@ -85,8 +91,14 @@ else
     [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
 end
 
-% i1 and i2 are remaining points (i.e., those not in the intersection.
-i1 = (1:size(axy,1)).'; i1(i4a) = [];
-i2 = (1:size(bxy,1)).'; i2(i4b) = [];
+% We forgot about the "corner" indicies. Add them back.
+na = size(a.xy{1},1); ia = unique(floor((i4a-1)/(na-2))+1, 'stable').';
+nb = size(b.xy{1},1); ib = unique(floor((i4b-1)/(nb-2))+1, 'stable').';
+i4a = (1:na).' + (ia-1)*na; i4a = i4a(:);
+i4b = (1:nb).' + (ib-1)*nb; i4b = i4b(:);
+
+% i1 and i2 are remaining points (i.e., those not in the intersection).
+i1 = (1:(size(axy,1)+2*length(a.xy))).'; i1(i4a) = [];
+i2 = (1:(size(bxy,1)+2*length(b.xy))).'; i2(i4b) = [];
 
 end

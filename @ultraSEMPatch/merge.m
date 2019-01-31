@@ -25,9 +25,12 @@ D2Na = a.D2N; D2Nb = b.D2N;
 % a.D2N = []; b.D2N = [];
 
 % Compute new solution operator:
-S = -( D2Na(s1,s1) + D2Nb(s2,s2) ) \ ...
-     [ D2Na(s1,i1), D2Nb(s2,i2), D2Na(s1,end) + D2Nb(s2,end) ];
-%                               |----------- rhs -----------|
+% Note: In the case of cross points, the operator we have to invert is rank
+% deficient by one. The least squares solution is correct, though.
+% What is the complexity of lsqminnorm?
+S = lsqminnorm( -( D2Na(s1,s1) + D2Nb(s2,s2) ), ...
+                 [ D2Na(s1,i1), D2Nb(s2,i2), D2Na(s1,end) + D2Nb(s2,end) ]);
+%                                           |----------- rhs -----------|
 
 % Compute new D2N maps:
 Z12 = zeros(numel(i1), numel(i2));
@@ -51,8 +54,8 @@ function xy = mergeBdy(axy, bxy, i1, i2)
 %   for a given boundary, we merge all the nodes for that boundary.
 
 % Map global indicies to indicies specifying which boundaries to merge:
-na = size(axy{1},1)-2; ia = unique(floor((i1-1)/na)+1);
-nb = size(bxy{1},1)-2; ib = unique(floor((i2-1)/nb)+1);
+na = size(axy{1},1); ia = unique(floor((i1-1)/na)+1, 'stable');
+nb = size(bxy{1},1); ib = unique(floor((i2-1)/nb)+1, 'stable');
 xy = [axy(ia) ; bxy(ib)];
 
 end
