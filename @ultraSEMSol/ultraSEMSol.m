@@ -40,7 +40,7 @@ classdef ultraSEMSol
 
             for k = 1:size(d, 1)
                 n = size(u{k}, 1);
-                [obj.x{k}, obj.y{k}] = chebpts2(n, n, d(k,:));
+                [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
             end
 
         end
@@ -269,8 +269,9 @@ classdef ultraSEMSol
                 return
             elseif ( isnumeric( g ) )
                 h = f;
-                g = repmat({g}, size(f.u,1), 1);
-                h.u = cellfun(@plus, f.u , g, 'UniformOutput', false);
+                for k = 1:size(h.u,1)
+                    h.u{k}(1,1) = h.u{k}(1,1) + g;
+                end
             elseif ( isa(f, 'ultraSEMSol') && isa(g, 'ultraSEMSol') )
                 h = f;
                 % TODO: Assume on the same grid for now.
