@@ -207,7 +207,8 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     BC = reshape(BC, (n-2)^2, 4*n);
 
     % Solve for every possible BC
-    S22 = A \ [BC, rhs];
+%     S22 = A \ [BC, rhs];
+    S22 = schurSolve(A, [BC, rhs], 2*n-2);
 
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
@@ -405,5 +406,39 @@ function P = compatibleProjection(n)
     % Build the projection:
     VV = null(A);
     P = VV * VV';
+
+end
+
+function x = schurSolve(A, b, m)
+% Fast solution of A*x = b where A is banded + m dense rows via Schur
+% complement factorisation.
+
+doRowScaling = true;
+
+na = size(A,2);
+nb = size(b,2);
+if ( na <= m )
+    x = A\b;
+    return
+end
+
+i1 = 1:m;
+i2 = m+1:na;
+i3 = nb+(1:m);
+
+if ( doRowScaling )
+    % Row scaling to improve accuracy
+    AA = A(i2,i2);
+    s = 1./ max(1, max(abs(AA), [], 2) );  
+    AA = bsxfun(@times, s, AA);
+    bb = s.*[b(i2,:), A(i2,i1)];
+    c = AA\bb;
+else
+    c = A(i2,i2)\[b(i2,:), A(i2,i1)];
+end
+
+x = (A(i1,i1) - A(i1,i2)*c(:,i3)) \ (b(i1,:) - A(i1,i2)*c(:,1:nb));
+y = c(:,1:nb) - c(:,i3)*x;
+x = [x ; y];
 
 end
