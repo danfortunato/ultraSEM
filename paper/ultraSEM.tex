@@ -65,25 +65,28 @@
 \maketitle
 
 \begin{abstract}
+We introduce a novel spectral element method based on the ultraspherical spectral method and the Hierarchical Poincare--Steklov scheme for solving general partial differential equations on polygonal domains.  Properties of using the ultraspherical spectral method lead to almost banded well-conditioned linear systems, allowing for the element method to be competitive in the ultra high-polynomial regime as well as be robust to triangulations that contain elements with small aspect ratios. We develop a software system...
 \end{abstract}
 
 \begin{keywords}
+spectral element method, ultraspherical spectral method, Hierarchical Poincare--Steklov scheme
 \end{keywords}
 
 \begin{AMS}
+65N35, 65N55, 	65M60
 \end{AMS}
 
 \section{Introduction}\label{sec:introduction}
-{\bf Advantages}
-\begin{enumerate}
-\item Complexity is $\mathcal{O}(p^4/h^3)$ instead of $\mathcal{O}(p^6/h^3)$.
-\item Closer to ``true" $hp$-adaptivity, since this allows for $p$ in the hundreds.
-\item Stability?
-\item Robust to skinny elements.
-\item Storage of solution operator allows for fast solves with multiple RHSs/BCs (e.g. time-stepping).
-\item Hierarchical Poincar\'{e}--Steklov can be used as an element method (i.e. it doesn't have to look like nested dissection).
-\item No mapping between grids to deal with corners.
-\end{enumerate}
+%{\bf Advantages}
+%\begin{enumerate}
+%\item Complexity is $\mathcal{O}(p^4/h^3)$ instead of $\mathcal{O}(p^6/h^3)$.
+%\item Closer to ``true" $hp$-adaptivity, since this allows for $p$ in the hundreds.
+%\item Stability?
+%\item Robust to skinny elements.
+%\item Storage of solution operator allows for fast solves with multiple RHSs/BCs (e.g. time-stepping).
+%\item Hierarchical Poincar\'{e}--Steklov can be used as an element method (i.e. it doesn't have to look like nested dissection).
+%\item No mapping between grids to deal with corners.
+%\end{enumerate}
 
 Traditional approaches for solving partial differential equations (PDEs) include finite element, finite differences, and spectral element methods. Each approach represents the sought-after PDE solution on a grid or mesh. Convergence is then achieved by shrinking the grid or mesh spacing. 
 
