@@ -347,25 +347,24 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
 %ZERODOF   Eliminate so degrees of freedom in the matrix equation can be
 %removed.
 
-    if ( nargin < 6)
-        trans = false;
-    end
+if ( nargin < 6)
+    trans = false;
+end
 
-    for ii = 1:size(B, 1) % For each boundary condition, zero a column.
-        for kk = 1:size(C1, 1)
-            if ( abs(C1(kk,ii)) > 10*eps )
-                c = C1(kk,ii); % Constant required to zero entry out.
-                C1(kk,:) = C1(kk,:) - c*B(ii,:);
-                for ll = 1:size(G, 3) % Do this for every BC.
-                    if ( trans )
-                        E(:,kk,ll) = E(:,kk,ll).' - c*G(ii,:,ll)*C2.';
-                    else
-                        E(kk,:,ll) = E(kk,:,ll) - c*G(ii,:,ll)*C2.';
-                    end
-                end
-            end
+
+for ii = 1:size(B, 1) % For each boundary condition, zero a column.
+    C1ii = full(C1(:,ii)); % Constant required to zero entry out.
+    C1 = C1 - C1ii*B(ii,:);
+    Gii = permute(G(ii,:,:), [2 3 1]);  
+    for kk = 1:size(C1, 1)
+        if ( trans )
+            E(:,kk,:) = E(:,kk,:) - C1ii(kk)*permute(C2*Gii,[1,3,2]);
+        else
+            E(kk,:,:) = E(kk,:,:) - C1ii(kk)*permute(C2*Gii,[3 1 2]);
         end
     end
+end
+
 
 end
 
