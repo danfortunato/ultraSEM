@@ -11,7 +11,12 @@ if ( nargin == 2 && strcmp(m, 'makeObj') )
 end
 
 if ( ~all(size(dom) == [1, 4]) )
-    error('Input must be a 1x4 vector.')
+    error('ULTRASEM:ULTRASEMDOMAIN:rectangle', ...
+        'Input must be a 1x4 vector.')
+end
+if ( dom(1) == dom(2) || dom(3) == dom(4) )
+    error('ULTRASEM:ULTRASEMDOMAIN:rectangle', ...
+        'Rectangle is degenerate.');
 end
 if ( nargin < 2 )
     m = 1;
