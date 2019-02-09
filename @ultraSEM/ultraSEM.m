@@ -355,6 +355,9 @@ classdef ultraSEM < handle
         % Run the test suite.
         pass = test();
 
+        % Run the GUI.
+        varargout = gui();
+
     end
 
 end
