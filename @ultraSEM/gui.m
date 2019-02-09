@@ -52,7 +52,6 @@ if ( ~all( v(end,:) == v(1,:) ) )
 end
 % Remove the duplicated end vertex:
 v(end, :) = [];
-varargout{3} = v;
 
 %% Determine polygonal boundary contraints:
 
@@ -92,23 +91,20 @@ for k = 1:nt
     v = pts(list(k,:),:);
     T = T & ultraSEM.triangle(v);
 end
-varargout{2} = T;
 
 %% Initialize ultraSEM object:
 S = ultraSEM(T, PDO, rhs, n);
 
 %% Solve:
 sol = solve(S, bc);
-
-%% Plot:
-
 if ( nargout == 1 )
     varargout{1} = sol;
-else
-    title('Solution')
-    figure(1)
-    h = surf(sol);
-    axis(h(1).Parent, lim)
 end
+
+%% Plot:
+title('Solution')
+figure(1)
+h = surf(sol);
+axis(lim), axis(h(1).Parent, lim)
 
 end
