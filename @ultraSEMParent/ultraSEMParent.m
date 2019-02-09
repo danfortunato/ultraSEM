@@ -14,6 +14,8 @@ classdef ultraSEMParent < ultraSEMPatch
         child2 = []     % Child patch
         idx1            % How p.xy relates to p.child1.xy
         idx2            % How p.xy relates to p.child2.xy
+        flip1           % How to flip the interface for child1
+        flip2           % How to flip the interface for child2
 
     end
 
@@ -23,7 +25,7 @@ classdef ultraSEMParent < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMParent(domain, S, D2N, xy, child1, child2, idx1, idx2)
+        function P = ultraSEMParent(domain, S, D2N, xy, child1, child2, idx1, idx2, flip1, flip2)
         %ULTRASEMPARENT   Class constructor for the @ultraSEMParent class.
         %   P = ultraSEMParent(DOMAIN, S, D2N, XY, CHILD1, CHILD2, IDX1, IDX2)
         %   assigns each of the inputs to their associated properties in
@@ -45,6 +47,8 @@ classdef ultraSEMParent < ultraSEMPatch
             P.child2 = child2;
             P.idx1 = idx1;
             P.idx2 = idx2;
+            P.flip1 = flip1;
+            P.flip2 = flip2;
 
         end
 
@@ -83,9 +87,9 @@ classdef ultraSEMParent < ultraSEMPatch
 
             % Assemble boundary conditions for child patches:
             ubc1 = ones(size(P.child1.S, 2)-1, 1);
-            ubc1(idx1) = [bc(i1) ; u];
+            ubc1(idx1) = [bc(i1) ; P.flip1.*u];
             ubc2 = ones(size(P.child2.S, 2)-1, 1);
-            ubc2(idx2) = [bc(i2) ; u];
+            ubc2(idx2) = [bc(i2) ; P.flip2.*u];
 
             % Solve for the child patches:
             [u1, d1] = solve(P.child1, ubc1);

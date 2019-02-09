@@ -40,7 +40,12 @@ classdef ultraSEMSol
 
             for k = 1:size(d, 1)
                 n = size(u{k}, 1);
-                [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
+                if ( ~isnumeric(d(k,:)) )
+                    [x,y] = chebpts2(n);
+                    [obj.x{k,1}, obj.y{k,1}] = transformGrid(d(k,:), x, y);
+                else
+                    [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
+                end
             end
 
         end
@@ -188,12 +193,13 @@ classdef ultraSEMSol
             for k = 1:size(sol.domain, 1 )
 
                 map = sol.domain(k,:);
-                x = map.invT1(x0, y0);
-                y = map.invT2(x0, y0);
+                % Convert to single to avoid mapping issues
+                x = single(map.invT1(x0, y0));
+                y = single(map.invT2(x0, y0));
                 dom = map.domain;
 
                 idx = ( isreal(x) & isreal(y) & x >= dom(1) & x <= dom(2) & ...
-                       y >= dom(3) & y <= dom(4));
+                       y >= dom(3) & y <= dom(4) );
 
                 if ( any(idx) )
                     u(idx) = clenshaw(sol.u{k}, x(idx), y(idx));

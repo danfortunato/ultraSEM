@@ -609,6 +609,12 @@ classdef ultraSEMDomain
         % Construct rectangular domains:
         T = rectangle(varargin);
 
+        % Construct kite domains:
+        T = kite(varargin);
+
+        % Construct triangular domains:
+        T = triangle(varargin);
+
         % Construct word-shaped domains:
         T = scribble( str, join );
 

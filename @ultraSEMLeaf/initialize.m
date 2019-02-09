@@ -45,9 +45,6 @@ if ( isnumeric(dom) )
                        ~any(diff(diff(dom(:,3:4),1,2))) )
         constantOp = true;
     end
-else
-    error('ULTRASEM:ULTRASEMLEAF:initialize:nonconst', ...
-        'Cannot handle non-rectangular domains yet.');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,29 +160,41 @@ if ( constantOp )
 % Each patch needs a different solution operator:
 else
 
+    op_orig = op;
+    rhs_orig = rhs;
+
     % Loop over each patch:
     for k = 1:numPatches
 
+        % Determine if this is a mapped domain:
+        mapped = ~isnumeric(dom(k,:)) & ~isa(dom(k,:), 'rectangle');
+
         % Get the current domain:
         domk = dom(k,:);
-
+        rect = dom(k,:);
+        if ( mapped ), rect = rect.domain; end
         % Define the boundary nodes for this patch:
-        if ( isnumeric(domk) )
-            domx = domk(1:2);
-            domy = domk(3:4);
-        else
-            domx = domk.domain(1:2);
-            domy = domk.domain(3:4);
-        end
+        domx = rect(1:2);
+        domy = rect(3:4);
         sclx = 2/diff(domx);
         scly = 2/diff(domy);
         x = (XX+1)/sclx + domx(1);
         y = (YY+1)/scly + domy(1);
+
         % Store the four sides separately:
         xy = {[ x(leftIdx)  y(leftIdx)  ] ;
               [ x(rightIdx) y(rightIdx) ] ;
               [ x(downIdx)  y(downIdx)  ] ;
               [ x(upIdx)    y(upIdx)    ] };
+
+        % Transform the equation for mapped domains:
+        if ( mapped )
+            [op, rhs] = transformPDO(domk, op_orig, rhs_orig);
+            % Transform the grid:
+            for j = 1:4
+               [xy{j}(:,1), xy{j}(:,2)] = transformGrid(domk, xy{j}(:,1), xy{j}(:,2));
+            end
+        end
 
         % Evaluate non-constant RHSs:
         if ( ~isnumeric(rhs) )
@@ -197,17 +206,24 @@ else
             rmap = ultraS.convertmat(n, 0, 1);
             coeffs = lmap * coeffs * rmap.';
             coeffs = coeffs(1:n-2, 1:n-2);
-            rhs_eval(:,k) = reshape(coeffs, numIntDOF, 1);
+            rhs_eval = reshape(coeffs, numIntDOF, 1);
         end
 
         % Solution operator:
-        S = buildSolOp(op, domk, rhs_eval(:,k), n);
+        S = buildSolOp(op, rect, rhs_eval, n);
+
+        % Normal derivative operator:
+        if ( mapped )
+            normal_d = transformNormalD(domk, xy, n);
+        else
+            normal_d = bcrows_d;
+        end
 
         % Dirichlet-to-Neumann map:
-        D2N = bcrows_d * S;
+        D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, n, op);
+        P{k} = ultraSEMLeaf(domk, S, D2N, xy, n, op);
 
     end
 
@@ -229,7 +245,7 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     for field = fieldnames(pdo)'
         coeff = pdo.(field{1});
         if ( isa(coeff, 'function_handle') )
-            pdo.(field{1}) = chebfun2(coeff, dom); % Domain?
+            pdo.(field{1}) = chebfun2(coeff, [n n], dom); % Domain?
         end
     end
 
@@ -350,7 +366,6 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
 if ( nargin < 6)
     trans = false;
 end
-
 
 for ii = 1:size(B, 1) % For each boundary condition, zero a column.
     C1ii = full(C1(:,ii)); % Constant required to zero entry out.

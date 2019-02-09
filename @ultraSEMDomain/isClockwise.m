@@ -1,5 +1,5 @@
 function out = isClockwise( v )
-%ISCLOCKWISE   Determines whether a polgon is clokwise orientated.
+%ISCLOCKWISE   Determines whether a polgon is clockwise oriented.
 %   ISCLOCKWISE(V) returns true if the polygon defined by the vertices V is
 %   clockwise oriented, or not. It does this by computing the signed area
 %   of the polygon. If the polygon is degenerate (i.e., the area is zero)
