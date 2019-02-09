@@ -21,8 +21,9 @@ MS = 'markersize'; ms = 20;
 
 % Launch a new figure and click the mouse as many time as you want within
 % figure
-figure(), axis(5*[-1 1 -1 1]), grid on, hold on
-title('Select boundary verticies')
+lim = 5*[-1 1 -1 1];
+figure(), axis(lim), grid on, hold on
+title('Select boundary vertices')
 v = [];
 cv = ginput(1);                             % Current vertex.
 v = cv;                                     % Add to list.
@@ -60,7 +61,7 @@ P = [1:lv ; 2:lv 1].';
 
 %% Add interior vertices:
 
-title('Select interior verticies')
+title('Select interior vertices')
 button = 1;
 while ( button == 1  )                  % Until button 2 is pressed...
     [x, y, button] = ginput(1);         % Grab next vertex.
@@ -106,10 +107,8 @@ if ( nargout == 1 )
 else
     title('Solution')
     figure(1)
-    subplot(1,2,1)
-    mesh( sol )
-    subplot(1,2,2)
-    surf( sol )
+    h = surf(sol);
+    axis(h(1).Parent, lim)
 end
 
 end
