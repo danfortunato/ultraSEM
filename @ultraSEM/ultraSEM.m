@@ -342,14 +342,21 @@ classdef ultraSEM < handle
 
         function varargout = kite(varargin)
         %KITE Construct an ultraSEMDomain kite domain.
-        %   ultraSEM.kite(V) constructs a kite with verticies V.
+        %   ultraSEM.kite(V) constructs a kite with vertices V.
             [varargout{1:nargout}] = ultraSEMDomain.kite(varargin{:});
         end
 
         function varargout = triangle(varargin)
         %TRIANGLE  Construct an ultraSEMDomain triangle domain.
-        %   ultraSEM.triangle(V) constructs a triangle with verticies V.
+        %   ultraSEM.triangle(V) constructs a triangle with vertices V.
             [varargout{1:nargout}] = ultraSEMDomain.triangle(varargin{:});
+        end
+
+        function varargout = polygon(varargin)
+        %POLYGON  Construct an ultraSEMDomain convex polygon domain.
+        %   ultraSEM.polygon(V) constructs a convex polygon with vertices
+        %   V.
+            [varargout{1:nargout}] = ultraSEMDomain.polygon(varargin{:});
         end
 
         % Run the test suite.

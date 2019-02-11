@@ -53,7 +53,7 @@ end
 % Remove the duplicated end vertex:
 v(end, :) = [];
 
-%% Determine polygonal boundary contraints:
+%% Determine polygonal boundary constraints:
 
 lv = size(v, 1);
 P = [1:lv ; 2:lv 1].';

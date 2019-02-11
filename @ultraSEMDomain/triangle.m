@@ -10,7 +10,7 @@ function T = triangle(v)
 
     if ( ultraSEMDomain.isClockwise(v) )
         % Switch the second and third vertex to make it anticlockwise.
-         v([2,3],:) = v([3,2],:);
+        v([2,3],:) = v([3,2],:);
     end
 
     % Locate the centre of the triangle:
