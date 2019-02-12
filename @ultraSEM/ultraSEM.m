@@ -359,6 +359,12 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.polygon(varargin{:});
         end
 
+        function varargout = trimesh(varargin)
+        %TRIMESH  Construct an ultraSEMDomain triangulated mesh.
+        %   ultraSEM.trimesh(P, T) constructs a triangulated mesh.
+            [varargout{1:nargout}] = ultraSEMDomain.trimesh(varargin{:});
+        end
+
         % Run the test suite.
         pass = test();
 

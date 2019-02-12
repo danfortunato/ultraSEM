@@ -618,6 +618,9 @@ classdef ultraSEMDomain
         % Construct convex polygonal domains:
         T = polygon(varargin);
 
+        % Construct triangulated meshes:
+        T = trimesh(varargin);
+
         % Construct word-shaped domains:
         T = scribble( str, join );
 
