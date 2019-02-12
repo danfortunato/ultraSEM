@@ -1,4 +1,4 @@
-classdef ultraSEMMapping < matlab.mixin.Heterogeneous
+classdef ultraSEMMapping < handle
 %ULTRASEMMAPPING  Abstract mapping object from ULTRASEM system.
 
     %#ok<*PROP>
