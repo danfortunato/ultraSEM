@@ -120,6 +120,8 @@ classdef ultraSEMParent < ultraSEMPatch
             s1 = P.idx1{2};
             i2 = P.idx2{1};
             s2 = P.idx2{2};
+            flip1 = P.flip1;
+            flip2 = P.flip2;
 
             % Extract D2N maps:
             D2Na = a.D2N; D2Nb = b.D2N;
@@ -127,15 +129,15 @@ classdef ultraSEMParent < ultraSEMPatch
             % a.D2N = []; b.D2N = [];
 
             % Compute new solution operator:
-            S = -( D2Na(s1, s1) + D2Nb(s2,s2) ) \ ...
-                 ( D2Na(s1,end) + D2Nb(s2,end) );
-            %     |----------- rhs -----------|
+            S = lsqminnorm( -( flip1.*D2Na(s1,s1).*flip1.' + flip2.*D2Nb(s2,s2).*flip2.' ), ...
+                               flip1.*D2Na(s1,end) + flip2.*D2Nb(s2,end) );
+            %                 |------------------ rhs ------------------|
 
             % Compute new D2N maps:
             %      |--- rhs ----|
             D2N = [ D2Na(i1,end) ;
                     D2Nb(i2,end) ] ...
-                + [ D2Na(i1,s1) ; D2Nb(i2, s2) ] * S;
+                + [ D2Na(i1,s1).*flip1.' ; D2Nb(i2,s2).*flip2.' ] * S;
 
             P.S(:,end) = S;
             P.D2N(:,end) = D2N;

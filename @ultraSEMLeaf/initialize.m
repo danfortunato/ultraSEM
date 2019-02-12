@@ -137,11 +137,11 @@ if ( constantOp )
         end
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, n, op);
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, A, xy, n, op);
 
     end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Append particular parts:
     if ( ~constantRHS )
         Si = A \ rhs_eval;
@@ -210,7 +210,7 @@ else
         end
 
         % Solution operator:
-        S = buildSolOp(op, rect, rhs_eval, n);
+        [S, A] = buildSolOp(op, rect, rhs_eval, n);
 
         % Normal derivative operator:
         if ( mapped )
@@ -223,7 +223,7 @@ else
         D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(domk, S, D2N, xy, n, op);
+        P{k} = ultraSEMLeaf(domk, S, D2N, A, xy, n, op);
 
     end
 
