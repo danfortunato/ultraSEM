@@ -104,5 +104,3 @@ err(8) = abs(u0 - trueSol);
 pass = err < tol;
 
 end
-
-
