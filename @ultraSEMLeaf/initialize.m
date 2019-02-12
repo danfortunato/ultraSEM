@@ -372,7 +372,10 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
         C1 = C1 - C1ii*B(ii,:);
         Gii = permute(G(ii,:,:), [2 3 1]);
         C2Gii = C2*Gii;
+        tol = 10*eps;
+        if ( ~any( abs(C1ii) > tol ) ), continue, end
         for kk = 1:size(C1, 1)
+            if ( abs(C1ii(kk)) < tol ), continue, end
             if ( trans )
                 E(:,kk,:) = E(:,kk,:) - C1ii(kk)*permute(C2Gii,[1,3,2]);
             else
