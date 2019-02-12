@@ -47,7 +47,7 @@ axy = cat(1, axy{:});
 bxy = cat(1, bxy{:});
 
 % Convert to single precision to avoid issues with rounding error.
-shift = 0;
+shift = 42;
 axy = single(axy + shift);
 bxy = single(bxy + shift);
 
