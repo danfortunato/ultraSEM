@@ -102,6 +102,8 @@ nb = size(b.xy{1},1); ib = unique(floor((i4b-1)/(nb-2))+1, 'stable').';
 % Determine what regions of the glue are flipped.
 flags1 = find(all(diff(reshape(i4a,na-2,numel(ia))) == -1));
 flags2 = find(all(diff(reshape(i4b,nb-2,numel(ib))) == -1));
+if ( isempty(i4a) ), flags1 = []; end
+if ( isempty(i4b) ), flags2 = []; end
 
 % Now create the non-flipped glue indices.
 i4a = (1:na).' + (ia-1)*na; i4a = i4a(:);
