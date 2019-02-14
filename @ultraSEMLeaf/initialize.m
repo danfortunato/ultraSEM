@@ -324,6 +324,8 @@ function CC = discretizeODOs(pdo, dom, n)
             else
                 % Variable coefficient
                 [C, D, R] = cdr(coeff);
+                C = chebcoeffs(C, n);
+                R = chebcoeffs(R, n);
                 % Make a multiplication operator for each slice of chebfun2
                 for r = 1:length(coeff)
                     Mx = ultraS.multmat( n, D(r,r) * R(:,r), dx );
