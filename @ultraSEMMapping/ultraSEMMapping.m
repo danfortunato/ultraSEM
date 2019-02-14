@@ -74,11 +74,13 @@ classdef ultraSEMMapping < handle
                 end
 
                 % Add text to centre of patch:
-                mx = mean(T(k).domain(1:2));
-                my = mean(T(k).domain(3:4));
-                cx = T(k).T1(mx, my);
-                cy = T(k).T2(mx, my);
-                text(cx, cy, int2str(k))
+                if ( numel(T) < 100 ) % Don't add text on large meshes
+                    mx = mean(T(k).domain(1:2));
+                    my = mean(T(k).domain(3:4));
+                    cx = T(k).T1(mx, my);
+                    cy = T(k).T2(mx, my);
+                    text(cx, cy, int2str(k), 'HorizontalAlignment', 'center')
+                end
 
             end
 

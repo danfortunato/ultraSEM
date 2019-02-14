@@ -325,7 +325,10 @@ classdef ultraSEMDomain
                 h(k,1) = fill(domk([1 2 2 1]), domk([3 3 4 4]), c, ...
                     'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
                 % Add text to center of patch:
-                text(mean(domk(1:2)), mean(domk(3:4)), int2str(k))
+                if ( length(T) < 100 ) % Don't add text on large meshes
+                    text(mean(domk(1:2)), mean(domk(3:4)), int2str(k), ...
+                        'HorizontalAlignment', 'center')
+                end
             end
             axis equal
 
