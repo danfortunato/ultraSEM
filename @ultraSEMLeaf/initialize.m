@@ -314,8 +314,8 @@ function CC = discretizeODOs(pdo, dom, n)
             CC{k} = cell(length(coeff), 2);
             Sx = ultraS.convertmat(n, dx, 1);
             Sy = ultraS.convertmat(n, dy, 1);
-            Dx = (2/diff(dom(3:4)))^dx * ultraS.diffmat(n, dx);
-            Dy = (2/diff(dom(1:2)))^dy * ultraS.diffmat(n, dy);
+            Dx = (2/diff(dom(1:2)))^dx * ultraS.diffmat(n, dx);
+            Dy = (2/diff(dom(3:4)))^dy * ultraS.diffmat(n, dy);
 
             if ( isscalar(coeff) )
                 % Constant coefficient
