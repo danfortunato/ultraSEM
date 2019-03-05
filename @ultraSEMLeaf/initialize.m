@@ -240,15 +240,6 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
 %   S = solution operator on patch
 %   A = discretized operator on patch
 
-    % Convert variable coefficients of PDO to chebfun2 in order to get a
-    % separable representation.
-    for field = fieldnames(pdo)'
-        coeff = pdo.(field{1});
-        if ( isa(coeff, 'function_handle') )
-            pdo.(field{1}) = chebfun2(coeff, [n n], dom); % Domain?
-        end
-    end
-
     % Discretize the separable ODOs that make the PDO
     CC = discretizeODOs(pdo, dom, n);
 
@@ -284,7 +275,7 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
     % system O(p) times, which we do in O(p^4) using Schur
     % complements/Woodbury.
-    %S22 = A \ [BC, rhs];
+%     S22 = A \ [BC, rhs];
     S22 = schurSolve(A, [BC, rhs], 2*n-2);
 
     % Add in the boundary data
@@ -306,9 +297,15 @@ function CC = discretizeODOs(pdo, dom, n)
         coeff = pdo.(terms{k});
         dx = length(strfind(terms{k}, 'x'));
         dy = length(strfind(terms{k}, 'y'));
+        
+%         % Convert variable coefficients of PDO to chebfun2 in order to get a
+%         % separable representation.
+%         if ( isa(coeff, 'function_handle') )
+%             coeff = chebfun2(coeff, [n n], dom);
+%         end
 
         % Check if the coefficient is zero
-        if ( (isscalar(coeff) && coeff ~= 0) || isa(coeff, 'chebfun2') )
+        if ( (isnumeric(coeff) && ~all(coeff(:) == 0)) || isa(coeff, 'chebfun2') || isa(coeff, 'function_handle') )
 
             % Define operators
             CC{k} = cell(length(coeff), 2);
@@ -317,15 +314,26 @@ function CC = discretizeODOs(pdo, dom, n)
             Dx = (2/diff(dom(1:2)))^dx * ultraS.diffmat(n, dx);
             Dy = (2/diff(dom(3:4)))^dy * ultraS.diffmat(n, dy);
 
-            if ( isscalar(coeff) )
+            if ( isnumeric(coeff) )
                 % Constant coefficient
                 CC{k}{1,1} = coeff .* Sy * Dy;
                 CC{k}{1,2} =          Sx * Dx;
             else
                 % Variable coefficient
-                [C, D, R] = cdr(coeff);
-                C = chebcoeffs(C, n);
-                R = chebcoeffs(R, n);
+                if ( isa(coeff, 'function_handle') )
+                    [xx,yy] = chebpts2(n, n, dom);
+                    [C, D, R] = svd(coeff(xx,yy));
+                    r = rank(D);
+                    C = chebtech2.vals2coeffs(C(:,1:r));
+                    D = D(1:r,1:r);
+                    R = chebtech2.vals2coeffs(R(:,1:r));
+                    coeff = 1:r;
+                    CC{k} = cell(length(coeff), 2);
+                else
+                    [C, D, R] = cdr(coeff);
+                    C = chebcoeffs(C, n);
+                    R = chebcoeffs(R, n);
+                end
                 % Make a multiplication operator for each slice of chebfun2
                 for r = 1:length(coeff)
                     Mx = ultraS.multmat( n, D(r,r) * R(:,r), dx );
