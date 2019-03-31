@@ -275,8 +275,8 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
     % system O(p) times, which we do in O(p^4) using Schur
     % complements/Woodbury.
-%     S22 = A \ [BC, rhs];
-    S22 = schurSolve(A, [BC, rhs], 2*n-2);
+    S22 = A \ [BC, rhs];
+%     S22 = schurSolve(A, [BC, rhs], 2*n-2);
 
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
@@ -321,7 +321,9 @@ function CC = discretizeODOs(pdo, dom, n)
             else
                 % Variable coefficient
                 if ( isa(coeff, 'function_handle') )
-                    [xx,yy] = chebpts2(n, n, dom);
+                    x = chebpts(n, dom(1:2));
+                    y = chebpts(n, dom(3:4));
+                    [xx,yy] = meshgrid(x,y);
                     [C, D, R] = svd(coeff(xx,yy));
                     r = rank(D);
                     C = chebtech2.vals2coeffs(C(:,1:r));
