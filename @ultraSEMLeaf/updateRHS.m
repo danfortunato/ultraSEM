@@ -81,6 +81,53 @@ P.D2N(:,end) = normal_d * S;
 
 end
 
+function [B, G, P] = canonicalBC(B, G)
+%CANONICALBC   Form a linear combintation of the boundary conditions
+%so that they can be used for imposing on the PDE.
+
+P = nonsingularPermute(B);
+B = B*P;
+[L, B] = lu(B);
+G = L \ G;
+
+% Scale so that B is unit upper triangular.
+if ( min(size(B)) > 1 )
+    D = diag(1./diag(B));
+elseif ( ~isempty(B) )
+    D = 1./B(1,1);
+else
+    D = []; % No boundary conditions.
+end
+B = D*B;
+G = D*G;
+
+end
+
+function P = nonsingularPermute(B)
+%NONSINGULARPERMUTE   Permute the columns of B to ensure that the principal
+%m*m submatrix of B is nonsingular, where m = size(B, 1).
+%
+% Note: This is needed for solving the matrix equations with linear
+% constraints, see DPhil thesis of Alex Townsend (section 6.5).
+
+m = size(B, 1);
+k = 1;
+
+% [TODO]: improve this check.
+% Try each mxm block in a linear fashion:
+while ( rank(B(:,k:m+k-1)) < m )
+    k = k+1;
+    if ( m+k > size(B, 2) )
+        error('CHEBFUN:CHEBOP2:discretize:nonsingularPermute:BCs', ...
+            'Boundary conditions are linearly dependent.');
+    end
+end
+
+P = speye(size(B, 2));
+P = P(:,[k:m+k-1, 1:k-1, m+k:end]);
+
+end
+
 function S = imposeBCs(S22, Px, Py, Bx, By, Gx, Gy, n)
 %IMPOSEBCS   Impose the boundary conditions on the solution.
 
