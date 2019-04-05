@@ -1,79 +1,86 @@
-\documentclass[11pt,a4paper,review]{siamart171218}
+\documentclass[review]{siamart171218}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{arrows.meta}
 
-\usepackage{graphicx}
-\usepackage{fancyhdr}
-\usepackage{dsfont}
-\usepackage{stmaryrd}
-
-\usepackage{amsfonts}
-\usepackage{amssymb}
-%\usepackage{amsthm}
-
-\usepackage{amsmath}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{mathtools}
-\usepackage{enumitem}
-
-\usepackage{mathrsfs}
-
-%\usepackage{algorithm2e}
-%\usepackage{algorithmic}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepgfplotslibrary{patchplots}
 
 \usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{overpic} 
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[title]{appendix}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{dsfont}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{import}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{overpic}
+\usepackage{refcheck}
+\usepackage{stmaryrd}
+\usepackage{varwidth}
+\usepackage{xcolor}
 
-\usepackage{mathtools,booktabs}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
-\usepackage{varwidth}
-
-\usepackage[title]{appendix}
-
+\renewcommand{\vec}[1]{\bm{#1}}
+\newcommand{\R}[0]{\mathbb{R}}
+\newcommand{\C}[0]{\mathbb{C}}
 \newcommand{\ttrank}{{\rm rank}^{\rm TT}}
 \newcommand{\mlrank}{{\rm rank}^{\rm ML}}
 \newcommand{\cprank}{{\rm rank}^{\rm CP}}
 \newcommand{\rank}{{\rm rank}}
 \newcommand{\lex}{<_{\rm lex}}
 \newcommand{\lexeq}{\le_{\rm lex}}
+
 %\theoremstyle{definition}
 %\newtheorem{definition}{Definition}[section]
-
 %\newtheorem{theorem}{Theorem}[section]
 %\newtheorem{corollary}{Corollary}[theorem]
 %\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{example}{Example}[section]
 
-\usepackage{cite}
+\graphicspath{{figures/}}
+\makeatletter
+\def\input@path{{figures/}}
+\makeatother
 
 \title{The ultraspherical spectral element method\thanks{Submitted to the editors \today.
 \funding{This work is supported by National Science Foundation grant no.~1818757 and the National Defense Science and Engineering Graduate Fellowship.}}}
-\author{Dan Fortunato\thanks{School of Engineering and Applied Sciences, Harvard University, Cambridge, MA 02138. (\email{dfortunato@g.harvard.edu})} \and Nick Hale\thanks{} \and Alex Townsend\thanks{Department of Mathematics, Cornell University, Ithaca, NY 14853. (\email{townsend@cornell.edu})}}
-\headers{ultraSEM}{Dan Fortunato, Nick Hale, and Alex Townsend}
+\author{Daniel Fortunato\thanks{School of Engineering and Applied Sciences, Harvard University, Cambridge, MA 02138. (\email{dfortunato@g.harvard.edu})} \and Nicholas Hale\thanks{Department of Mathematical Sciences, Stellenbosch University, Stellenbosch, 7602, South Africa. (\email{nickhale@sun.ac.za})} \and Alex Townsend\thanks{Department of Mathematics, Cornell University, Ithaca, NY 14853. (\email{townsend@cornell.edu})}}
+\headers{ultraSEM}{Daniel Fortunato, Nicholas Hale, and Alex Townsend}
 \begin{document}
-\newcommand{\R}[0]{\mathbb{R}}
-\newcommand{\C}[0]{\mathbb{C}}
 \maketitle
 
 \begin{abstract}
-We introduce a novel spectral element method based on the ultraspherical spectral method and the Hierarchical Poincare--Steklov scheme for solving general partial differential equations on polygonal domains.  Properties of using the ultraspherical spectral method lead to almost banded well-conditioned linear systems, allowing for the element method to be competitive in the ultra high-polynomial regime as well as be robust to triangulations that contain elements with small aspect ratios. We develop a software system...
+We introduce a novel spectral element method based on the ultraspherical spectral method and the hierarchical Poincare--Steklov scheme for solving general partial differential equations (PDEs) on polygonal unstructured meshes.  Properties of the ultraspherical spectral method lead to almost banded well-conditioned linear systems, allowing for the element method to be competitive in the ultra-high-polynomial regime and to be robust to meshes that contain elements with small aspect ratios. The hierarchical Poincare--Steklov scheme enables precomputed solution operators to be reused, allowing for fast elliptic solves in implicit and semi-implicit time-steppers. We develop an open-source software system...
 \end{abstract}
 
 \begin{keywords}
-spectral element method, ultraspherical spectral method, Hierarchical Poincare--Steklov scheme
+spectral element method, ultraspherical spectral method, hierarchical Poincare--Steklov scheme
 \end{keywords}
 
 \begin{AMS}
-65N35, 65N55, 	65M60
+65N35, 65N55, 65M60
 \end{AMS}
 
 \section{Introduction}\label{sec:introduction}
@@ -107,6 +114,24 @@ We go some way to achieving this goal by developing a Hierarchical Poincare--Ste
  \underbrace{\frac{p^4}{h^2}}_{\text{leaf computation}} + \underbrace{\frac{p^3}{h^3}}_{\text{merge cost}} + \underbrace{\frac{p^2}{h} + \frac{p}{h}\log \frac{p}{h}}_{\text{solve cost}} \approx \frac{p^4}{h^2} + \frac{p^3}{h^3} \approx Np^2 + N^{3/2}. 
 \]
 
+\begin{figure}[htb]
+  \centering
+  \begin{minipage}{0.49\textwidth}
+    \begin{center}
+      \small
+      \scalebox{0.4}{\input{values}}
+    \end{center}
+  \end{minipage}%
+  \begin{minipage}{0.49\textwidth}
+    \begin{center}
+      \small
+      \scalebox{0.42}{\input{coeffs}}
+    \end{center}
+  \end{minipage}
+  \vspace{1em}
+  \caption{Two interpretations of domain decomposition using the Schur complement method, with interface data in red and interior data in blue. (Left) In value space, neighboring elements communicate directly through shared degrees of freedom, which can be partitioned into shared interface nodes and local interior nodes. (Right) Neighboring elements communicate indirectly through unshared interface unknowns, allowing for domain decomposition that is independent of basis.}
+  \label{fig:dd_interpretations}
+\end{figure}
 
 \section{Background material}\label{sec:background}
 First, we describe the fundamental ideas in the ultraspherical spectral method~\cite{Olver_13_01}, which in one dimension solves linear ordinary differential equations (ODEs) with variable coefficients of the form: 
@@ -202,7 +227,8 @@ of the ultraspherical spectral method for solving singularly perturbed different
 
 \section*{Acknowledgements}
 
+\nocite{*}
+\bibliographystyle{siamplain}
 \bibliography{references}
-\bibliographystyle{siam}
 
 \end{document}

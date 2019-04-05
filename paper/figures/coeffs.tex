@@ -1,0 +1,88 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=4.754in,
+height=4.754in,
+at={(1.648in,0.642in)},
+scale only axis,
+xmin=-2.5,
+xmax=2.5,
+ymin=-2.5,
+ymax=2.5,
+axis line style={draw=none},
+ticks=none,
+axis x line*=bottom,
+axis y line*=left
+]
+\draw[fill=blue, draw=black] (axis cs:0.2,0.2) rectangle (axis cs:2.2,2.2);
+\draw[fill=blue, draw=black] (axis cs:-2.2,0.2) rectangle (axis cs:-0.2,2.2);
+\draw[fill=blue, draw=black] (axis cs:0.2,-2.2) rectangle (axis cs:2.2,-0.2);
+\draw[fill=blue, draw=black] (axis cs:-2.2,-2.2) rectangle (axis cs:-0.2,-0.2);
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+0	0.2\\
+0	2.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+0	-2.2\\
+0	-0.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+-2.2	0\\
+-0.2	0\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+0.2	0\\
+2.2	0\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+2.4	0.2\\
+2.4	2.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+2.4	-2.2\\
+2.4	-0.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+-2.4	0.2\\
+-2.4	2.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+-2.4	-2.2\\
+-2.4	-0.2\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+-2.2	2.4\\
+-0.2	2.4\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+0.2	2.4\\
+2.2	2.4\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+-2.2	-2.4\\
+-0.2	-2.4\\
+};
+\addplot [color=red, line width=6.0pt, forget plot]
+  table[row sep=crcr]{%
+0.2	-2.4\\
+2.2	-2.4\\
+};
+\end{axis}
+\end{tikzpicture}%
