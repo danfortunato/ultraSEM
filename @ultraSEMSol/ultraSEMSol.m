@@ -38,10 +38,10 @@ classdef ultraSEMSol
             obj.domain = d;
             obj.u = u;
 
-            for k = 1:size(d, 1)
-                n = size(u{k}, 1);
-                [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
-            end
+%             for k = 1:size(d, 1)
+%                 n = size(u{k}, 1);
+%                 [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
+%             end
 
         end
 
