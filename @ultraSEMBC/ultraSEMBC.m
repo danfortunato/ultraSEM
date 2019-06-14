@@ -49,7 +49,7 @@ classdef ultraSEMBC
                 for k = 1:size(obj.coeffs, 1)
                     vals = feval(bc, xy{k}(:,1), xy{k}(:,2));
                     % Convert from values to coeffs:
-                    obj.coeffs{k} = chebtech2.vals2coeffs(vals);
+                    obj.coeffs{k} = util.vals2coeffs(vals);
                 end
             elseif ( isscalar(bc) )
                 % Convert a scalar to coeffs:
