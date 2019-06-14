@@ -38,11 +38,13 @@ end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for a constant-coefficient PDO on a uniform domain:
-[~, isConstant] = feval(op, dom(1,1), dom(1,3));
-if ( ~isConstant || any(diff(diff(dom(:,1:2),1,2))) || ...
-                    any(diff(diff(dom(:,3:4),1,2))) )
-    error('ULTRASEM:ULTRASEMLEAF:initialize:nonconst', ...
-        'Cannot handle variable-coefficient PDEs or non-rectangular domains yet.');
+constantOp = false;
+if ( isnumeric(dom) )
+    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
+    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
+                       ~any(diff(diff(dom(:,3:4),1,2))) )
+        constantOp = true;
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,68 +93,140 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%% SOLVE LOCAL PROBLEMS %%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Solution operator:
-% This involves solving a O(p^2) x O(p^2) almost-banded-block-banded system
-% O(p) times. Currently this is O(p^4*p) = O(p^5), but can be done in
-% O(p^4) using e.g. Woodbury.
-[S, A] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
-
-% Dirichlet-to-Neumann map:
-D2N = bcrows_d * S;
-
 % Initialize
 P = cell(numPatches, 1);
 
-% Scaling (for all patches):
-domx = dom(1,1:2);
-domy = dom(1,3:4);
-sclx = 2/diff(domx);
-scly = 2/diff(domy);
+% Check if we can build one solution operator for all patches:
+if ( constantOp )
 
-% Loop over each patch:
-for k = 1:numPatches
+    % Solution operator:
+    [S, A] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
 
-    % Define the boundary nodes for this patch:
-    x = (XX+1)/sclx + dom(k,1);
-    y = (YY+1)/scly + dom(k,3);
-    % Store the four sides separately:
-    xy = {[ x(leftIdx)  y(leftIdx)  ] ;
-          [ x(rightIdx) y(rightIdx) ] ;
-          [ x(downIdx)  y(downIdx)  ] ;
-          [ x(upIdx)    y(upIdx)    ] };
+    % Dirichlet-to-Neumann map:
+    D2N = bcrows_d * S;
 
-    % Evaluate non-constant RHSs:
-    if ( ~isnumeric(rhs) )
-        vals = feval(rhs, x, y);
-        % Convert to coeffs:
-        coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
-        % Map the RHS to the right ultraspherical space.
-        lmap = ultraS.convertmat(n, 0, 1);
-        rmap = ultraS.convertmat(n, 0, 1);
-        coeffs = lmap * coeffs * rmap.';
-        coeffs = coeffs(1:n-2, 1:n-2);
-        rhs_eval(:,k) = reshape(coeffs, numIntDOF, 1);
-    end
+    % Scaling (for all patches):
+    domx = dom(1,1:2);
+    domy = dom(1,3:4);
+    sclx = 2/diff(domx);
+    scly = 2/diff(domy);
 
-    % Assemble the patch:
-    P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, n, op);
-
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Append particular parts:
-if ( ~constantRHS )
-    Si = A \ rhs_eval;
-    Gx = zeros(2, n); Gy = zeros(2, n);
-    Bx = [(-1).^(0:n-1); ones(1,n)];
-    By = [(-1).^(0:n-1); ones(1,n)];
-    [By, Gy, Py] = canonicalBC(By, Gy);
-    [Bx, Gx, Px] = canonicalBC(Bx, Gx);
+    % Loop over each patch:
     for k = 1:numPatches
-        S = imposeBCs(Si(:,k), Px, Py, Bx, By, Gx, Gy, n);
-        P{k}.S(:,end) = S;
-        P{k}.D2N(:,end) = P{k}.D2N(:,end) + bcrows_d * S;
+
+        % Define the boundary nodes for this patch:
+        x = (XX+1)/sclx + dom(k,1);
+        y = (YY+1)/scly + dom(k,3);
+        % Store the four sides separately:
+        xy = {[ x(leftIdx)  y(leftIdx)  ] ;
+              [ x(rightIdx) y(rightIdx) ] ;
+              [ x(downIdx)  y(downIdx)  ] ;
+              [ x(upIdx)    y(upIdx)    ] };
+
+        % Evaluate non-constant RHSs:
+        if ( ~isnumeric(rhs) )
+            vals = feval(rhs, x, y);
+            % Convert to coeffs:
+            coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
+            % Map the RHS to the right ultraspherical space:
+            lmap = ultraS.convertmat(n, 0, 1);
+            rmap = ultraS.convertmat(n, 0, 1);
+            coeffs = lmap * coeffs * rmap.';
+            coeffs = coeffs(1:n-2, 1:n-2);
+            rhs_eval(:,k) = reshape(coeffs, numIntDOF, 1);
+        end
+
+        % Assemble the patch:
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, A, xy, n, op);
+
     end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Append particular parts:
+    if ( ~constantRHS )
+        Si = A \ rhs_eval;
+        Gx = zeros(2, n); Gy = zeros(2, n);
+        Bx = [(-1).^(0:n-1); ones(1,n)];
+        By = [(-1).^(0:n-1); ones(1,n)];
+        [By, Gy, Py] = canonicalBC(By, Gy);
+        [Bx, Gx, Px] = canonicalBC(Bx, Gx);
+        for k = 1:numPatches
+            S = imposeBCs(Si(:,k), Px, Py, Bx, By, Gx, Gy, n);
+            P{k}.S(:,end) = S;
+            P{k}.D2N(:,end) = P{k}.D2N(:,end) + bcrows_d * S;
+        end
+    end
+
+% Each patch needs a different solution operator:
+else
+
+    op_orig = op;
+    rhs_orig = rhs;
+
+    % Loop over each patch:
+    for k = 1:numPatches
+
+        % Determine if this is a mapped domain:
+        mapped = ~isnumeric(dom(k,:)) & ~isa(dom(k,:), 'rectangle');
+
+        % Get the current domain:
+        domk = dom(k,:);
+        rect = dom(k,:);
+        if ( mapped ), rect = rect.domain; end
+        % Define the boundary nodes for this patch:
+        domx = rect(1:2);
+        domy = rect(3:4);
+        sclx = 2/diff(domx);
+        scly = 2/diff(domy);
+        x = (XX+1)/sclx + domx(1);
+        y = (YY+1)/scly + domy(1);
+
+        % Store the four sides separately:
+        xy = {[ x(leftIdx)  y(leftIdx)  ] ;
+              [ x(rightIdx) y(rightIdx) ] ;
+              [ x(downIdx)  y(downIdx)  ] ;
+              [ x(upIdx)    y(upIdx)    ] };
+
+        % Transform the equation for mapped domains:
+        if ( mapped )
+            [op, rhs] = transformPDO(domk, op_orig, rhs_orig);
+            % Transform the grid:
+            for j = 1:4
+               [xy{j}(:,1), xy{j}(:,2)] = transformGrid(domk, xy{j}(:,1), xy{j}(:,2));
+            end
+        end
+
+        % Evaluate non-constant RHSs:
+        if ( ~isnumeric(rhs) )
+            vals = feval(rhs, x, y);
+            % Convert to coeffs:
+            coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
+            % Map the RHS to the right ultraspherical space:
+            lmap = ultraS.convertmat(n, 0, 1);
+            rmap = ultraS.convertmat(n, 0, 1);
+            coeffs = lmap * coeffs * rmap.';
+            coeffs = coeffs(1:n-2, 1:n-2);
+            rhs_eval = reshape(coeffs, numIntDOF, 1);
+        end
+
+        % Solution operator:
+        [S, A] = buildSolOp(op, rect, rhs_eval, n);
+
+        % Normal derivative operator:
+        if ( mapped )
+            normal_d = transformNormalD(domk, xy, n);
+        else
+            normal_d = bcrows_d;
+        end
+
+        % Dirichlet-to-Neumann map:
+        D2N = normal_d * S;
+
+        % Assemble the patch:
+        P{k} = ultraSEMLeaf(domk, S, D2N, A, xy, n, op);
+
+    end
+
 end
 
 end
@@ -165,15 +239,6 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
 %
 %   S = solution operator on patch
 %   A = discretized operator on patch
-
-    % Convert variable coefficients of PDO to chebfun2 in order to get a
-    % separable representation.
-    for field = fieldnames(pdo)'
-        coeff = pdo.(field{1});
-        if ( isa(coeff, 'function_handle') )
-            pdo.(field{1}) = chebfun2(coeff); % Domain?
-        end
-    end
 
     % Discretize the separable ODOs that make the PDO
     CC = discretizeODOs(pdo, dom, n);
@@ -206,9 +271,12 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     end
     BC = reshape(BC, (n-2)^2, 4*n);
 
-    % Solve for every possible BC
-%     S22 = A \ [BC, rhs];
-    S22 = schurSolve(A, [BC, rhs], 2*n-2);
+    % Solve for every possible BC.
+    % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
+    % system O(p) times, which we do in O(p^4) using Schur
+    % complements/Woodbury.
+    S22 = A \ [BC, rhs];
+%     S22 = schurSolve(A, [BC, rhs], 2*n-2);
 
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
@@ -229,30 +297,51 @@ function CC = discretizeODOs(pdo, dom, n)
         coeff = pdo.(terms{k});
         dx = length(strfind(terms{k}, 'x'));
         dy = length(strfind(terms{k}, 'y'));
+        
+%         % Convert variable coefficients of PDO to chebfun2 in order to get a
+%         % separable representation.
+%         if ( isa(coeff, 'function_handle') )
+%             coeff = chebfun2(coeff, [n n], dom);
+%         end
 
         % Check if the coefficient is zero
-        if ( (isscalar(coeff) && coeff ~= 0) || isa(coeff, 'chebfun2') )
+        if ( (isnumeric(coeff) && ~all(coeff(:) == 0)) || isa(coeff, 'chebfun2') || isa(coeff, 'function_handle') )
 
             % Define operators
             CC{k} = cell(length(coeff), 2);
             Sx = ultraS.convertmat(n, dx, 1);
             Sy = ultraS.convertmat(n, dy, 1);
-            Dx = (2/diff(dom(3:4)))^dx * ultraS.diffmat(n, dx);
-            Dy = (2/diff(dom(1:2)))^dy * ultraS.diffmat(n, dy);
+            Dx = (2/diff(dom(1:2)))^dx * ultraS.diffmat(n, dx);
+            Dy = (2/diff(dom(3:4)))^dy * ultraS.diffmat(n, dy);
 
-            if ( isscalar(coeff) )
+            if ( isnumeric(coeff) )
                 % Constant coefficient
-                CC{k}{1,1} = coeff .* Sx * Dx;
-                CC{k}{1,2} =          Sy * Dy;
+                CC{k}{1,1} = coeff .* Sy * Dy;
+                CC{k}{1,2} =          Sx * Dx;
             else
                 % Variable coefficient
-                [C, D, R] = cdr(coeff);
+                if ( isa(coeff, 'function_handle') )
+                    x = chebpts(n, dom(1:2));
+                    y = chebpts(n, dom(3:4));
+                    [xx,yy] = meshgrid(x,y);
+                    [C, D, R] = svd(coeff(xx,yy));
+                    r = rank(D);
+                    C = chebtech2.vals2coeffs(C(:,1:r));
+                    D = D(1:r,1:r);
+                    R = chebtech2.vals2coeffs(R(:,1:r));
+                    coeff = 1:r;
+                    CC{k} = cell(length(coeff), 2);
+                else
+                    [C, D, R] = cdr(coeff);
+                    C = chebcoeffs(C, n);
+                    R = chebcoeffs(R, n);
+                end
                 % Make a multiplication operator for each slice of chebfun2
                 for r = 1:length(coeff)
                     Mx = ultraS.multmat( n, D(r,r) * R(:,r), dx );
                     My = ultraS.multmat( n,          C(:,r), dy );
-                    CC{k}{r,1} = Sx * Mx * Dx;
-                    CC{k}{r,2} = Sy * My * Dy;
+                    CC{k}{r,1} = Sy * My * Dy;
+                    CC{k}{r,2} = Sx * Mx * Dx;
                 end
             end
         end
@@ -291,17 +380,18 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
     end
 
     for ii = 1:size(B, 1) % For each boundary condition, zero a column.
+        C1ii = full(C1(:,ii)); % Constant required to zero entry out.
+        C1 = C1 - C1ii*B(ii,:);
+        Gii = permute(G(ii,:,:), [2 3 1]);
+        C2Gii = C2*Gii;
+        tol = 10*eps;
+        if ( ~any( abs(C1ii) > tol ) ), continue, end
         for kk = 1:size(C1, 1)
-            if ( abs(C1(kk,ii)) > 10*eps )
-                c = C1(kk,ii); % Constant required to zero entry out.
-                C1(kk,:) = C1(kk,:) - c*B(ii,:);
-                for ll = 1:size(G, 3) % Do this for every BC.
-                    if ( trans )
-                        E(:,kk,ll) = E(:,kk,ll).' - c*G(ii,:,ll)*C2.';
-                    else
-                        E(kk,:,ll) = E(kk,:,ll) - c*G(ii,:,ll)*C2.';
-                    end
-                end
+            if ( abs(C1ii(kk)) < tol ), continue, end
+            if ( trans )
+                E(:,kk,:) = E(:,kk,:) - C1ii(kk)*permute(C2Gii,[1,3,2]);
+            else
+                E(kk,:,:) = E(kk,:,:) - C1ii(kk)*permute(C2Gii,[3 1 2]);
             end
         end
     end
@@ -410,35 +500,35 @@ function P = compatibleProjection(n)
 end
 
 function x = schurSolve(A, b, m)
-% Fast solution of A*x = b where A is banded + m dense rows via Schur
-% complement factorisation.
+%SCHURSOLVE   Fast solution of A*x = b where A is banded + m dense rows via
+%Schur complement factorisation.
 
-doRowScaling = true;
+    doRowScaling = true;
 
-na = size(A,2);
-nb = size(b,2);
-if ( na <= m )
-    x = A\b;
-    return
-end
+    na = size(A,2);
+    nb = size(b,2);
+    if ( na <= m )
+        x = A\b;
+        return
+    end
 
-i1 = 1:m;
-i2 = m+1:na;
-i3 = nb+(1:m);
+    i1 = 1:m;
+    i2 = m+1:na;
+    i3 = nb+(1:m);
 
-if ( doRowScaling )
-    % Row scaling to improve accuracy
-    AA = A(i2,i2);
-    s = 1./ max(1, max(abs(AA), [], 2) );  
-    AA = bsxfun(@times, s, AA);
-    bb = s.*[b(i2,:), A(i2,i1)];
-    c = AA\bb;
-else
-    c = A(i2,i2)\[b(i2,:), A(i2,i1)];
-end
+    if ( doRowScaling )
+        % Row scaling to improve accuracy
+        AA = A(i2,i2);
+        s = 1./ max(1, max(abs(AA), [], 2) );
+        AA = bsxfun(@times, s, AA);
+        bb = s.*[b(i2,:), A(i2,i1)];
+        c = AA\bb;
+    else
+        c = A(i2,i2)\[b(i2,:), A(i2,i1)];
+    end
 
-x = (A(i1,i1) - A(i1,i2)*c(:,i3)) \ (b(i1,:) - A(i1,i2)*c(:,1:nb));
-y = c(:,1:nb) - c(:,i3)*x;
-x = [x ; y];
+    x = (A(i1,i1) - A(i1,i2)*c(:,i3)) \ (b(i1,:) - A(i1,i2)*c(:,1:nb));
+    y = c(:,1:nb) - c(:,i3)*x;
+    x = [x ; y];
 
 end

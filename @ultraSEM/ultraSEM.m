@@ -292,6 +292,42 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.alphabet(varargin{:});
         end
 
+        function T = delaunay(v, P)
+        %DELAUNAY   Delaunay triangularization.
+        %   T = ULTRASEM.DELAUNAY(X), where is an N x 2 matrix, returns an
+        %   ultraSEMDomain representation of the Delaunay triangulation
+        %   equivalent to DELAUNAY(X), but with each triangle subdivided
+        %   into three further kites with their intersection at the
+        %   barycenter.
+        %
+        %   T = ULTRASEM.DELAUNAY(X_BDY, X_INT), where X_INT is an N x 2
+        %   matrix and X_BDY is an M x 2 matrix, creates a constrained
+        %   Delaunay triangulation, equivalent to
+        %   delaunayTriangulation(X_BDY, X_INT).
+        %
+        % See also TRIANGLE, KITE.
+
+            % Compute triangulariztation:
+            if ( nargin < 2 )
+                dt = delaunayTriangulation(v);
+                list = dt.ConnectivityList;
+            else
+                dt = delaunayTriangulation(v, P);
+                IO = isInterior(dt);
+                list = dt(IO,:);
+            end
+            pts = dt.Points(:,:);
+
+            %% Build domain:
+            nt = size(list,1);
+            T = [];
+            for k = 1:nt
+                v = pts(list(k,:),:);
+                T = T & ultraSEM.triangle(v);
+            end
+
+        end
+
         function varargout = rectangle(varargin)
         %RECTANGLE   Construct a rectangular ultraSEMDomain.
         %   ULTRASEM.RECTANGLE([A B C D]) returns a rectangluar
@@ -304,8 +340,36 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.rectangle(varargin{:});
         end
 
+        function varargout = kite(varargin)
+        %KITE Construct an ultraSEMDomain kite domain.
+        %   ultraSEM.kite(V) constructs a kite with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.kite(varargin{:});
+        end
+
+        function varargout = triangle(varargin)
+        %TRIANGLE  Construct an ultraSEMDomain triangle domain.
+        %   ultraSEM.triangle(V) constructs a triangle with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.triangle(varargin{:});
+        end
+
+        function varargout = polygon(varargin)
+        %POLYGON  Construct an ultraSEMDomain convex polygon domain.
+        %   ultraSEM.polygon(V) constructs a convex polygon with vertices
+        %   V.
+            [varargout{1:nargout}] = ultraSEMDomain.polygon(varargin{:});
+        end
+
+        function varargout = trimesh(varargin)
+        %TRIMESH  Construct an ultraSEMDomain triangulated mesh.
+        %   ultraSEM.trimesh(P, T) constructs a triangulated mesh.
+            [varargout{1:nargout}] = ultraSEMDomain.trimesh(varargin{:});
+        end
+
         % Run the test suite.
         pass = test();
+
+        % Run the GUI.
+        varargout = gui();
 
     end
 

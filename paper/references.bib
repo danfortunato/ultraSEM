@@ -5,7 +5,8 @@
 @STRING(laa="Linear Algebra Appl.") 
 %@STRING(ela="Electron. J. Linear Algebra") 
 @STRING(ela="ELA")
-@String(bit= "BIT")
+@STRING(bit= "BIT")
+@STRING(bitnm="BIT Numer. Math.")
 @STRING(sinum="SIAM J. Numer. Anal.")
 @STRING(sirev="SIAM Rev.")
 @STRING(nlaa="Numer. Lin. Alg. Appl.")
@@ -16,9 +17,196 @@
 @STRING(anm="Appl. Numer. Math.")
 @STRING(amc="Appl. Math. Comput.")
 @STRING(jcp="J. Comput. Phys.")
+@STRING(jsc="J. Sci. Comput.")
 @STRING(mc="Math. Comp.")
 @STRING(imajna="IMA J. Numer. Anal.")
 @STRING(acmtoms="ACM Trans. Math. Soft.")
 @STRING(j-PARALLEL-COMPUTING="Parallel Comput.")
 @STRING(sciap="SIAM J. Appl. Math.")
+@STRING(adcm="Adv. Comput. Math.")
 
+@article{Babb_18_01,
+	author = {Babb, Tracy and Gillman, Adrianna and Hao, Sijia and Martinsson, Per-Gunnar},
+	title = {An accelerated {P}oisson solver based on multidomain spectral discretization},
+	journal = bitnm,
+	volume = {58},
+	number = {4},
+	pages = {851--879},
+	year = {2018},
+	doi = {10.1007/s10543-018-0714-0}
+}
+
+@misc{Babb_18_02,
+	author = {Babb, Tracy and Martinsson, Per-Gunnar and Appelo, Daniel},
+	title = {{HPS} Accelerated Spectral Solvers for Time Dependent Problems},
+	year = {2018},
+	month = {Nov},
+	eprint = {1811.04555},
+	eprintclass = {math.NA}
+}
+
+@book{Chebfun,
+	editor = {T. A. Driscoll and N. Hale and L. N. Trefethen},
+	title = {Chebfun Guide},
+	year = {2014},
+	address = {Oxford},
+	publisher = {Pafnuty Publications}
+}
+
+@article{Cockburn_09_01,
+	author = {Cockburn, B. and Gopalakrishnan, J. and Lazarov, R.},
+	title = {Unified Hybridization of Discontinuous {G}alerkin, Mixed, and Continuous {G}alerkin Methods for Second Order Elliptic Problems},
+	journal = sinum,
+	volume = {47},
+	number = {2},
+	pages = {1319--1365},
+	year = {2009},
+	doi = {10.1137/070706616}
+}
+
+@misc{Fortunato_17_01,
+	title = {Fast {P}oisson solvers for spectral methods},
+	author = {Fortunato, Daniel and Townsend, Alex},
+	year = {2017},
+	month = {Oct},
+	eprint = {1710.11259},
+	eprintclass = {math.NA}
+}
+
+@article{Geldermans_19_01,
+	author = {Geldermans, P. and Gillman, A.},
+	title = {An Adaptive High Order Direct Solution Technique for Elliptic Boundary Value Problems},
+	journal = sisc,
+	volume = {41},
+	number = {1},
+	pages = {A292--A315},
+	year = {2019},
+	doi = {10.1137/17M1156320}
+}
+
+@Article{Gillman2014,
+	author = {Gillman, Adrianna and Martinsson, Per-Gunnar},
+	title = {An {$O(N)$} algorithm for constructing the solution operator to {2D} elliptic boundary value problems in the absence of body loads},
+	journal = adcm,
+	volume = {40},
+	number = {4},
+	pages = {773--796},
+	year = {2014},
+	doi = {10.1007/s10444-013-9326-z}
+}
+
+@article{Gillman_14_01,
+	title = {A direct solver with {$O(N)$} complexity for variable coefficient elliptic {PDE}s discretized via a high-order composite spectral collocation method},
+	author = {Gillman, Adrianna and Martinsson, Per-Gunnar},
+	journal = sisc,
+	volume = {36},
+	number = {4},
+	pages = {A2023--A2046},
+	year = {2014},
+	doi = {10.1137/130918988}
+}
+
+@misc{GithubRepo,
+	author = {D. Fortunato and N. Hale and A. Townsend},
+	howpublished = {GitHub repository},
+	note = {\url{https://github.com/danfortunato/ultraSEM}},
+	year = {2018}
+}
+
+@article{Hao_16_01,
+	author = {Hao, Sijia and Martinsson, Per-Gunnar},
+	title = {A direct solver for elliptic {PDE}s in three dimensions based on hierarchical merging of {P}oincar\'{e}--{S}teklov operators},
+	journal = jcam,
+	volume = {308},
+	pages = {419--434},
+	year = {2016},
+	doi = {10.1016/j.cam.2016.05.013}
+}
+
+@article{Haut_15_01,
+	author = {Haut, T. S. and Martinsson, P.-G. and Babb, T. and Wingate, B. A.},
+	title = {A high-order time-parallel scheme for solving wave propagation problems via the direct construction of an approximate time-evolution operator},
+	journal = imajna,
+	volume = {36},
+	number = {2},
+	pages = {688--716},
+	year = {2015},
+	doi = {10.1093/imanum/drv021}
+}
+
+@article{Martinsson_09_01,
+	title = {A fast direct solver for a class of elliptic partial differential equations},
+	author = {Martinsson, Per-Gunnar},
+	journal = jsc,
+	volume = {38},
+	number = {3},
+	pages = {316--330},
+	year = {2009},
+	doi = {10.1007/s10915-008-9240-6}
+}
+
+@book{NISTHandbook,
+	author = {F. W. J. Olver and D. W. Lozier and R. F. Boisvert and C. W. Clark},
+	title = {NIST Handbook of Mathematical Functions},
+	year = {2010},
+	publisher = {Cambridge University Press},
+	address = {New York, NY}
+}
+
+@article{Olver_13_01,
+	title = {A fast and well-conditioned spectral method},
+	author = {Olver, Sheehan and Townsend, Alex},
+	journal = sirev,
+	volume = {55},
+	number = {3},
+	pages = {462--489},
+	year = {2013},
+	doi = {10.1137/120865458},
+}
+
+@article{Olver_19_01,
+	author = {Olver, Sheehan and Townsend, Alex and Vasil, Geoffrey},
+	title = {A sparse spectral method on triangles},
+	year = {2019},
+	month = {Feb},
+	eprint = {1902.04863},
+	eprintclass = {math.NA}
+}
+
+@book{Sherwin_05_01,
+	title = {Spectral/hp element methods for computational fluid dynamics},
+	author = {Sherwin, Spencer and Karniadakis, George},
+	publisher = {Oxford University Press},
+	address = {Oxford},
+	year = {2005}
+}
+
+@article{Townsend_15_01,
+	title = {The automatic solution of partial differential equations using a global spectral method},
+	author = {Townsend, Alex and Olver, Sheehan},
+	journal = jcp,
+	volume = {299},
+	number = {Supplement C},
+	pages = {106--123},
+	year = {2015},
+	doi = {10.1016/j.jcp.2015.06.031}
+}
+
+@misc{Yeiser_18_01,
+	title = {A spectral element method for meshes with skinny elements},
+	author = {Yeiser, Aaron and Townsend, Alex},
+	year = {2018},
+	month = {Mar},
+	eprint = {1803.10353},
+	eprintclass = {math.NA}
+}
+
+@article{Zhang_18_01,
+	author = {Yabin Zhang and Adrianna Gillman},
+	title = {A fast direct solver for boundary value problems on locally perturbed geometries},
+	journal = jcp,
+	volume = {356},
+	pages = {356--371},
+	year = {2018},
+	doi = {10.1016/j.jcp.2017.12.013}
+}

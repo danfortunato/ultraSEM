@@ -20,6 +20,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
         n  % Discretization size.
         op % Description of PDO (stored so the RHS can be efficiently updated).
+        A  % Discretized differential operator.
 
     end
 
@@ -29,7 +30,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMLeaf(domain, S, D2N, xy, n, op)
+        function P = ultraSEMLeaf(domain, S, D2N, A, xy, n, op)
         %ULTRASEMLEAF   Class constructor for the @ultraSEMLeaf class.
         %   P = ultraSEMLeaf(DOMAIN, S, D2N, XY, N, OP) assigns each of
         %   the inputs to their associated properties in the ultraSEMLeaf
@@ -44,6 +45,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
             P.domain = domain;    % Domain.
             P.S = S;              % Solution operator.
             P.D2N = D2N;          % Dirichlet-to-Neumann map.
+            P.A = A;              % Discretized operator.
             P.xy = xy;            % Boundary nodes.
             P.n = n;              % Discretization size in x.
             P.op = op;            % PDO (in cell form).
@@ -97,21 +99,6 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
         % Initialize an array of ultraSEMLeaf objects.
         P = initialize(dom, op, rhs, n);
-
-        function P = updateRHS(P, rhs)
-        %UPDATERHS   Update RHS of a spceddLeaf object.
-        %   P = UPDATERHS(P, F) replaces the existing RHS of an initialised spceddLeaf
-        %   object P with that given in F, which may be a constant or a function handle.
-        %   Since only one subproblem needs to be solved on each patch in the update
-        %   process (rather than O(n) in the original intitialisation) this can lead to
-        %   considerable performance gains when solving for multiple RHSs.
-        %
-        % See also SPECDDLEAF.INITIALISE.
-
-            error('ULTRASEM:ULTRASEMLEAF:updateRHS:notImplemented', ...
-                'Updating the RHS of a leaf has not been implemented yet.');
-
-        end
 
     end
 
