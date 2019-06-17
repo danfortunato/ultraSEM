@@ -17,7 +17,7 @@ if ( lambda == 0 )
 elseif ( lambda > 0 )
     a = util.convertmat(n, 0, lambda-1) * a;
     d1 = [1 2*lambda:2*lambda+m-2] ./ [1 2*((lambda+1):lambda+m-1)];
-    d2 = (1:m) ./ (2*(lambda:lambda + m - 1));
+    d2 = (1:m) ./ (2*(lambda:lambda+m-1));
     B = [d2' zeros(m,1) d1'];
     Mx = spdiags(B, [-1 0 1], m, m);
     M = util.multmat1d_ultraS(n, a, Mx, lambda);
