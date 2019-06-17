@@ -50,8 +50,8 @@ Mj = 2*lambda_y*My;
 % j = 1:
 M1 = util.multmat1d_chebT(n, A(1,:), Mx);
 M = kron(M1, Mold(1:n,1:n));
-
-for j = 2:n
+len = find( max(abs(A),[],2)>eps, 1, 'last');
+for j = 2:len
     M1 = util.multmat1d_chebT(n, A(j,:), Mx);
     M = M + kron(M1, Mj(1:n,1:n));
     Mnew = (2*(j+lambda_y-1)/j)*My*Mj - ((j+2*lambda_y-2)/j)*Mold;
@@ -80,7 +80,8 @@ Mx = spdiags(B, [-1 0 1], m, m);
 M1 = util.multmat1d_ultraS(n, A(1,:), Mx, lambda_x);
 M = kron(M1, Mold(1:n,1:n));
 
-for j = 2:n
+len = find( max(abs(A),[],2)>eps, 1, 'last');
+for j = 2:len
     M1 = util.multmat1d_ultraS(n, A(j,:), Mx, lambda_x);
     M = M + kron(M1, Mj(1:n,1:n));
     Mnew = 2*My*Mj - Mold;
@@ -106,7 +107,8 @@ Mj = Mx;
 M1 = util.multmat1d_chebT(n, A(1,:), Mj);
 M = kron(M1, Mold(1:n,1:n));
 
-for j = 2:n
+len = find( max(abs(A),[],2)>eps, 1, 'last');
+for j = 2:len
     M1 = util.multmat1d_chebT(n, A(j,:), Mx);
     M = M + kron(M1, Mj(1:n,1:n));
     Mnew = 2*Mx*Mj - Mold;
@@ -141,7 +143,8 @@ Mj = 2*lambda_y*My;
 M1 = util.multmat1d_ultraS(n, A(1,:), Mx, lambda_x);
 M = kron(M1, Mold(1:n,1:n));
 
-for j = 2:n
+len = find( max(abs(A),[],2)>eps, 1, 'last');
+for j = 2:len
     M1 = util.multmat1d_ultraS(n, A(j,:), Mx, lambda_x);
     M = M + kron(M1, Mj(1:n,1:n));
     Mnew = (2*(j+lambda_y-1)/j)*My*Mj - ((j+2*lambda_y-2)/j)*Mold;

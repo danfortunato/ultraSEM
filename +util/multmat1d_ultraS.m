@@ -9,7 +9,8 @@ m = 2*n;
 Mold = speye( m );
 Ms = 2*lambda*Mx;
 M = a(1)*Mold + a(2)*Ms;
-for k = 2:n-1
+len = find( abs(a)>eps, 1, 'last');
+for k = 2:len-1
     Mnew = (2*(k+lambda-1)/k)*Mx*Ms - ((k+2*lambda-2)/k)*Mold;
     M = M + a(k+1)*Mnew;
     Mold = Ms; Ms = Mnew;
