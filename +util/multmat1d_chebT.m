@@ -5,8 +5,8 @@ function M = multmat1d_chebT( n, a, Mx )
 %
 %  Alex Townsend, June 2019.
 
-m = 2*n;
-Mold = speye( m );
+m = ceil(sqrt(2)*n);
+Mold = speye( m, m );
 Ms = Mx;
 M = a(1)*Mold + a(2)*Ms;
 len = find( abs(a)>eps, 1, 'last');

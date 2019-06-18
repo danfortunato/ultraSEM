@@ -6,7 +6,7 @@ function S = convertmat(n, k1, k2)
 %   C^{(K2 + 1)} basis, where C^{(K)} denotes ultraspherical polynomial
 %   basis with parameter K. If K2 < K1, S is the N-by-N identity matrix.
 
-S = speye(n);
+S = speye(n, n);
 for s = k1:k2
     S = spconvert(n, s) * S;
 end

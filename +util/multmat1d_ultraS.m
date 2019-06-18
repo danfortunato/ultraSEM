@@ -5,7 +5,7 @@ function M = multmat1d_ultraS(n, a, Mx, lambda)
 %
 %  Alex Townsend, June 2019.
 
-m = 2*n;
+m = ceil(sqrt(2)*n);
 Mold = speye( m );
 Ms = 2*lambda*Mx;
 M = a(1)*Mold + a(2)*Ms;

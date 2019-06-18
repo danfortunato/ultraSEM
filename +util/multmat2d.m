@@ -35,7 +35,7 @@ function M = multmat2d_ultraS_chebT(n, A, lambda_y)
 %
 %   f(x,y) = sum_j sum_k  A(j,k) C^{(lambda_y)}_j(y)T_k(x)
 
-m = 2*n;
+m = ceil(sqrt(2)*n);
 Mold = speye(m, m);
 
 Mx = spdiags(ones(m,2)/2,[-1 1], m, m);
@@ -65,7 +65,7 @@ function M = multmat2d_chebT_ultraS(n, A, lambda_x)
 %
 %   f(x,y) = sum_j sum_k  A(j,k) T_j(y)C^{(lambda_x)}_k(x)
 
-m = 2*n;
+m = ceil(sqrt(2)*n);
 Mold = speye(m, m);
 My = spdiags(ones(m,2)/2,[-1 1], m, m);
 My(2,1) = 1;
@@ -97,7 +97,7 @@ function M = multmat2d_chebT(n, A)
 %
 %  Alex Townsend, June 2019.
 
-m = 2*n;
+m = ceil(sqrt(2)*n);
 Mold = speye(m, m);
 Mx = spdiags(ones(m,2)/2,[-1 1], m, m);
 Mx(2,1) = 1;
@@ -124,7 +124,7 @@ function M = multmat2d_ultraS(n, A, lambda_x, lambda_y)
 %
 %  Alex Townsend, June 2019.
 
-m = 2*n;
+m = ceil(sqrt(2)*n);
 Mold = speye(m, m);
 
 d1 = [1 2*lambda_x:2*lambda_x+m-2] ./ [1 2*((lambda_x+1):lambda_x+m-1)];

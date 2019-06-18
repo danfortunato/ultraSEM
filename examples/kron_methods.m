@@ -21,7 +21,7 @@ n = 50;
 f = chebfun2(@(x,y) x.*sin(x.*y));
 bc = 0;
 %v = @(x,y) 1+0*x;
-v = @(x,y) 10*sin(10*x.*y); % Nontrivial variable-coefficient
+v = @(x,y) 10*sin(20*x.*y); % Nontrivial variable-coefficient
 vfun = chebfun2(v);
 
 %% True solution from chebop2
@@ -92,6 +92,58 @@ plot(u-sol), view(3), title(['Corner method (2): ', num2str(norm(u-sol))])
 axis square
 shg
 
+%% (2b) Townsend's approach: 
+tic
+m = 2*n; 
+ii = 1:n^2; ii([n^2-n-1 n^2-n n^2-1 n^2]) = [];
+I = speye( n );
+corners = [n-1 n];
+lbc = kron( (-1).^(0:n-1), I );
+rbc = kron( ones(1,n), I );
+dbc = kron( I, (-1).^(0:n-1) );
+ubc = kron( I, ones(1,n) );
+% Remove the corner conditions
+lbc(corners,:) = []; rbc(corners,:) = [];
+dbc(corners,:) = []; ubc(corners,:) = [];
+bcrows = [lbc; rbc; dbc; ubc];
+
+% D2*X*S02.' + S02*X*D2.' + S02*My*X*(S02*Mx).' + ... = F
+S02 = util.convertmat(m, 0, 1); S  = S02(1:n-2,1:n);
+D2  = util.diffmat(n, 2);       D2 =  D2(1:end-2,:);
+A = kron(S, D2) + kron(D2, S);
+
+% Add the multiplication matrices
+[C, D, R] = cdr(vfun);
+C = chebcoeffs(C, m);
+R = chebcoeffs(R, m);
+S02 = util.convertmat(m, 0, 1);
+for r = 1:length(vfun)
+    Mx = ultraS.multmat( m, D(r,r) * R(:,r), 0 );
+    My = ultraS.multmat( m,          C(:,r), 0 );
+    SMx = S02*Mx; SMx = SMx(1:end-2,:);
+    SMy = S02*My; SMy = SMy(1:end-2,:);
+    A = A + kron(SMx(1:n-2,1:n), SMy(1:n-2,1:n));
+end
+A = [ bcrows(:,ii) ; A(:,ii) ];
+
+BC = zeros(4*(n-2),1);
+F = coeffs2(f, m, m);
+F = S02*F*S02.'; F = F(1:n-2,1:n-2);
+rhs = [ BC ; F(:) ];
+
+x = A \ rhs;
+x([n^2-n-1 n^2-n n^2-1 n^2]) = [0 0 0 0];
+toc
+
+X = reshape(x, n, n);
+u = chebfun2(X, 'coeffs');
+
+figure(1), subplot(142)
+plot(u-sol), view(3), title(['Corner method (2b): ', num2str(norm(u-sol))])
+axis square
+shg
+
+
 %% (3) Solve an n^2+4 x n^2 overdetermined system but build multmats using low-rank slices.
 tic
 I = speye( n );
@@ -153,7 +205,8 @@ D2  = util.diffmat(n, 2);       D2 =  D2(1:end-2,:);
 %   kron(Sx*Mx*Dx, Sy*My*Dy) = kron(Sx,Sy) * kron(Mx,My) * kron(Dx,Dy)
 %                                           |---- M ----|
 V = coeffs2(vfun, n, n);
-M = util.multmat2d(n, V, 0, 0);
+M = util.multmat2d(n, V, 0, 0); 
+M = M(1:n^2,1:n^2);
 S02M = kron(S02,S02) * M;
 
 % Remove 4n-4 DOFs
