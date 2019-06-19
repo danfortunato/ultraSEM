@@ -21,9 +21,9 @@ for k = 1:size(p,1)
     op = ultraSEM(D, pdo, rhs, n);
     sol1 = op \ bc;
     pass(k) = 1;
+    [x, y] = getGrid(sol1);
     for j = 1:numel(sol1.u)
-        xx = sol1.x{j}; yy = sol1.y{j};
-        err = abs(feval(sol1, xx, yy) - feval(sol, xx, yy));
+        err = abs(feval(sol1, x{j}, y{j}) - feval(sol, x{j}, y{j}));
         pass(k) = pass(k) & max(max(err)) < tol;
     end
 end

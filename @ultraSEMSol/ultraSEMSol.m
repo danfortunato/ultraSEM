@@ -15,8 +15,6 @@ classdef ultraSEMSol
     properties ( Access = public )
 
         domain % Domain of the patch.
-        x      % Interpolation points on each patch in x.
-        y      % Interpolation points on each patch in y.
         u      % Coefficients of solution.
 
     end
@@ -38,16 +36,6 @@ classdef ultraSEMSol
             obj.domain = d;
             obj.u = u;
 
-            for k = 1:size(d, 1)
-                n = size(u{k}, 1);
-                if ( ~isnumeric(d(k,:)) )
-                    [x,y] = chebpts2(n);
-                    [obj.x{k,1}, obj.y{k,1}] = transformGrid(d(k,:), x, y);
-                else
-                    [obj.x{k,1}, obj.y{k,1}] = chebpts2(n, n, d(k,:));
-                end
-            end
-
         end
 
     end
@@ -63,8 +51,9 @@ classdef ultraSEMSol
             holdState = ishold();
 
             % Loop over the patches:
+            [x,y] = getGrid(sol);
             for k = 1:length(sol)
-                stem3(sol.x{k}, sol.y{k}, abs(sol.u{k}), 'ok', 'MarkerFaceColor', 'k');
+                stem3(x{k}, y{k}, abs(sol.u{k}), 'ok', 'MarkerFaceColor', 'k');
                 hold on
             end
             set(gca, 'ZScale', 'log')
@@ -123,12 +112,13 @@ classdef ultraSEMSol
 
             % Loop over the patches:
             vals = coeffs2vals(sol.u);
+            [x,y] = getGrid(sol);
             for k = 1:length(sol)
                 u = vals{k};
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                contour(sol.x{k}, sol.y{k}, u, levels, varargin{:});
+                contour(x{k}, y{k}, u, levels, varargin{:});
                 hold on
             end
             view(0, 90)
@@ -210,6 +200,34 @@ classdef ultraSEMSol
             u = reshape(u, sx);
 
         end
+        
+        function [x, y] = getGrid(sol, kk)
+           
+            d = sol.domain;
+            u = sol.u;
+            
+            x = cell(size(u));
+            y = cell(size(u));
+            
+            if ( nargin == 1 )
+                kk = 1:size(d, 1);
+            end
+            for k = kk
+                nk = size(u{k}, 1);
+                if ( isnumeric(d(k,:)) )
+                    [x{k,1}, y{k,1}] = chebpts2(nk, nk, d(k,:));
+                else
+                    [xk, yk] = chebpts2(nk);
+                    [x{k,1}, y{k,1}] = transformGrid(d(k,:), xk, yk);
+                end
+            end
+            
+            if ( nargin > 1 && numel(kk) == 1 )
+                x = x{1};
+                y = y{1};
+            end
+            
+        end        
 
         function out = length(sol)
             out = length(sol.u);
@@ -220,12 +238,13 @@ classdef ultraSEMSol
             holdState = ishold();
 
             vals = coeffs2vals(sol.u);
+            [x,y] = getGrid(sol);
             for k = 1:length(sol)
                 u = vals{k};
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                mesh(sol.x{k}, sol.y{k}, u, varargin{:});
+                mesh(x{k}, y{k}, u, varargin{:});
                 hold on
             end
             view(0, 90)
@@ -291,8 +310,9 @@ classdef ultraSEMSol
             holdState = ishold();
 
             vals = coeffs2vals(sol.u);
+            [x,y] = getGrid(sol);
             for k = 1:numPatches
-                scatter(sol.x{k}, sol.y{k}, vals{k}, 'edgealpha', 0, varargin{:});
+                scatter(x{k}, y{k}, vals{k}, 'edgealpha', 0, varargin{:});
                 hold on
             end
             view(0, 90)
@@ -311,17 +331,20 @@ classdef ultraSEMSol
 
         end
 
+
         function varargout = surf(sol, varargin)
 
             holdState = ishold();
 
             vals = coeffs2vals(sol.u);
+            [x,y] = getGrid(sol);
+            
             for k = 1:length(sol)
                 u = vals{k};
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                h(k) = surf(sol.x{k}, sol.y{k}, u, 'edgealpha', 1, varargin{:});
+                h(k) = surf(x{k}, y{k}, u, 'edgealpha', 1, varargin{:});
                 hold on
             end
             shading interp
@@ -350,12 +373,14 @@ classdef ultraSEMSol
             holdState = ishold();
 
             vals = coeffs2vals(sol.u);
+            [x,y] = getGrid(sol);
+            
             for k = 1:length(sol)
                 u = vals{k};
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                h(k) = surface(sol.x{k}, sol.y{k}, 0*u, u, 'edgealpha', 1, varargin{:});
+                h(k) = surface(x{k}, y{k}, 0*u, u, 'edgealpha', 1, varargin{:});
                 hold on
             end
             shading interp

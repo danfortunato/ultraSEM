@@ -27,10 +27,9 @@ figure, plot(sol)
 
 % Check the error:
 err = [0 0 0];
-for k = 1:numel(sol.x)
-    x = sol.x{k};
-    y = sol.y{k};
-    e = abs(u(x,y) - feval(sol,x,y));
+[x,y] = getGrid(sol);
+for k = 1:numel(sol.u)
+    e = abs(u(x{k},y{k}) - feval(sol,x{k},y{k}));
     err(k) = norm(e, inf);
 end
 
