@@ -8,7 +8,7 @@ tol = 1e-10;
 D = ultraSEM.rectangle([-1 1 -1 1]);
 op = ultraSEM( D, {{1,1,1}, 0, 0}, 0, 51 );
 sol = op \ 1;
-plot(sol)
+% plot(sol)
 
 err = normest(sol-1);
 pass = err < tol;

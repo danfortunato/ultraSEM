@@ -18,7 +18,7 @@ A = P.A;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%% DEFINE GRID ON [-1 1] AND SET INDICIES %%%%%%%%%%%%%%%%%%%%%%%%%%%
 numIntDOF = (n-2)^2;
-[XX, YY] = chebpts2(n);
+[XX, YY] = util.chebpts2(n);
 
 % Define the scaling for this domain:
 if ( isnumeric(dom) )
@@ -40,10 +40,10 @@ if ( isnumeric(rhs) && isscalar(rhs) )
 elseif ( ~isnumeric(rhs) )
     vals = feval(rhs, x, y);
     % Convert to coeffs:
-    coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
+    coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
     % Map the RHS to the right ultraspherical space:
-    lmap = ultraS.convertmat(n, 0, 1);
-    rmap = ultraS.convertmat(n, 0, 1);
+    lmap = util.convertmat(n, 0, 1);
+    rmap = util.convertmat(n, 0, 1);
     coeffs = lmap * coeffs * rmap.';
     coeffs = coeffs(1:n-2, 1:n-2);
     rhs = reshape(coeffs, numIntDOF, 1);

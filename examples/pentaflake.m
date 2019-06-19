@@ -10,14 +10,22 @@ function T = pentaflake(n, varargin)
     [offx, offy] = pol2cart(tt+pi/10, h*phi);
 
     if ( n == 0 )
-        T = ultraSEM.polygon([h*sin(tt)+x, h*cos(tt)+y]);
+        %v = [h*sin(tt)+x, h*cos(tt)+y];
+        %T = ultraSEM.polygon([h*sin(tt)+x, h*cos(tt)+y]);
+        T = polyshape([h*sin(tt)+x, h*cos(tt)+y]);
     else
         if ( n > 1 ), h = h/(phi+1); end
-        T = [];
+        %T = [];
+        %v = [];
+        T = polyshape();
         for k = 1:5
-            T = T & pentaflake(n-1, x+offx(k), y+offy(k), th, h);
+            %T = T & pentaflake(n-1, x+offx(k), y+offy(k), th, h);
+            %v = [v; pentaflake(n-1, x+offx(k), y+offy(k), th, h)];
+            T = union(T, pentaflake(n-1, x+offx(k), y+offy(k), th, h));
         end
-        T = T & pentaflake(n-1, x, y, th+pi, h);
+        %T = T & pentaflake(n-1, x, y, th+pi, h);
+        %v = [v; pentaflake(n-1, x, y, th+pi, h)];
+        T = union(T, pentaflake(n-1, x, y, th+pi, h));
     end
 
 end

@@ -164,7 +164,7 @@ classdef ultraSEMSol
                     scly = 2/diff(dom(3:4));
                     xm = sclx*(x(idx)-dom(1))-1;
                     ym = scly*(y(idx)-dom(3))-1;
-                    u(idx) = clenshaw(sol.u{k}, xm, ym);
+                    u(idx) = util.clenshaw2d(sol.u{k}, xm, ym);
                 end
 
             end
@@ -192,7 +192,7 @@ classdef ultraSEMSol
                        y >= dom(3) & y <= dom(4) );
 
                 if ( any(idx) )
-                    u(idx) = clenshaw(sol.u{k}, x(idx), y(idx));
+                    u(idx) = util.clenshaw2d(sol.u{k}, x(idx), y(idx));
                 end
 
             end
@@ -215,7 +215,7 @@ classdef ultraSEMSol
             for k = kk
                 nk = size(u{k}, 1);
                 if ( isnumeric(d(k,:)) )
-                    [x{k,1}, y{k,1}] = chebpts2(nk, nk, d(k,:));
+                    [x{k,1}, y{k,1}] = util.chebpts2(nk, nk, d(k,:));
                 else
                     [xk, yk] = chebpts2(nk);
                     [x{k,1}, y{k,1}] = transformGrid(d(k,:), xk, yk);
@@ -431,15 +431,6 @@ function V = coeffs2vals(C)
 %COEFFS2VALS   Convert a cell array of 2D Chebyshev coefficients to values.
     V = cell(size(C));
     for k = 1:length(C)
-        V{k} = chebtech2.coeffs2vals(chebtech2.coeffs2vals(C{k}).').';
-    end
-end
-
-function v = clenshaw(C, x, y)
-%CLENSHAW   Evaluate a 2D Chebyshev expansion at the given points.
-    v = 0*x;
-    Cy = chebtech2.clenshaw(y, C).';
-    for k = 1:numel(x)
-        v(k) = chebtech2.clenshaw(x(k), Cy(:,k));
+        V{k} = util.coeffs2vals(util.coeffs2vals(C{k}).').';
     end
 end

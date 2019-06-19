@@ -30,7 +30,7 @@ classdef ultraSEMMapping < handle
     methods ( Access = public, Static = false, Sealed )
 
         function [xx, yy] = chebGrid(n, map)
-            [xx, yy] = chebpts2(n, n, map.domain);
+            [xx, yy] = util.chebpts2(n, n, map.domain);
             [xx, yy] = transformGrid(map, xx, yy);
         end
 
@@ -96,8 +96,8 @@ classdef ultraSEMMapping < handle
             % Chebyshev differentiation matrices in (s,t), i.e. mapped
             % [-1,1]^2 space
             I = speye( n );
-            D = ultraS.diffmat( n, 1 );
-            S = ultraS.convertmat( n, 0, 0 );
+            D = util.diffmat( n, 1 );
+            S = util.convertmat( n, 0, 0 );
             Dcheb = S\D;
             Ds = kron( Dcheb, I );
             Dt = kron( I, Dcheb );
@@ -129,7 +129,7 @@ classdef ultraSEMMapping < handle
             % Get the 1D Chebyshev coefficients of d(s,t)/d(x,y) on the
             % four sides through evaluation at the boundary nodes, and
             % construct multiplication matrices
-            coeffMult = @(vals) ultraS.multmat(n, chebtech2.vals2coeffs(vals), 0);
+            coeffMult = @(vals) util.multmat(n, util.vals2coeffs(vals), 0);
             dsdx_l = coeffMult( dsdx(xxl,yyl) ); dsdy_l = coeffMult( dsdy(xxl,yyl) );
             dtdx_l = coeffMult( dtdx(xxl,yyl) ); dtdy_l = coeffMult( dtdy(xxl,yyl) );
             dsdx_r = coeffMult( dsdx(xxr,yyr) ); dsdy_r = coeffMult( dsdy(xxr,yyr) );

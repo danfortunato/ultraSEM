@@ -23,7 +23,7 @@ op = {{1,0,1}, {0,0}, b};
 T = ultraSEM.triangle([0 0; 1 0; 1/2 sqrt(3)/2]);
 S = ultraSEM(T, op, rhs, n);
 sol = S\0;
-figure, plot(sol)
+% figure, plot(sol)
 
 % Check the error:
 err = [0 0 0];

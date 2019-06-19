@@ -53,7 +53,7 @@ numIntDOF = (n-2)^2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%% DEFINE BOUNDARY NODES %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[XX, YY] = chebpts2(n); % Chebyshev points and grid.
+[XX, YY] = util.chebpts2(n); % Chebyshev points and grid.
 leftIdx  = sub2ind([n n], (1:n).', ones(n,1));
 rightIdx = sub2ind([n n], (1:n).', n*ones(n,1));
 downIdx  = sub2ind([n n], ones(n,1), (1:n).');
@@ -127,10 +127,10 @@ if ( constantOp )
         if ( ~isnumeric(rhs) )
             vals = feval(rhs, x, y);
             % Convert to coeffs:
-            coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
+            coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
             % Map the RHS to the right ultraspherical space:
-            lmap = ultraS.convertmat(n, 0, 1);
-            rmap = ultraS.convertmat(n, 0, 1);
+            lmap = util.convertmat(n, 0, 1);
+            rmap = util.convertmat(n, 0, 1);
             coeffs = lmap * coeffs * rmap.';
             coeffs = coeffs(1:n-2, 1:n-2);
             rhs_eval(:,k) = reshape(coeffs, numIntDOF, 1);
@@ -200,10 +200,10 @@ else
         if ( ~isnumeric(rhs) )
             vals = feval(rhs, x, y);
             % Convert to coeffs:
-            coeffs = chebtech2.vals2coeffs(chebtech2.vals2coeffs(vals).').';
+            coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
             % Map the RHS to the right ultraspherical space:
-            lmap = ultraS.convertmat(n, 0, 1);
-            rmap = ultraS.convertmat(n, 0, 1);
+            lmap = util.convertmat(n, 0, 1);
+            rmap = util.convertmat(n, 0, 1);
             coeffs = lmap * coeffs * rmap.';
             coeffs = coeffs(1:n-2, 1:n-2);
             rhs_eval = reshape(coeffs, numIntDOF, 1);
@@ -309,10 +309,10 @@ function CC = discretizeODOs(pdo, dom, n)
 
             % Define operators
             CC{k} = cell(length(coeff), 2);
-            Sx = ultraS.convertmat(n, dx, 1);
-            Sy = ultraS.convertmat(n, dy, 1);
-            Dx = (2/diff(dom(1:2)))^dx * ultraS.diffmat(n, dx);
-            Dy = (2/diff(dom(3:4)))^dy * ultraS.diffmat(n, dy);
+            Sx = util.convertmat(n, dx, 1);
+            Sy = util.convertmat(n, dy, 1);
+            Dx = (2/diff(dom(1:2)))^dx * util.diffmat(n, dx);
+            Dy = (2/diff(dom(3:4)))^dy * util.diffmat(n, dy);
 
             if ( isnumeric(coeff) )
                 % Constant coefficient
@@ -321,14 +321,14 @@ function CC = discretizeODOs(pdo, dom, n)
             else
                 % Variable coefficient
                 if ( isa(coeff, 'function_handle') )
-                    x = chebpts(n, dom(1:2));
-                    y = chebpts(n, dom(3:4));
+                    x = util.chebpts(n, dom(1:2));
+                    y = util.chebpts(n, dom(3:4));
                     [xx,yy] = meshgrid(x,y);
                     [C, D, R] = svd(coeff(xx,yy));
                     r = rank(D);
-                    C = chebtech2.vals2coeffs(C(:,1:r));
+                    C = util.vals2coeffs(C(:,1:r));
                     D = D(1:r,1:r);
-                    R = chebtech2.vals2coeffs(R(:,1:r));
+                    R = util.vals2coeffs(R(:,1:r));
                     coeff = 1:r;
                     CC{k} = cell(length(coeff), 2);
                 else
@@ -338,8 +338,8 @@ function CC = discretizeODOs(pdo, dom, n)
                 end
                 % Make a multiplication operator for each slice of chebfun2
                 for r = 1:length(coeff)
-                    Mx = ultraS.multmat( n, D(r,r) * R(:,r), dx );
-                    My = ultraS.multmat( n,          C(:,r), dy );
+                    Mx = util.multmat( n, D(r,r) * R(:,r), dx );
+                    My = util.multmat( n,          C(:,r), dy );
                     CC{k}{r,1} = Sy * My * Dy;
                     CC{k}{r,2} = Sx * Mx * Dx;
                 end
