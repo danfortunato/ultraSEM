@@ -10,6 +10,11 @@ if ( nargin == 2 && strcmp(m, 'makeObj') )
     return
 end
 
+% Default rectangle
+if ( nargin == 0 )
+    dom = [-1 1 -1 1];
+end
+
 if ( ~all(size(dom) == [1, 4]) )
     error('ULTRASEM:ULTRASEMDOMAIN:rectangle', ...
         'Input must be a 1x4 vector.')

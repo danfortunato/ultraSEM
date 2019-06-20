@@ -87,7 +87,30 @@ classdef quad < ultraSEMMapping
             [xmid, ymid] = centroid(polyshape(v.'));
             c = [xmid ; ymid]; 
         end
+        
+        function Q = refine(Q)
+            v = vertices(Q);
+            c = centroid(Q);
+            vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
+            
+            Q(4,1) = quad();
+            Q(1) = quad([v(:,1) vnew(:,1) c vnew(:,4)]');
+            Q(2) = quad([v(:,2) vnew(:,2) c vnew(:,1)]');
+            Q(3) = quad([v(:,3) vnew(:,3) c vnew(:,2)]');
+            Q(4) = quad([v(:,4) vnew(:,4) c vnew(:,3)]');
+        end
 
+        function Q = refineCorner(Q, k)
+            v = vertices(Q);
+            c = centroid(Q);
+            vnew = (v(:,1:end) + v(:,[2:end, 1]))/2;
+            Q(3,1) = quad();
+            Q(1) = quad([v(:,1) vnew(:,1) c vnew(:,4)]);
+            Q(2) = quad([v(:,2) v(:,3) c vnew(:,1)]);            
+            Q(3) = quad([v(:,4) vnew(:,4) c v(:,3)]);
+        end
+            
+        
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

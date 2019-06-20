@@ -440,18 +440,7 @@ classdef ultraSEMDomain
             nDom = size(T.domain, 1);
             T2 = cell(nDom, 1);
             for k = 1:nDom
-                v = vertices(T.domain(k));
-                vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
-                [xmid, ymid] = centroid(polyshape(v.'));
-                vmid = [xmid ; ymid];
-                vmid = centroid(T.domain(k));
-                
-                Qk2(4,1) = quad();
-                Qk2(1) = quad([v(:,1) vnew(:,1) vmid vnew(:,4)]');
-                Qk2(2) = quad([v(:,2) vnew(:,2) vmid vnew(:,1)]');
-                Qk2(3) = quad([v(:,3) vnew(:,3) vmid vnew(:,2)]');
-                Qk2(4) = quad([v(:,4) vnew(:,4) vmid vnew(:,3)]');
-                
+                Qk2 = refine(T.domain(k));
                 T2{k} = ultraSEMDomain(Qk2, {[1 2 ; 3 4], [1 2]});
             end
             T2 = merge(T2{:});
