@@ -8,6 +8,10 @@ function T = triangle(v)
 %   It is important to note that each side of the triangle will be formed
 %   from two adjacent grids.
 
+    if ( nargin == 0 )
+        v = [0 0 ; 1 0 ; .5 sqrt(3)/2];
+    end
+
     if ( ultraSEMDomain.isClockwise(v) )
         % Switch the second and third vertex to make it anticlockwise.
         v([2,3],:) = v([3,2],:);
@@ -31,8 +35,8 @@ function T = triangle(v)
     K(3) = kite( v3 );
 
     % Construct ultraSEMDomain:
-    %T = ultraSEMDomain(K, {[1 2 3]});
-    T = triangle(K, {[1 2 ; 3 NaN], [1 2]});
-    T.corners = v;
+    T = ultraSEMDomain(K, {[1 2 ; 3 NaN], [1 2]});
+%     T = triangle(K, {[1 2 ; 3 NaN], [1 2]});
+%     T.corners = v;
 
 end

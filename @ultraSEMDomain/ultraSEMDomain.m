@@ -398,7 +398,17 @@ classdef ultraSEMDomain
             if ( nargin < 2 )
                 m = 1;
             end
+            
+            if ( isnumeric(T.domain) )
+                T = refineRectangle(T, m);
+            else
+                T= refineKite(T,m);
+            end
+                
 
+        end
+        
+        function T = refineRectangle(T, m)
             for l = 1:m % Refine m times.
                 nDom = size(T.domain, 1);
                 dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
@@ -406,17 +416,50 @@ classdef ultraSEMDomain
                     d = dom{k}; % Subdivide this square into four new pieces:
                     midPt  = [ mean(d(1:2)), mean(d(3:4)) ];
                     dom{k} = [ d(1), midPt(1), d(3), midPt(2) ;
-                               midPt(1), d(2), d(3), midPt(2) ;
-                               d(1), midPt(1), midPt(2), d(4) ;
-                               midPt(1), d(2), midPt(2), d(4) ];
+                        midPt(1), d(2), d(3), midPt(2) ;
+                        d(1), midPt(1), midPt(2), d(4) ;
+                        midPt(1), d(2), midPt(2), d(4) ];
                 end
                 T.domain = cell2mat(dom);                  % Revert to a matrix.
                 hMerge = reshape(1:4*nDom, 2, 2*nDom).';   % New horizontal merge.
                 vMerge = reshape(1:2*nDom, 2, nDom).';     % New vertical merge.
                 T.mergeIdx = [hMerge, vMerge, T.mergeIdx]; % Append to existing.
             end
-
         end
+            
+        
+        function T2 = refineKite(T, m)
+            if ( m > 1 )
+                T2 = refine(refine(T,1), m-1);
+                return
+            end
+            
+            nDom = size(T.domain, 1);
+            T2 = cell(nDom, 1);
+            for k = 1:nDom
+                kitek = T.domain(k);
+                xRef = kitek.domain([1 2 2 1]);
+                yRef = kitek.domain([3 3 4 4]);
+                x = kitek.T1(xRef, yRef);
+                y = kitek.T2(xRef, yRef);
+                v = [x; y];
+                vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
+                
+                p = polyshape(x, y);
+                [xmid, ymid] = centroid(p);
+                midpt = [xmid ; ymid];
+                
+                K(4,1) = kite();
+                K(1) = kite([v(:,1) vnew(:,1) midpt vnew(:,4)]');
+                K(2) = kite([v(:,2) vnew(:,2) midpt vnew(:,1)]');
+                K(3) = kite([v(:,3) vnew(:,3) midpt vnew(:,2)]');
+                K(4) = kite([v(:,4) vnew(:,4) midpt vnew(:,3)]');
+                T2{k} = ultraSEMDomain(K, {[1 2 ; 3 4], [1 2]});
+            end
+            T2 = merge(T2{:});
+        end
+ 
+        
 
         function T = refinex(T, m)
         %REFINEX   Refine a domain in the x-direction.
@@ -424,7 +467,7 @@ classdef ultraSEMDomain
         %   two new equally-sized pieces. The tree index information in the
         %   result is updated to reflect the new subdomains, which are the
         %   first to be merged.
-        %
+        
         %   REFINEX(T, M) will refine M times.
 
             if ( isempty(T.domain) )
