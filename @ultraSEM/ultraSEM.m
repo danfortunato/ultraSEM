@@ -367,6 +367,9 @@ classdef ultraSEM < handle
 
         % Run the test suite.
         pass = test();
+        
+        % Run the test suite.
+        duration = bench();
 
         % Run the GUI.
         varargout = gui();
