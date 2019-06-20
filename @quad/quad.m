@@ -14,6 +14,9 @@ classdef quad < ultraSEMMapping
             if ( nargin == 0 )
                 return
             end
+            
+            % Ensure v is of the form [x, y], not [x ; y]:
+            if ( size(v,1) == 2 ), v = v.'; end
 
             % TODO: Ensure vertices are oriented in an anticlockwise
             % direction (or fix things so that clockwise is supported).
@@ -78,6 +81,12 @@ classdef quad < ultraSEMMapping
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     methods
+        
+        function c = centroid(Q)
+            v = vertices(Q);
+            [xmid, ymid] = centroid(polyshape(v.'));
+            c = [xmid ; ymid]; 
+        end
 
     end
 

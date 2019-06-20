@@ -172,7 +172,7 @@ else
         % Get the current domain:
         domk = dom(k,:);
         rect = dom(k,:);
-        if ( mapped ), rect = rect.domain; end
+        if ( mapped ), rect = [-1 1 -1 1]; end
         % Define the boundary nodes for this patch:
         domx = rect(1:2);
         domy = rect(3:4);

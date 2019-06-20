@@ -8,7 +8,6 @@ classdef ultraSEMMapping < handle
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties ( Access = public )
 
-        domain = [-1 1 -1 1] % Reference domain
         T1             % square->domain map 1st coordinate
         T2             % square->domain map 2nd coordinate
         invT1          % domain->square map 1st coordinate
@@ -61,11 +60,8 @@ classdef ultraSEMMapping < handle
 
             for k = 1:numel(T)
                 % Plot domain:
-                X = T(k).domain([1 2 2 1 1]);
-                Y = T(k).domain([3 3 4 4 1]);
-                ex = T(k).T1( X, Y );
-                ey = T(k).T2( X, Y );
-                plot(ex, ey, 'k-', 'LineWidth', 2); hold on
+                v = vertices(T(k));
+                plot(v(1,[1:end, 1]), v(2,[1:end, 1]), 'k-', 'LineWidth', 2); hold on
 
                 if ( plotPts )
                     % Plot the grid:
@@ -75,11 +71,8 @@ classdef ultraSEMMapping < handle
 
                 % Add text to centre of patch:
                 if ( numel(T) < 100 ) % Don't add text on large meshes
-                    mx = mean(T(k).domain(1:2));
-                    my = mean(T(k).domain(3:4));
-                    cx = T(k).T1(mx, my);
-                    cy = T(k).T2(mx, my);
-                    text(cx, cy, int2str(k), 'HorizontalAlignment', 'center')
+                    c = centroid(T(k));
+                    text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
                 end
 
             end
@@ -165,8 +158,9 @@ classdef ultraSEMMapping < handle
         end
         
         function v = vertices(M)
-            xRef = M.domain([1 2 2 1]);
-            yRef = M.domain([3 3 4 4]);
+%             xRef = M.domain([1 2 2 1]);
+%             yRef = M.domain([3 3 4 4]);
+            xRef = [-1 1 1 -1]; yRef = [-1 -1 1 1];
             x = M.T1(xRef, yRef);
             y = M.T2(xRef, yRef);
             v = [x ; y];

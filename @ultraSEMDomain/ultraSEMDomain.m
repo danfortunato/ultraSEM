@@ -444,6 +444,7 @@ classdef ultraSEMDomain
                 vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
                 [xmid, ymid] = centroid(polyshape(v.'));
                 vmid = [xmid ; ymid];
+                vmid = centroid(T.domain(k));
                 
                 Qk2(4,1) = quad();
                 Qk2(1) = quad([v(:,1) vnew(:,1) vmid vnew(:,4)]');

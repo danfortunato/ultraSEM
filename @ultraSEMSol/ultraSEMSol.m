@@ -186,7 +186,7 @@ classdef ultraSEMSol
                 % Convert to single to avoid mapping issues
                 x = single(map.invT1(x0, y0));
                 y = single(map.invT2(x0, y0));
-                dom = map.domain;
+                dom = [-1 1 -1 1];
 
                 idx = ( isreal(x) & isreal(y) & x >= dom(1) & x <= dom(2) & ...
                        y >= dom(3) & y <= dom(4) );
