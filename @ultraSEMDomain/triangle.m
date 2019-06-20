@@ -32,6 +32,7 @@ function T = triangle(v)
 
     % Construct ultraSEMDomain:
     %T = ultraSEMDomain(K, {[1 2 3]});
-    T = ultraSEMDomain(K, {[1 2 ; 3 NaN], [1 2]});
+    T = triangle(K, {[1 2 ; 3 NaN], [1 2]});
+    T.corners = v;
 
 end
