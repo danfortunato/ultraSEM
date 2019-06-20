@@ -1,6 +1,6 @@
 function t = laptri(r, p)
 
-D = ultraSEMDomain.triangle([0 0 ; 1 0 ; .5  1/sqrt(2) ]);
+D = ultraSEMDomain.triangle([0 0 ; 1 0 ; .5  sqrt(3)/2 ]);
 D = refine(D, r);
 op = {{1,0,1}, {0,0}, 0};
 
