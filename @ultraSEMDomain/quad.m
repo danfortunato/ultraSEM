@@ -1,4 +1,4 @@
-function T = kite(varargin)
+function T = quad(varargin)
 
 vertices = varargin{1};
 
@@ -7,7 +7,7 @@ if ( ultraSEMDomain.isClockwise(vertices) )
     vertices([2,4],:) = vertices([4,2],:);
 end
 
-K = kite( vertices );
+K = quad( vertices );
 %T = ultraSEMDomain(K, {[1 ; NaN]});
 T = ultraSEMDomain(K);
 

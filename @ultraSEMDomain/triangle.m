@@ -1,5 +1,5 @@
 function T = triangle(v)
-%ULTRASEM.TRIANGLE  Return a triangular domain formed of kites.
+%ULTRASEM.TRIANGLE  Return a triangular domain formed of kites/quads.
 %   T = ULTRASEM.TRIANGLE(V) returns a triangular ultraSEMDomain T with
 %   vertices V formed of three kites. The vertices V should be given in
 %   anticlockwise order. If they are not, they will be modified to be as
@@ -29,10 +29,10 @@ function T = triangle(v)
     v3 = [ m12 ; v(2,:) ; m23 ; c ];
 
     % Construct kites:
-    K(3,1) = kite();
-    K(1) = kite( v1 );
-    K(2) = kite( v2 );
-    K(3) = kite( v3 );
+    K(3,1) = quad();
+    K(1) = quad( v1 );
+    K(2) = quad( v2 );
+    K(3) = quad( v3 );
 
     % Construct ultraSEMDomain:
     T = ultraSEMDomain(K, {[1 2 ; 3 NaN], [1 2]});
