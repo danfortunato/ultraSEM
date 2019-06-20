@@ -197,9 +197,11 @@ classdef ultraSEMDomain
             mergeIdx{end} = [1, 2]; % Final merge leaves a single patch.
 
             if ( isnumeric(F.domain) && ~isnumeric(G.domain) )
-                F.domain = ultraSEM.rectangle(F.domain, 'makeObj');
+%                 F.domain = ultraSEM.rectangle(F.domain, 'makeObj');
+                F.domain = rect2quad(F.domain);
             elseif  ( ~isnumeric(F.domain) && isnumeric(G.domain) )
-                G.domain = ultraSEM.rectangle(G.domain, 'makeObj');
+%                 G.domain = ultraSEM.rectangle(G.domain, 'makeObj');
+                G.domain = rect2quad(G.domain);
             end
 
             % Construct the new ultraSEMDomain:
@@ -690,3 +692,16 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% METHODS IMPLEMENTED IN THIS FILE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function h = rect2quad(f)
+
+sf = size(f, 1);
+h(sf,1) = quad();
+for k = 1:sf
+    d = f(k,:);
+    v = [d([1 2 2 1]) ; d([3 3 4 4])]';
+    h(k) = quad(v);
+end
+
+end
+
