@@ -163,6 +163,14 @@ classdef ultraSEMMapping < handle
             X = T.T1(x, y);
             Y = T.T2(x, y);
         end
+        
+        function v = vertices(M)
+            xRef = M.domain([1 2 2 1]);
+            yRef = M.domain([3 3 4 4]);
+            x = M.T1(xRef, yRef);
+            y = M.T2(xRef, yRef);
+            v = [x ; y];
+        end
 
     end
 

@@ -404,7 +404,7 @@ classdef ultraSEMDomain
             if ( isnumeric(T.domain) )
                 T = refineRectangle(T, m);
             else
-                T= refineQuad(T,m);
+                T = refineQuad(T,m);
             end
                 
 
@@ -431,6 +431,7 @@ classdef ultraSEMDomain
             
         
         function T2 = refineQuad(T, m)
+            % TODO: THis should be moved to the quad class.
             if ( m > 1 )
                 T2 = refine(refine(T,1), m-1);
                 return
@@ -439,24 +440,16 @@ classdef ultraSEMDomain
             nDom = size(T.domain, 1);
             T2 = cell(nDom, 1);
             for k = 1:nDom
-                Qk = T.domain(k);
-                xRef = Qk.domain([1 2 2 1]);
-                yRef = Qk.domain([3 3 4 4]);
-                x = Qk.T1(xRef, yRef);
-                y = Qk.T2(xRef, yRef);
-                v = [x; y];
-                
-                v2 = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
-                
-                p = polyshape(x, y);
-                [xmid, ymid] = centroid(p);
-                midpt = [xmid ; ymid];
+                v = vertices(T.domain(k));
+                vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
+                [xmid, ymid] = centroid(polyshape(v.'));
+                vmid = [xmid ; ymid];
                 
                 Qk2(4,1) = quad();
-                Qk2(1) = quad([v(:,1) v2(:,1) midpt v2(:,4)]');
-                Qk2(2) = quad([v(:,2) v2(:,2) midpt v2(:,1)]');
-                Qk2(3) = quad([v(:,3) v2(:,3) midpt v2(:,2)]');
-                Qk2(4) = quad([v(:,4) v2(:,4) midpt v2(:,3)]');
+                Qk2(1) = quad([v(:,1) vnew(:,1) vmid vnew(:,4)]');
+                Qk2(2) = quad([v(:,2) vnew(:,2) vmid vnew(:,1)]');
+                Qk2(3) = quad([v(:,3) vnew(:,3) vmid vnew(:,2)]');
+                Qk2(4) = quad([v(:,4) vnew(:,4) vmid vnew(:,3)]');
                 
                 T2{k} = ultraSEMDomain(Qk2, {[1 2 ; 3 4], [1 2]});
             end
