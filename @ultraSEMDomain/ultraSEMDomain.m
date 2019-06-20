@@ -145,9 +145,18 @@ classdef ultraSEMDomain
             out = size(T.domain, 1);
         end
 
-        function H = merge(F, G)
-        %MERGE   Merge two ultraSEMDomains.
-
+        function H = merge(varargin)
+        %MERGE   Merge two or more ultraSEMDomains.
+        
+            F = varargin{1};
+            G = varargin{2};
+            
+            % Merge multiple pieces:
+            if ( nargin > 2 )
+                H = merge(merge(F,G), varargin{3:end});
+                return
+            end
+            % Nothing to do here:
             if ( isempty(F) )
                 H = G;
                 return
