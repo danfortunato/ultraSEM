@@ -1,7 +1,7 @@
 function T = polygon(v)
-%ULTRASEM.POLYGON  Return a convex polygonal domain formed of kites.
+%ULTRASEM.POLYGON  Return a convex polygonal domain formed of quadrilaterals.
 %   T = ULTRASEM.POLYGON(V) returns a convex polygonal ultraSEMDomain T
-%   with vertices V formed of N kites, where N is the polygon degree. The
+%   with vertices V formed of N quads, where N is the polygon degree. The
 %   vertices V should be given in anticlockwise order. If they are not,
 %   they will be modified to be as such.
 %
@@ -25,12 +25,12 @@ function T = polygon(v)
     % Locate the center of the polygon:
     c = mean( v );
 
-    % Construct kites:
-    K(n,1) = kite();
+    % Construct quads:
+    Q(n,1) = quad();
     for k = 1:n
         next = mod(k,n)+1;
         prev = mod(k-2,n)+1;
-        K(k) = kite( [ v(k,:) ; mean(v([k,next],:)) ; c ; mean(v([prev,k],:)) ] );
+        Q(k) = quad( [ v(k,:) ; mean(v([k,next],:)) ; c ; mean(v([prev,k],:)) ] );
     end
 
     % Construct merges:
@@ -42,6 +42,6 @@ function T = polygon(v)
     end
 
     % Construct ultraSEMDomain:
-    T = ultraSEMDomain(K, mergeIdx);
+    T = ultraSEMDomain(Q, mergeIdx);
 
 end

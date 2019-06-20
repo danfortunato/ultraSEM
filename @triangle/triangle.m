@@ -1,5 +1,5 @@
 classdef triangle < ultraSEMDomain
-%TRIANGLE   Kite mapping object from ULTRASEM system.
+%TRIANGLE   .
 
     %#ok<*PROP>
 

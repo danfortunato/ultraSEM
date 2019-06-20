@@ -305,7 +305,7 @@ classdef ultraSEM < handle
         %   Delaunay triangulation, equivalent to
         %   delaunayTriangulation(X_BDY, X_INT).
         %
-        % See also TRIANGLE, KITE.
+        % See also TRIANGLE, QUAD.
 
             % Compute triangulariztation:
             if ( nargin < 2 )
@@ -340,10 +340,10 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.rectangle(varargin{:});
         end
 
-        function varargout = kite(varargin)
-        %KITE Construct an ultraSEMDomain kite domain.
-        %   ultraSEM.kite(V) constructs a kite with vertices V.
-            [varargout{1:nargout}] = ultraSEMDomain.kite(varargin{:});
+        function varargout = quad(varargin)
+        %QUAD Construct an ultraSEMDomain quadrilateral domain.
+        %   ultraSEM.quad(V) constructs a quadrilateral with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.quad(varargin{:});
         end
 
         function varargout = triangle(varargin)

@@ -34,10 +34,10 @@ classdef ultraSEMMapping < handle
             [xx, yy] = transformGrid(map, xx, yy);
         end
 
-        function n = normals( K )
-        %NORMALS   Outward pointing normal vectors to the edges of a kite.
-            v = [ K.T1([-1 1 1 -1],[-1 -1 1 1]) ;
-                  K.T2([-1 1 1 -1],[-1 -1 1 1]) ].';
+        function n = normals( Q )
+        %NORMALS   Outward pointing normal vectors to the edges of a quad.
+            v = [ Q.T1([-1 1 1 -1],[-1 -1 1 1]) ;
+                  Q.T2([-1 1 1 -1],[-1 -1 1 1]) ].';
             v = [ v ; v(1,:) ];
             dx = diff(v(:,1));
             dy = diff(v(:,2));

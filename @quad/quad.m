@@ -1,5 +1,5 @@
-classdef kite < ultraSEMMapping
-%KITE   Kite mapping object from ULTRASEM system.
+classdef quad < ultraSEMMapping
+%QUAD   Quadrilateral mapping object from ULTRASEM system.
 
     %#ok<*PROP>
 
@@ -7,10 +7,10 @@ classdef kite < ultraSEMMapping
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        function obj = kite( v )
-            %KITE  Class constructor for the @kite class.
+        function obj = quad( v )
+            %QUAD  Class constructor for the @quad class.
 
-            % Construct empty kite:
+            % Construct empty quad:
             if ( nargin == 0 )
                 return
             end
@@ -30,7 +30,7 @@ classdef kite < ultraSEMMapping
             d = M \ v(:,2);
             obj.T2 = @(x,y) d(1) + d(2)*x + d(3)*y + d(4)*x.*y;
 
-            % Fill in Aaron's formulas for the kite transformations:
+            % Fill in Aaron's formulas for the quad transformations:
             A = c(2)*d(4)-c(4)*d(2);
             B = @(s,t) c(2)*d(3)+c(1)*d(4)-c(4)*d(1)-c(3)*d(2)-d(4)*s+c(4)*t;
             C = @(s,t) c(1)*d(3)-c(3)*d(1)-d(3)*s+c(3)*t;

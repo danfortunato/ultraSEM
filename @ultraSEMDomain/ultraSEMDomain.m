@@ -402,7 +402,7 @@ classdef ultraSEMDomain
             if ( isnumeric(T.domain) )
                 T = refineRectangle(T, m);
             else
-                T= refineKite(T,m);
+                T= refineQuad(T,m);
             end
                 
 
@@ -428,7 +428,7 @@ classdef ultraSEMDomain
         end
             
         
-        function T2 = refineKite(T, m)
+        function T2 = refineQuad(T, m)
             if ( m > 1 )
                 T2 = refine(refine(T,1), m-1);
                 return
@@ -437,24 +437,26 @@ classdef ultraSEMDomain
             nDom = size(T.domain, 1);
             T2 = cell(nDom, 1);
             for k = 1:nDom
-                kitek = T.domain(k);
-                xRef = kitek.domain([1 2 2 1]);
-                yRef = kitek.domain([3 3 4 4]);
-                x = kitek.T1(xRef, yRef);
-                y = kitek.T2(xRef, yRef);
+                Qk = T.domain(k);
+                xRef = Qk.domain([1 2 2 1]);
+                yRef = Qk.domain([3 3 4 4]);
+                x = Qk.T1(xRef, yRef);
+                y = Qk.T2(xRef, yRef);
                 v = [x; y];
-                vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
+                
+                v2 = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
                 
                 p = polyshape(x, y);
                 [xmid, ymid] = centroid(p);
                 midpt = [xmid ; ymid];
                 
-                K(4,1) = kite();
-                K(1) = kite([v(:,1) vnew(:,1) midpt vnew(:,4)]');
-                K(2) = kite([v(:,2) vnew(:,2) midpt vnew(:,1)]');
-                K(3) = kite([v(:,3) vnew(:,3) midpt vnew(:,2)]');
-                K(4) = kite([v(:,4) vnew(:,4) midpt vnew(:,3)]');
-                T2{k} = ultraSEMDomain(K, {[1 2 ; 3 4], [1 2]});
+                Qk2(4,1) = quad();
+                Qk2(1) = quad([v(:,1) v2(:,1) midpt v2(:,4)]');
+                Qk2(2) = quad([v(:,2) v2(:,2) midpt v2(:,1)]');
+                Qk2(3) = quad([v(:,3) v2(:,3) midpt v2(:,2)]');
+                Qk2(4) = quad([v(:,4) v2(:,4) midpt v2(:,3)]');
+                
+                T2{k} = ultraSEMDomain(Qk2, {[1 2 ; 3 4], [1 2]});
             end
             T2 = merge(T2{:});
         end
@@ -664,8 +666,8 @@ classdef ultraSEMDomain
         % Construct rectangular domains:
         T = rectangle(varargin);
 
-        % Construct kite domains:
-        T = kite(varargin);
+        % Construct quadrilateral domains:
+        T = quad(varargin);
 
         % Construct triangular domains:
         T = triangle(varargin);

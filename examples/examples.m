@@ -115,13 +115,13 @@ sol = op \ bc;
 subplot(326), plot(sol), axis square tight
 shg
 
-%% Kite
+%% Quad
 
 n = 30;
 pdo = {0.3, 10, 0};
 rhs = -1;
 bc = 0;
-dom = ultraSEM.kite([3 2; 1 1; 0 0; 2 0]);
+dom = ultraSEM.quad([3 2; 1 1; 0 0; 2 0]);
 exampleplot(dom)
 
 op = ultraSEM(dom, pdo, rhs, n);
@@ -135,11 +135,11 @@ pdo = {1, 0, 0};
 rhs = @(x,y) 10*x+y;
 bc = 0;
 
-K1 = ultraSEM.kite([ 0 0 ;  1/2 .1 ;  .6 .8 ; 0 sqrt(3)/6]);
-K2 = ultraSEM.kite([ 0 0 ; -1/2 .2 ; -.6 .5 ; 0 sqrt(3)/6]); % anticlockwise
-K3 = ultraSEM.kite([ 0 sqrt(3)/6 ; .6 .8 ; .5 1 ; -.6 .5]);
-K4 = ultraSEM.kite([-1/2 .2 ; -.6 0 ; -.2 -.2 ; 0 0 ]);
-dom = K1 & K2 & K3 & K4;
+K1 = ultraSEM.quad([ 0 0 ;  1/2 .1 ;  .6 .8 ; 0 sqrt(3)/6]);
+K2 = ultraSEM.quad([ 0 0 ; -1/2 .2 ; -.6 .5 ; 0 sqrt(3)/6]); % anticlockwise
+K3 = ultraSEM.quad([ 0 sqrt(3)/6 ; .6 .8 ; .5 1 ; -.6 .5]);
+K4 = ultraSEM.quad([-1/2 .2 ; -.6 0 ; -.2 -.2 ; 0 0 ]);
+dom = merge(K1, K2, K3, K4);
 exampleplot(dom)
 
 op = ultraSEM(dom, pdo, rhs, n);
@@ -165,10 +165,9 @@ sol = op \ bc;
 exampleplot(sol)
 
 err = 0;
-for k = 1:numel(sol.x)
-    x = sol.x{k};
-    y = sol.y{k};
-    e = abs(u(x,y) - feval(sol,x,y));
+[x,y] = getGrid(sol);
+for k = 1:numel(sol.u)
+    e = abs(u(x{k},y{k}) - feval(sol,x{k},y{k}));
     err = max(err, norm(e, inf));
 end
 err
