@@ -137,7 +137,7 @@ if ( constantOp )
         end
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, A, xy, n, op);
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, A);
 
     end
 
@@ -223,7 +223,7 @@ else
         D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(domk, S, D2N, A, xy, n, op);
+        P{k} = ultraSEMLeaf(domk, S, D2N, xy, A);
 
     end
 

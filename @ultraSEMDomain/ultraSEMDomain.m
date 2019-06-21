@@ -88,7 +88,7 @@ classdef ultraSEMDomain
                     '%s does not contain merge information.', inputname(1))
                 T.mergeIdx = T.defaultIdx(T.domain);
             end
-
+            
             % Loop over each level:
             for j = 1:numel(T.mergeIdx) % <-- number of levels
 
@@ -409,6 +409,13 @@ classdef ultraSEMDomain
                 
 
         end
+        
+%         function T = refineCorner(T, pt)
+%             nDom = size(T.domain, 1);
+%             dom = T.domain
+%             anydom(:,1) == 
+%         end
+        
         
         function T = refineRectangle(T, m)
             for l = 1:m % Refine m times.

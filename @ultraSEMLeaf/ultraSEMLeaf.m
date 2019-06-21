@@ -18,10 +18,8 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     properties ( Access = public )
 
-        n  % Discretization size.
-        op % Description of PDO (stored so the RHS can be efficiently updated).
         A  % Discretized differential operator.
-
+           % (Stored so the RHS can be efficiently updated)
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,11 +28,10 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMLeaf(domain, S, D2N, A, xy, n, op)
+        function P = ultraSEMLeaf(dom, S, D2N, xy, A)
         %ULTRASEMLEAF   Class constructor for the @ultraSEMLeaf class.
-        %   P = ultraSEMLeaf(DOMAIN, S, D2N, XY, N, OP) assigns each of
-        %   the inputs to their associated properties in the ultraSEMLeaf
-        %   object OBJ.
+        %   P = ultraSEMLeaf(DOMAIN, S, D2N, XY) assigns each of the inputs to
+        %   their associated properties in the ultraSEMLeaf object OBJ.
 
             % Construct empty patch:
             if ( nargin == 0 )
@@ -42,13 +39,13 @@ classdef ultraSEMLeaf < ultraSEMPatch
             end
 
             % Assign domain and operators:
-            P.domain = domain;    % Domain.
+            P.domain = dom;       % Domain.
             P.S = S;              % Solution operator.
             P.D2N = D2N;          % Dirichlet-to-Neumann map.
-            P.A = A;              % Discretized operator.
             P.xy = xy;            % Boundary nodes.
-            P.n = n;              % Discretization size in x.
-            P.op = op;            % PDO (in cell form).
+            if ( nargin > 4 )
+                P.A = A;          % Discretized operator.
+            end
 
         end
 
@@ -75,7 +72,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
             % Evaluate the solution operator for the patch:
             u = P.S * [bc ; 1]; % The 1 accounts for the particular part.
-            u = reshape(u, P.n, P.n);
+            u = reshape(u, P.n*[1,1]);
 
             % Return cell output for consistency with
             % ultraSEMParent/solve():
@@ -88,8 +85,13 @@ classdef ultraSEMLeaf < ultraSEMPatch
             end
 
         end
+        
+        function out = n(P)
+            out = size(P.D2N,1)/4;
+        end
 
     end
+    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% STATIC METHODS
