@@ -139,6 +139,10 @@ classdef ultraSEMDomain
         %INTERSECT   Compute the intersecting patches of two ultraSEMDomains.
             [d, ia, ib] = intersect(S.domain, T.domain, 'rows', 'stable');
         end
+        
+        function out = isempty(T)
+            out = isempty(T.domain);
+        end
 
         function out = length(T)
         %LENGTH   The length of an ultraSEMDomain is its number of patches.
@@ -410,12 +414,44 @@ classdef ultraSEMDomain
 
         end
         
-%         function T = refineCorner(T, pt)
-%             nDom = size(T.domain, 1);
-%             dom = T.domain
-%             anydom(:,1) == 
-%         end
-        
+        function T = refinePoint(T, pt, m)
+            if ( nargin > 2 )
+                for k = 1:m
+                    T = refinePoint(T, pt);
+                end
+                return
+            end
+            
+            if ( isempty(pt) )
+                return
+            end
+            pt = pt(:,1)+1i*pt(:,2);           
+            d = T.domain;
+            if ( isnumeric(d) )
+                v = (d(:,[1 2 2 1]) + 1i*d(:,[3 3 4 4]));
+            else
+                nd = length(T.domain);
+                v = zeros(nd, 4);
+                for k = 1:nd
+                    tmp = vertices(T.domain(k));
+                    v(k,:) = tmp(1,:)+1i*tmp(2,:);
+                end
+            end  
+            sv = size(v);
+            [i, j] = find(reshape(any(abs(v(:)-pt.') < 1e-15, 2), sv(1), 4));
+             for k = 1:numel(i')
+                if ( isnumeric(T.domain) )
+                    % TODO: Gah. Ugly.
+                    tmp = refineCornerRect(T.domain(i(k),:), j(k));                   
+                else
+                    tmp = refineCorner(T.domain(i(k),:), j(k));
+                end
+                Tnew{k} = ultraSEMDomain(tmp, {[1 NaN ; 2 3], [1 2]});
+            end
+            T = removePatch(T,i);
+            T = merge(T, Tnew{:});
+            
+        end
         
         function T = refineRectangle(T, m)
             for l = 1:m % Refine m times.
@@ -452,7 +488,6 @@ classdef ultraSEMDomain
             end
             T2 = merge(T2{:});
         end
- 
         
 
         function T = refinex(T, m)
@@ -694,4 +729,35 @@ for k = 1:sf
 end
 
 end
+
+        function Q = refineCornerRect(d, k)
+%             d = T.domain;
+            c = mean(d([1 3 ; 2 4]))';
+            v = d([1 2 2 1 ; 3 3 4 4]);
+            if ( k == 1 )
+                vnew = (v(:,1) + v(:,[2,4]))/2;
+                v1 = [v(:,1) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[2 3]) c vnew(:,1)];
+                v3 = [v(:,4) vnew(:,2) c v(:,3)];
+            elseif ( k == 2 )
+                vnew = (v(:,2) + v(:,[3,1]))/2;
+                v1 = [v(:,2) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[3 4]) c vnew(:,1)];
+                v3 = [v(:,1) vnew(:,2) c v(:,4)];                
+            elseif ( k == 3 )
+                vnew = (v(:,3) + v(:,[4,2]))/2;
+                v1 = [v(:,3) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[4 1]) c vnew(:,1)];
+                v3 = [v(:,2) vnew(:,2) c v(:,1)]; 
+            elseif ( k == 4 )
+                vnew = (v(:,4) + v(:,[1,3]))/2;
+                v1 = [v(:,4) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[1 2]) c vnew(:,1)];
+                v3 = [v(:,3) vnew(:,2) c v(:,2)];                 
+            end            
+            Q(3,1) = ultraSEMQuad();
+            Q(1) = ultraSEMQuad(v1);
+            Q(2) = ultraSEMQuad(v2);
+            Q(3) = ultraSEMQuad(v3);
+        end
 
