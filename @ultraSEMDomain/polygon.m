@@ -26,11 +26,12 @@ function T = polygon(v)
     c = mean( v );
 
     % Construct quads:
-    Q(n,1) = quad();
+    Q(n,1) = ultraSEMQuad();
     for k = 1:n
         next = mod(k,n)+1;
         prev = mod(k-2,n)+1;
-        Q(k) = quad( [ v(k,:) ; mean(v([k,next],:)) ; c ; mean(v([prev,k],:)) ] );
+        vk = [ v(k,:) ; mean(v([k,next],:)) ; c ; mean(v([prev,k],:)) ];
+        Q(k) = ultraSEMQuad( vk );
     end
 
     % Construct merges:
@@ -38,7 +39,8 @@ function T = polygon(v)
     mergeIdx = cell(1, lvls);
     for k = 1:lvls
         m = ceil(2^(1-k)*n);
-        mergeIdx{k} = reshape( padarray((1:m)', mod(m,2), NaN, 'post'), 2, ceil(m/2))';
+        parray = padarray((1:m)', mod(m,2), NaN, 'post');
+        mergeIdx{k} = reshape( parray, 2, ceil(m/2))';
     end
 
     % Construct ultraSEMDomain:

@@ -340,10 +340,10 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.rectangle(varargin{:});
         end
 
-        function varargout = quad(varargin)
+        function varargout = ultraSEMQuad(varargin)
         %QUAD Construct an ultraSEMDomain quadrilateral domain.
-        %   ultraSEM.quad(V) constructs a quadrilateral with vertices V.
-            [varargout{1:nargout}] = ultraSEMDomain.quad(varargin{:});
+        %   ultraSEM.ultraSEMQuad(V) constructs a quadrilateral with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.ultraSEMQuad(varargin{:});
         end
 
         function varargout = triangle(varargin)

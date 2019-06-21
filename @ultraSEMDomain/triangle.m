@@ -29,14 +29,12 @@ function T = triangle(v)
     v3 = [ m12 ; v(2,:) ; m23 ; c ];
 
     % Construct kites:
-    K(3,1) = quad();
-    K(1) = quad( v1 );
-    K(2) = quad( v2 );
-    K(3) = quad( v3 );
+    K(3,1) = ultraSEMQuad();
+    K(1) = ultraSEMQuad( v1 );
+    K(2) = ultraSEMQuad( v2 );
+    K(3) = ultraSEMQuad( v3 );
 
     % Construct ultraSEMDomain:
     T = ultraSEMDomain(K, {[1 2 ; 3 NaN], [1 2]});
-%     T = triangle(K, {[1 2 ; 3 NaN], [1 2]});
-%     T.corners = v;
 
 end
