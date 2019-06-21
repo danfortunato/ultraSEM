@@ -64,7 +64,7 @@ classdef ultraSEMParent < ultraSEMPatch
         %SOLVE   Solve a patch.
         %   SOL = SOLVE(P, BC) returns an ultraSEMSol object representing
         %   the PDE solution on the patch P with Dirichlet boundary data
-        %   given by the ultraSEMBC BC.
+        %   given by BC.
         %
         %   [U, D] = SOLVE(P, BC) returns instead cell arrays containing
         %   the solution coefficients U and a vector D containing the
