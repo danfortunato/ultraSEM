@@ -222,12 +222,12 @@ classdef ultraSEMSol
                 end
             end
             
-            if ( nargin > 1 && numel(kk) == 1 )
+            if ( nargin > 1 || numel(kk) == 1 )
                 x = x{1};
                 y = y{1};
             end
             
-        end        
+        end
 
         function out = length(sol)
             out = length(sol.u);
