@@ -11,12 +11,17 @@ function P = updateRHS(P, rhs)
 
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
+A = P.A;
+if ( isempty(A) )
+    error('ULTRASEM:ULTRASEMLEAF:updateRHS:operatorNotStored', ...
+        'Discretised operator A was not stored. Cannot update RHS.');
+    % TODO: Perhaps we can store A _OR_ the PDO. In the latter case, rebuild A.
+end
 n = P.n;
 dom = P.domain;
-A = P.A;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% %%%%%%%%%% DEFINE GRID ON [-1 1] AND SET INDICIES %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%% DEFINE GRID ON [-1 1] AND SET INDICIES %%%%%%%%%%%%%%%%%%%%%%%%%%%
 numIntDOF = (n-2)^2;
 [XX, YY] = util.chebpts2(n);
 

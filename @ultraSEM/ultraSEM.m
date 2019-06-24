@@ -108,6 +108,44 @@ classdef ultraSEM < handle
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     methods ( Access = public, Static = false )
+        
+        function coeffs = bc2coeffs(S, bc)
+        %BC2COEFFS   Convert boundary conditions to coeffs.
+
+            if ( numel(S.patches) ~= 1 )
+                error('ULTRASEM:ULTRASEM:bc2coeffs:notBuilt', ...
+                    'The ultraSEM object %s must be built before creating BCs.', ...
+                    inputname(1));
+            end
+
+            % Get boundary points:
+            xy = S.patches{1}.xy;
+
+            % Initialize boundary data. We should have n coefficients for
+            % each boundary.
+            coeffs = cell(size(xy));
+            if ( ~isnumeric(bc) )
+                % Evaluate the BC if given a function handle:
+                for k = 1:size(coeffs, 1)
+                    vals = feval(bc, xy{k}(:,1), xy{k}(:,2));
+                    % Convert from values to coeffs:
+                    coeffs{k} = util.vals2coeffs(vals);
+                end
+            elseif ( isscalar(bc) )
+                % Convert a scalar to coeffs:
+                for k = 1:size(coeffs, 1)
+                    n = size(xy{k}, 1);
+                    coeffs{k} = [bc ; zeros(n-1, 1)];
+                end
+            else
+                error('ULTRASEM:ULTRASEM:bc2coeffs:badBC', ...
+                    'Cannot evaluate boundary data.');
+            end
+
+            % CAT() is 10x faster than CELL2MAT().
+            coeffs = cat(1, coeffs{:});
+
+        end
 
         function build(S)
         %BUILD   Build the merge tree of patches in an ultraSEM object.
@@ -211,14 +249,11 @@ classdef ultraSEM < handle
                     inputname(1));
             end
 
-            % Build the boundary conditions if given as a scalar or
-            % function handle.
-            if ( ~isa(bc, 'ultraSEMBC') )
-                bc = ultraSEMBC(S, bc);
-            end
+            % Build the boundary conditions:
+            coeffs = bc2coeffs(S, bc);
 
             % Solve the patch object:
-            sol = solve(S.patches{1}, bc.coeffs);
+            sol = solve(S.patches{1}, coeffs);
 
         end
 
