@@ -686,11 +686,11 @@ end
 function h = rect2quad(f)
 
 sf = size(f, 1);
-h(sf,1) = quad();
+h(sf,1) = ultraSEMQuad();
 for k = 1:sf
     d = f(k,:);
     v = [d([1 2 2 1]) ; d([3 3 4 4])]';
-    h(k) = quad(v);
+    h(k) = ultraSEMQuad(v);
 end
 
 end

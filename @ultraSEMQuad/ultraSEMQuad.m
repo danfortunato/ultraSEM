@@ -1,5 +1,5 @@
-classdef quad < ultraSEMMapping
-%QUAD   Quadrilateral mapping object from ULTRASEM system.
+classdef ultraSEMQuad < ultraSEMMapping
+%ULTRASEMQUAD   Quadrilateral mapping object from ULTRASEM system.
 
     %#ok<*PROP>
 
@@ -7,10 +7,10 @@ classdef quad < ultraSEMMapping
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        function obj = quad( v )
-            %QUAD  Class constructor for the @quad class.
+        function obj = ultraSEMQuad( v )
+            %ULTRASEMQUAD  Class constructor for the @ultraSEMQuad class.
 
-            % Construct empty quad:
+            % Construct empty ultraSEMQuad:
             if ( nargin == 0 )
                 return
             end
@@ -18,8 +18,11 @@ classdef quad < ultraSEMMapping
             % Ensure v is of the form [x, y], not [x ; y]:
             if ( size(v,1) == 2 ), v = v.'; end
 
-            % TODO: Ensure vertices are oriented in an anticlockwise
-            % direction (or fix things so that clockwise is supported).
+            % Ensure vertices are oriented in an anticlockwise direction:
+            if ( ultraSEMDomain.isClockwise(v) )
+                % Switch the second and fourth indices.
+                v([2,4],:) = v([4,2],:);
+            end
 
             % Compute the change of variables:
             M = [1 -1 -1  1;    % (-1, 1)
@@ -34,9 +37,9 @@ classdef quad < ultraSEMMapping
             obj.T2 = @(x,y) d(1) + d(2)*x + d(3)*y + d(4)*x.*y;
 
             % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4)-c(4)*d(2);
-            B = @(s,t) c(2)*d(3)+c(1)*d(4)-c(4)*d(1)-c(3)*d(2)-d(4)*s+c(4)*t;
-            C = @(s,t) c(1)*d(3)-c(3)*d(1)-d(3)*s+c(3)*t;
+            A = c(2)*d(4) - c(4)*d(2);
+            B = @(s,t) c(2)*d(3) + c(1)*d(4) - c(4)*d(1) - c(3)*d(2) - d(4)*s + c(4)*t;
+            C = @(s,t) c(1)*d(3) - c(3)*d(1) - d(3)*s + c(3)*t;
             if ( A == 0 )
                 obj.invT1 = @(s,t) -C(s,t)./B(s,t);
                 obj.dinvT1{1} = @(s,t) -(-d(3)*(B(s,t)+d(4)*s) + (C(s,t)+d(3)*s)*d(4))./(B(s,t).^2);
@@ -93,21 +96,21 @@ classdef quad < ultraSEMMapping
             c = centroid(Q);
             vnew = (v(:,[1 2 3 4]) + v(:,[2 3 4 1]))/2;
             
-            Q(4,1) = quad();
-            Q(1) = quad([v(:,1) vnew(:,1) c vnew(:,4)]');
-            Q(2) = quad([v(:,2) vnew(:,2) c vnew(:,1)]');
-            Q(3) = quad([v(:,3) vnew(:,3) c vnew(:,2)]');
-            Q(4) = quad([v(:,4) vnew(:,4) c vnew(:,3)]');
+            Q(4,1) = ultraSEMQuad();
+            Q(1) = ultraSEMQuad([v(:,1) vnew(:,1) c vnew(:,4)]');
+            Q(2) = ultraSEMQuad([v(:,2) vnew(:,2) c vnew(:,1)]');
+            Q(3) = ultraSEMQuad([v(:,3) vnew(:,3) c vnew(:,2)]');
+            Q(4) = ultraSEMQuad([v(:,4) vnew(:,4) c vnew(:,3)]');
         end
 
         function Q = refineCorner(Q, k)
             v = vertices(Q);
             c = centroid(Q);
             vnew = (v(:,1:end) + v(:,[2:end, 1]))/2;
-            Q(3,1) = quad();
-            Q(1) = quad([v(:,1) vnew(:,1) c vnew(:,4)]);
-            Q(2) = quad([v(:,2) v(:,3) c vnew(:,1)]);            
-            Q(3) = quad([v(:,4) vnew(:,4) c v(:,3)]);
+            Q(3,1) = ultraSEMQuad();
+            Q(1) = ultraSEMQuad([v(:,1) vnew(:,1) c vnew(:,4)]);
+            Q(2) = ultraSEMQuad([v(:,2) v(:,3) c vnew(:,1)]);            
+            Q(3) = ultraSEMQuad([v(:,4) vnew(:,4) c v(:,3)]);
         end
             
         
