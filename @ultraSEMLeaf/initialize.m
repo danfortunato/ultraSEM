@@ -276,16 +276,16 @@ function [S, Ainv] = buildSolOp(pdo, dom, rhs, n)
     % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
     % system O(p) times, which we do in O(p^4) using Schur
     % complements/Woodbury.
-    % S22 = A \ [BC, rhs];
+    S22 = A \ [BC, rhs]; Ainv = @(u) A\u;
 %     S22 = schurSolve(A, [BC, rhs], 2*n-2);
     
     % Do sparse LU by hand so we can store L U factors:
-    P = symrcm(A);
-    [~, Pinv] = sort(P);
-    [L, U, p] = lu(A(P,P), 'vector');
-    rowPermute = @(v,p) v(p,:);
-    Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
-    S22 = Ainv([BC, rhs]);
+%     P = symrcm(A);
+%     [~, Pinv] = sort(P);
+%     [L, U, p] = lu(A(P,P), 'vector');
+%     rowPermute = @(v,p) v(p,:);
+%     Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
+%     S22 = Ainv([BC, rhs]);
     
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
