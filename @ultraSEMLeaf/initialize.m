@@ -272,47 +272,19 @@ function [S, Ainv] = buildSolOp(pdo, dom, rhs, n)
     end
     BC = reshape(BC, (n-2)^2, 4*n);
 
-    % Solve for every possible BC.
-    % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
-    % system O(p) times, which we do in O(p^4) using Schur
-    % complements/Woodbury.
-    % S22 = A \ [BC, rhs];
-%     S22 = schurSolve(A, [BC, rhs], 2*n-2);
+    % Solve for every possible BC. This involves solving a O(p^2) x O(p^2)
+    % almost-banded-block-banded system O(p) times, which we do in O(p^4) using
+    % Schur complements/Woodbury.
+    
+    % If the matrix is not physically sparse, then force it to be dense.
+    densityA = nnz(A)/numel(A);
+    if ( densityA > .25 )
+        A = full(A);
+    end
 
-%     A = full(A);
-   
-    tic
-    S22 = A \ [BC, rhs];
-    toc
-    
-    tic
-    S22 = schurSolve(A, [BC, rhs], 2*n-2);
-    toc
-
-    
-    % Do sparse LU by hand so we can store L U factors:
-    tic
-    P = amd(A);
-    [~, Pinv] = sort(P);
-    [L, U, p] = lu(A(P,P), 'vector');
-    rowPermute = @(v,p) v(p,:);
-    Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
-    S22 = Ainv([BC, rhs]);
-    toc
-    
-    tic
-    [L, U, p] = lu(A, 'vector');
-    rowPermute = @(v,p) v(p,:);
-    Ainv = @(b) U\(L\b(p,:));
-    S22 = Ainv([BC, rhs]);
-    toc
-    
-    
-    spy(L)
-    error
-    
-%     error
-    
+%     [L, U, p] = lu(A, 'vector');  Ainv = @(b) U\(L\b(p,:)); S22 = Ainv([BC, rhs]);
+    [S22, Ainv] = schurSolve(A, [BC, rhs], 2*n-2);
+       
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
     Gy(:,:,end+1) = zeros(2, n);
@@ -536,6 +508,52 @@ function P = compatibleProjection(n)
 end
 
 function [x, Ainv] = schurSolve(A, b, m)
+%SCHURSOLVE   Fast solution of A*x = b where A is banded + m dense rows via
+%Schur complement factorisation.
+
+    doRowScaling = true;
+
+    na = size(A,2);
+    nb = size(b,2);
+    if ( na <= m )
+        x = A\b;
+        return
+    end
+
+    i1 = 1:m;
+    i2 = m+1:na;
+    i3 = nb+(1:m);
+
+    if ( doRowScaling )
+        % Row scaling to improve accuracy
+        AA = A(i2,i2);
+        s = 1./ max(1, max(abs(AA), [], 2) );
+        AA = bsxfun(@times, s, AA);
+%         bb = s.*[b(i2,:), A(i2,i1)];
+        bb = s.*A(i2,i1);
+    else
+        AA = A(i2,i2);
+        s = 1;
+        bb = A(i2,i1);
+    end
+    [LL, UU, pp] = lu(AA, 'vector');
+    cA = UU\(LL\bb(pp,:));
+    
+    Ainv = @(b) factoredSchurSolve(b);
+    x = factoredSchurSolve(b);
+    
+    function x = factoredSchurSolve(b)
+        bb = s.*b(i2,:);
+        cb = UU\(LL\bb(pp,:));
+        x = (A(i1,i1) - A(i1,i2)*cA) \ (b(i1,:) - A(i1,i2)*cb);
+        y = cb - cA*x;
+        x = [x ; y];
+        
+    end
+
+end
+
+function [x, Ainv] = schurSolve2(A, b, m)
 %SCHURSOLVE   Fast solution of A*x = b where A is banded + m dense rows via
 %Schur complement factorisation.
 

@@ -32,4 +32,6 @@ err(2) = abs(-0.017310261817778 - feval(sol,0.2,0.3)); % Obtained from CHEBOP2
 pass = err < tol;
 pass(3) = t2 < t1/2;
 
+[t1 , t2]
+
 end
