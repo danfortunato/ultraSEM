@@ -18,8 +18,8 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     properties ( Access = public )
 
-        A  % Discretized differential operator.
-           % (Stored so the RHS can be efficiently updated)
+        Ainv  % Local (homogeneous BC) solution operator operator.
+              % (Stored so the RHS can be efficiently updated)
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,7 +28,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMLeaf(dom, S, D2N, xy, A)
+        function P = ultraSEMLeaf(dom, S, D2N, xy, Ainv)
         %ULTRASEMLEAF   Class constructor for the @ultraSEMLeaf class.
         %   P = ultraSEMLeaf(DOMAIN, S, D2N, XY) assigns each of the inputs to
         %   their associated properties in the ultraSEMLeaf object OBJ.
@@ -44,7 +44,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
             P.D2N = D2N;          % Dirichlet-to-Neumann map.
             P.xy = xy;            % Boundary nodes.
             if ( nargin > 4 )
-                P.A = A;          % Discretized operator.
+                P.Ainv = Ainv;    % Local solution operator.
             end
 
         end

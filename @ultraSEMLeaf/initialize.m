@@ -100,7 +100,7 @@ P = cell(numPatches, 1);
 if ( constantOp )
 
     % Solution operator:
-    [S, A] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
+    [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
 
     % Dirichlet-to-Neumann map:
     D2N = bcrows_d * S;
@@ -137,14 +137,15 @@ if ( constantOp )
         end
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, A);
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, Ainv);
 
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Append particular parts:
     if ( ~constantRHS )
-        Si = A \ rhs_eval;
+%         Si = A \ rhs_eval;
+        Si = Ainv(rhs_eval);
         Gx = zeros(2, n); Gy = zeros(2, n);
         Bx = [(-1).^(0:n-1); ones(1,n)];
         By = [(-1).^(0:n-1); ones(1,n)];
@@ -210,7 +211,7 @@ else
         end
 
         % Solution operator:
-        [S, A] = buildSolOp(op, rect, rhs_eval, n);
+        [S, Ainv] = buildSolOp(op, rect, rhs_eval, n);
 
         % Normal derivative operator:
         if ( mapped )
@@ -223,7 +224,7 @@ else
         D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(domk, S, D2N, xy, A);
+        P{k} = ultraSEMLeaf(domk, S, D2N, xy, Ainv);
 
     end
 
@@ -234,7 +235,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [S, A] = buildSolOp(pdo, dom, rhs, n)
+function [S, Ainv] = buildSolOp(pdo, dom, rhs, n)
 %BUILDSOLOP  Build the solution operator on a patch using chebop2 ideas.
 %
 %   S = solution operator on patch
@@ -275,9 +276,17 @@ function [S, A] = buildSolOp(pdo, dom, rhs, n)
     % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
     % system O(p) times, which we do in O(p^4) using Schur
     % complements/Woodbury.
-    S22 = A \ [BC, rhs];
+    % S22 = A \ [BC, rhs];
 %     S22 = schurSolve(A, [BC, rhs], 2*n-2);
-
+    
+    % Do sparse LU by hand so we can store L U factors:
+    P = symrcm(A);
+    [~, Pinv] = sort(P);
+    [L, U, p] = lu(A(P,P), 'vector');
+    rowPermute = @(v,p) v(p,:);
+    Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
+    S22 = Ainv([BC, rhs]);
+    
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
     Gy(:,:,end+1) = zeros(2, n);

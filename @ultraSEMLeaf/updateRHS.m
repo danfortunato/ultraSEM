@@ -11,8 +11,8 @@ function P = updateRHS(P, rhs)
 
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
-A = P.A;
-if ( isempty(A) )
+Ainv = P.Ainv;
+if ( isempty(Ainv) )
     error('ULTRASEM:ULTRASEMLEAF:updateRHS:operatorNotStored', ...
         'Discretised operator A was not stored. Cannot update RHS.');
     % TODO: Perhaps we can store A _OR_ the PDO. In the latter case, rebuild A.
@@ -55,7 +55,8 @@ elseif ( ~isnumeric(rhs) )
 end
 
 % Solve with the new RHS:
-S = schurSolve(A, rhs, 2*n-2);
+% S = schurSolve(A, rhs, 2*n-2);
+S = Ainv(rhs);
 
 % Impose zero Dirichlet BCs:
 Gx = zeros(2, n); Gy = zeros(2, n);
