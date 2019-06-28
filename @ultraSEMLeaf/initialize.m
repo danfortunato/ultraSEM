@@ -278,14 +278,40 @@ function [S, Ainv] = buildSolOp(pdo, dom, rhs, n)
     % complements/Woodbury.
     % S22 = A \ [BC, rhs];
 %     S22 = schurSolve(A, [BC, rhs], 2*n-2);
+
+%     A = full(A);
+   
+    tic
+    S22 = A \ [BC, rhs];
+    toc
+    
+    tic
+    S22 = schurSolve(A, [BC, rhs], 2*n-2);
+    toc
+
     
     % Do sparse LU by hand so we can store L U factors:
-    P = symrcm(A);
+    tic
+    P = amd(A);
     [~, Pinv] = sort(P);
     [L, U, p] = lu(A(P,P), 'vector');
     rowPermute = @(v,p) v(p,:);
     Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
     S22 = Ainv([BC, rhs]);
+    toc
+    
+    tic
+    [L, U, p] = lu(A, 'vector');
+    rowPermute = @(v,p) v(p,:);
+    Ainv = @(b) U\(L\b(p,:));
+    S22 = Ainv([BC, rhs]);
+    toc
+    
+    
+    spy(L)
+    error
+    
+%     error
     
     % Add in the boundary data
     Gx(:,:,end+1) = zeros(2, n);
@@ -387,10 +413,11 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
     if ( nargin < 6)
         trans = false;
     end
-
+    B = sparse(B);
     for ii = 1:size(B, 1) % For each boundary condition, zero a column.
-        C1ii = full(C1(:,ii)); % Constant required to zero entry out.
+        C1ii = (C1(:,ii)); % Constant required to zero entry out.
         C1 = C1 - C1ii*B(ii,:);
+        C1ii = full(C1ii);
         Gii = permute(G(ii,:,:), [2 3 1]);
         C2Gii = C2*Gii;
         tol = 10*eps;
@@ -508,7 +535,7 @@ function P = compatibleProjection(n)
 
 end
 
-function x = schurSolve(A, b, m)
+function [x, Ainv] = schurSolve(A, b, m)
 %SCHURSOLVE   Fast solution of A*x = b where A is banded + m dense rows via
 %Schur complement factorisation.
 
@@ -531,10 +558,11 @@ function x = schurSolve(A, b, m)
         s = 1./ max(1, max(abs(AA), [], 2) );
         AA = bsxfun(@times, s, AA);
         bb = s.*[b(i2,:), A(i2,i1)];
-        c = AA\bb;
     else
-        c = A(i2,i2)\[b(i2,:), A(i2,i1)];
+        AA = A(i2,i2);
+        bb = [b(i2,:), A(i2,i1)];
     end
+    c = AA\bb;
 
     x = (A(i1,i1) - A(i1,i2)*c(:,i3)) \ (b(i1,:) - A(i1,i2)*c(:,1:nb));
     y = c(:,1:nb) - c(:,i3)*x;
