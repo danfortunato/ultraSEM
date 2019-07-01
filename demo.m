@@ -2,7 +2,7 @@ close all
 clc
 
 S = ultraSEM.alphabet('S') + 2i;
-U = ultraSEM.alphabet('U') + 2;
+U = ultraSEM.alphabet('U') + 3;
 SU = S & U;
 SU = refine(SU, 1);
 pdo = {{1, 0, 1}, {0, 0}, 10};
