@@ -47,6 +47,18 @@ classdef ultraSEMMapping < handle
 
         function plot( T, varargin )
             % Plot the mapped domain and grid:
+            
+            % Choose a color:
+            if ( nargin > 1 && ischar(varargin{1}) && ...
+                    ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
+                col = varargin{1};
+                varargin(1) = [];
+            elseif ( nargin > 1 && isnumeric(varargin{1}) )
+                col = varargin{1};
+                varargin(1) = [];
+            else
+                col = 'm';
+            end
 
             plotPts = false;
             n = 21;
@@ -61,7 +73,9 @@ classdef ultraSEMMapping < handle
             for k = 1:numel(T)
                 % Plot domain:
                 v = vertices(T(k));
-                plot(v(1,[1:end, 1]), v(2,[1:end, 1]), 'k-', 'LineWidth', 2); hold on
+                h(k,1) = fill(v(1,[1:end, 1]), v(2,[1:end, 1]), col, ...
+                    'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
+                % Add text to center of patch:
 
                 if ( plotPts )
                     % Plot the grid:
