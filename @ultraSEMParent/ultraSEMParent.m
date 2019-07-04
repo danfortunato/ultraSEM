@@ -96,7 +96,26 @@ classdef ultraSEMParent < ultraSEMPatch
             [u2, d2] = solve(P.child2, ubc2);
 
             % Concatenate for output:
-            u = [u1 ; u2]; d = [d1 ; d2];
+            u = [u1 ; u2]; 
+            
+            % TODO: This is annoying. It will be better when we don't cheat and
+            % do rectangular domains properly.
+            if ( isnumeric(d1) && ~isnumeric(d2) )
+                for k = 1:size(d1, 1)
+                    d1k = d1(k,:);
+                    v1 = d1k([1 3 ; 2 3 ; 2 4 ; 1 4]);
+                    q1(k,1) = ultraSEMQuad(v1);
+                end
+                d1 = q1;
+            elseif ( ~isnumeric(d1) && isnumeric(d2) )
+                for k = 1:size(d2, 1)
+                    d2k = d2(k,:);
+                    v2 = d2k([1 3 ; 2 3 ; 2 4 ; 1 4]);
+                    q2(k,1) = ultraSEMQuad(v2);
+                end
+                d2 = q2;
+            end
+            d = [d1 ; d2];
 
             if ( nargout == 1 )
                 % If a single output is requested, return an ultraSEMSol

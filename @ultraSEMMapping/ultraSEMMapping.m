@@ -57,7 +57,8 @@ classdef ultraSEMMapping < handle
                 col = varargin{1};
                 varargin(1) = [];
             else
-                col = 'm';
+%                 col = 'm';
+                col = rand(1, 3);
             end
 
             plotPts = false;

@@ -148,12 +148,32 @@ classdef ultraSEMDomain
         function H = merge(varargin)
         %MERGE   Merge two or more ultraSEMDomains.
         
-            F = varargin{1};
-            G = varargin{2};
+        % Old-style merge:
+%         H = flatMerge(varargin{:}); return
+        
+        % FlatMerge any numeric domains. (We may want to have some compatibility
+        % check (i.e., same side lengths?)
+            isnum = cellfun(@(d) isnumeric(d.domain), varargin);
+            if ( sum(isnum) > 1 )
+                tmp = varargin(isnum);
+                H = flatMerge(tmp{:});
+                varargin = {H, varargin{~isnum}};
+            end
+            
+            newDomain = vertcat(varargin{:});
+            if ( numel(newDomain) == 1 )
+                H = newDomain;
+            else
+                H = ultraSEMDomain(newDomain);
+            end
+
+        end
+        
+        function H = flatMerge(F, G, varargin)
             
             % Merge multiple pieces:
             if ( nargin > 2 )
-                H = merge(merge(F,G), varargin{3:end});
+                H = merge(merge(F,G), varargin{:});
                 return
             end
             % Nothing to do here:
@@ -179,7 +199,7 @@ classdef ultraSEMDomain
                     repmat({[1, NaN]}, 1, treeSizeF-treeSizeG);
             end
 
-            % To update the mrge information we need to adjust the merge
+            % To update the merge information we need to adjust the merge
             % indicies of G by the number of patches in F for each level.
             % skip(k) contains this number.
             skip = cellfun(@(t) max(t(:)), F.mergeIdx);
@@ -311,7 +331,18 @@ classdef ultraSEMDomain
         %   by H = FILL(...), where FILL() is the built-in MATLAB method.
 
             if ( ~isnumeric(T.domain) )
-                [varargout{1:nargout}] = plot(T.domain, varargin{:});
+                if ( isa(T.domain, 'ultraSEMDomain') )
+                    holdState = ishold();
+                    for k = 1:numel(T.domain)
+                        [varargout{1:nargout}] = plot(T.domain(k), varargin{:});
+                        hold on
+                    end
+                    if ( ~holdState )
+                        hold off
+                    end
+                else
+                    [varargout{1:nargout}] = plot(T.domain, varargin{:});
+                end
                 return
             end
 
@@ -325,6 +356,7 @@ classdef ultraSEMDomain
                 varargin(1) = [];
             else
                 c = 'm';
+                c = rand(1, 3);
             end
 
             holdState = ishold();
@@ -389,24 +421,35 @@ classdef ultraSEMDomain
         %   to be merged.
         %
         %   REFINE(T, M) will refine M times.
-
-            if ( isempty(T.domain) )
-                return
-            end
-            if ( isempty(T.mergeIdx) && length(T) > 1)
-                warning('Empty tree index encountered. Building a default one.');
-                T.mergeIdx = defaultIdx(T.domain);
-            end
+        
             if ( nargin < 2 )
                 m = 1;
             end
             
+            if ( isempty(T.domain) )
+                return
+            elseif ( numel(T) > 1 )
+                keyboard
+                for k = 1:numel(T)
+                    T(k) = refine(T(k), m);
+                end
+                return
+            end
+            
+            if ( isempty(T.mergeIdx) && length(T) > 1)
+                warning('Empty tree index encountered. Building a default one.');
+                T.mergeIdx = defaultIdx(T.domain);
+            end
+
             if ( isnumeric(T.domain) )
                 T = refineRectangle(T, m);
+            elseif ( isa(T.domain, 'ultraSEMDomain') )
+                for k = 1:numel(T.domain)
+                    T.domain(k) = refine(T.domain(k, m));
+                end
             else
                 T = refineQuad(T,m);
             end
-                
 
         end
         
@@ -632,9 +675,9 @@ classdef ultraSEMDomain
         %   MERGEIDX = DEFAULTIDX(N) is equivalent.
 
             % Parse input:
-            if ( isa(dom, 'ultraSEMDomain') )
-                dom = dom.domain;
-            end
+%             if ( isa(dom, 'ultraSEMDomain') )
+%                 dom = dom.domain;
+%             end
             if ( isa(dom, 'scalar') )
                 np = dom;             % Number of patches.
             else

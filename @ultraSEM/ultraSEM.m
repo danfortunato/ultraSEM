@@ -157,6 +157,15 @@ classdef ultraSEM < handle
         %   If S has not yet been initialized, then an error is thrown.
         %
         % See also INITIALIZE, SOLVE.
+        
+            if ( isa(S.patches, 'ultraSEM') )
+                % Recurse down and build lower level patches
+                for k = 1:numel(S.patches)
+                    build(S.patches(k));
+                end
+                % Concatenate (since S already contains domain info.)
+                S.patches = vertcat(S.patches.patches);
+            end
 
             if ( isempty(S.patches) || isempty(S.patches{1}.S) )
                 error('ULTRASEM:ULTRASEM:build:notInitialized', ...
@@ -186,8 +195,25 @@ classdef ultraSEM < handle
         % See also BUILD, SOLVE.
 
             % Initialize all leaf patches:
-            S.patches = ultraSEMLeaf.initialize(S.domain, varargin{:});
-
+            
+            D = S.domain;
+            if ( ~isnumeric(D.domain) && isa(D.domain, 'ultraSEMDomain') && numel(D.domain) > 1)
+                nD = numel(D.domain);
+                S1 = ultraSEM;
+                S1(nD,1) = ultraSEM;
+                for k = 1:nD
+                    S1(k).domain = D.domain(k);
+                    initialize(S1(k), varargin{:});
+                end
+                if ( numel(S1) == 1 )
+                    S = S1;
+                else
+                    S.patches = S1;
+                end
+            else
+                S.patches = ultraSEMLeaf.initialize(D, varargin{:});
+            end
+            
         end
 
         function h = merge(f, g)
