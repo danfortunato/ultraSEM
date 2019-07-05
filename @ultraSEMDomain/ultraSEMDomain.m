@@ -149,6 +149,11 @@ classdef ultraSEMDomain
         %MERGE   Merge two or more ultraSEMDomains.
         
             F = varargin{1};
+            
+            if ( nargin == 1 )
+                H = F;
+                return
+            end
             G = varargin{2};
             
             % Merge multiple pieces:

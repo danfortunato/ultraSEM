@@ -330,6 +330,39 @@ classdef ultraSEMSol
             end
 
         end
+        
+        function varargout = subsref(u, index)
+            
+            idx = index(1).subs;
+            switch index(1).type
+
+            %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEVAL / COMPOSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                case '()'
+
+                    % Where to evaluate:
+                    x = idx{1}; 
+                    y = idx{2}; 
+
+                    out = feval(u, x, y);
+
+            %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                case '.'
+
+                    % Call GET() for .PROP access.
+                    out = u.(idx);
+
+                otherwise
+
+                    error('CHEBFUN:CHEBFUN:subsref:unexpectedType',...
+                        ['??? Unexpected index.type of ', index(1).type]);
+            end
+
+            % Convert to a cell:
+            varargout = {out};
+
+        end
+
+
 
 
         function varargout = surf(sol, varargin)
