@@ -434,7 +434,6 @@ classdef ultraSEMDomain
             if ( isempty(T.domain) )
                 return
             elseif ( numel(T) > 1 )
-                keyboard
                 for k = 1:numel(T)
                     T(k) = refine(T(k), m);
                 end
@@ -680,9 +679,6 @@ classdef ultraSEMDomain
         %   MERGEIDX = DEFAULTIDX(N) is equivalent.
 
             % Parse input:
-%             if ( isa(dom, 'ultraSEMDomain') )
-%                 dom = dom.domain;
-%             end
             if ( isa(dom, 'scalar') )
                 np = dom;             % Number of patches.
             else

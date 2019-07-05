@@ -98,6 +98,7 @@ classdef ultraSEMParent < ultraSEMPatch
             % Concatenate for output:
             u = [u1 ; u2]; 
             
+            % Cast rectangular domains to Quads.
             % TODO: This is annoying. It will be better when we don't cheat and
             % do rectangular domains properly.
             if ( isnumeric(d1) && ~isnumeric(d2) )

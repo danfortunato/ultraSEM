@@ -197,19 +197,14 @@ classdef ultraSEM < handle
             % Initialize all leaf patches:
             
             D = S.domain;
-            if ( ~isnumeric(D.domain) && isa(D.domain, 'ultraSEMDomain') && numel(D.domain) > 1)
-                nD = numel(D.domain);
-                S1 = ultraSEM;
-                S1(nD,1) = ultraSEM;
-                for k = 1:nD
-                    S1(k).domain = D.domain(k);
-                    initialize(S1(k), varargin{:});
+            numD = size(D.domain, 1);
+            if ( isa(D.domain, 'ultraSEMDomain') && numD > 1)
+                S_sub(numD,1) = ultraSEM;
+                for k = 1:numD
+                    S_sub(k).domain = D.domain(k);
+                    initialize(S_sub(k), varargin{:});
                 end
-                if ( numel(S1) == 1 )
-                    S = S1;
-                else
-                    S.patches = S1;
-                end
+                S.patches = S_sub;
             else
                 S.patches = ultraSEMLeaf.initialize(D, varargin{:});
             end
