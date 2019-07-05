@@ -17,16 +17,16 @@ function [new_PDO, rhs] = transformPDO( T, PDO, rhs )
 % DEVELOPER NOTE: Manipulating function handles is expensive, so we use strings.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dsdx  = 'T.dinvT1{1}( T.T1(s,t), T.T2(s,t) )';
-dsdy  = 'T.dinvT1{2}( T.T1(s,t), T.T2(s,t) )';
-dtdx  = 'T.dinvT2{1}( T.T1(s,t), T.T2(s,t) )';
-dtdy  = 'T.dinvT2{2}( T.T1(s,t), T.T2(s,t) )';
-dsdxx = 'T.d2invT1{1}( T.T1(s,t), T.T2(s,t) )';
-dsdxy = 'T.d2invT1{2}( T.T1(s,t), T.T2(s,t) )';
-dsdyy = 'T.d2invT1{3}( T.T1(s,t), T.T2(s,t) )';
-dtdxx = 'T.d2invT2{1}( T.T1(s,t), T.T2(s,t) )';
-dtdxy = 'T.d2invT2{2}( T.T1(s,t), T.T2(s,t) )';
-dtdyy = 'T.d2invT2{3}( T.T1(s,t), T.T2(s,t) )';
+dsdx  = 'T.dinvT11( T.T1(s,t), T.T2(s,t) )';
+dsdy  = 'T.dinvT12( T.T1(s,t), T.T2(s,t) )';
+dtdx  = 'T.dinvT21( T.T1(s,t), T.T2(s,t) )';
+dtdy  = 'T.dinvT22( T.T1(s,t), T.T2(s,t) )';
+dsdxx = 'T.d2invT11( T.T1(s,t), T.T2(s,t) )';
+dsdxy = 'T.d2invT12( T.T1(s,t), T.T2(s,t) )';
+dsdyy = 'T.d2invT13( T.T1(s,t), T.T2(s,t) )';
+dtdxx = 'T.d2invT21( T.T1(s,t), T.T2(s,t) )';
+dtdxy = 'T.d2invT22( T.T1(s,t), T.T2(s,t) )';
+dtdyy = 'T.d2invT23( T.T1(s,t), T.T2(s,t) )';
 
 dxx = PDO.dxx;
 dxy = PDO.dxy;

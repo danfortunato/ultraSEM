@@ -8,13 +8,14 @@ classdef ultraSEMMapping < handle
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties ( Access = public )
 
-        T1             % square->domain map 1st coordinate
-        T2             % square->domain map 2nd coordinate
-        invT1          % domain->square map 1st coordinate
-        invT2          % domain->square map 2nd coordinate
-        dinvT1         % 1st derivatives of T1^{-1}
-        dinvT2         % 1st derivatives of T2^{-1}
-        d2invT1        % 2nd derivatives of T1^{-1}
+        v
+%         T1             % square->domain map 1st coordinate
+%         T2             % square->domain map 2nd coordinate
+%         invT1          % domain->square map 1st coordinate
+%         invT2          % domain->square map 2nd coordinate
+%         dinvT1         % 1st derivatives of T1^{-1}
+%         dinvT2         % 1st derivatives of T2^{-1}
+%         d2invT1        % 2nd derivatives of T1^{-1}
         d2invT2        % 2nd derivatives of T2^{-1}
 
     end
@@ -73,8 +74,8 @@ classdef ultraSEMMapping < handle
 
             for k = 1:numel(T)
                 % Plot domain:
-                v = vertices(T(k));
-                h(k,1) = fill(v(1,[1:end, 1]), v(2,[1:end, 1]), col, ...
+                vertices = T(k).v;
+                h(k,1) = fill(vertices([1:end, 1],1), vertices([1:end, 1],2), col, ...
                     'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
                 % Add text to center of patch:
 
@@ -123,10 +124,10 @@ classdef ultraSEMMapping < handle
             Ds_u = ubc * Ds; Dt_u = ubc * Dt;
 
             % Derivatives of (s,t) with respect to (x,y)
-            dsdx = @(x,y) T.dinvT1{1}(x,y);
-            dsdy = @(x,y) T.dinvT1{2}(x,y);
-            dtdx = @(x,y) T.dinvT2{1}(x,y);
-            dtdy = @(x,y) T.dinvT2{2}(x,y);
+            dsdx = @(x,y) T.dinvT11(x,y);
+            dsdy = @(x,y) T.dinvT12(x,y);
+            dtdx = @(x,y) T.dinvT21(x,y);
+            dtdy = @(x,y) T.dinvT22(x,y);
 
             % Boundary points on the four sides
             xxl = xy{1}(:,1); yyl = xy{1}(:,2);
@@ -172,13 +173,8 @@ classdef ultraSEMMapping < handle
             Y = T.T2(x, y);
         end
         
-        function v = vertices(M)
-%             xRef = M.domain([1 2 2 1]);
-%             yRef = M.domain([3 3 4 4]);
-            xRef = [-1 1 1 -1]; yRef = [-1 -1 1 1];
-            x = M.T1(xRef, yRef);
-            y = M.T2(xRef, yRef);
-            v = [x ; y];
+        function out = vertices(T)
+            out = T.v;
         end
 
     end
