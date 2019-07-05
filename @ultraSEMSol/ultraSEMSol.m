@@ -184,12 +184,15 @@ classdef ultraSEMSol
 
                 map = sol.domain(k,:);
                 % Convert to single to avoid mapping issues
-                x = single(map.invT1(x0, y0));
-                y = single(map.invT2(x0, y0));
+                x = map.invT1(x0, y0);
+                y = map.invT2(x0, y0);
                 dom = [-1 1 -1 1];
 
-                idx = ( isreal(x) & isreal(y) & x >= dom(1) & x <= dom(2) & ...
-                       y >= dom(3) & y <= dom(4) );
+                xs = single(x);
+                ys = single(y);
+                
+                idx = ( isreal(xs) & isreal(ys) & xs >= dom(1) & xs <= dom(2) & ...
+                       ys >= dom(3) & ys <= dom(4) );
 
                 if ( any(idx) )
                     u(idx) = util.clenshaw2d(sol.u{k}, x(idx), y(idx));
