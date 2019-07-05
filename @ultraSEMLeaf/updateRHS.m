@@ -75,10 +75,10 @@ if ( ~isnumeric(dom) && ~isa(dom, 'rectangle') )
 else
     % Construct normal derivatives conditions along the four edges:
     I = speye(n);
-    lbc_d = kron( (-1).^(0:n-1).*(0:n-1).^2, I );
-    rbc_d = kron( ones(1,n).*(0:n-1).^2, I );
-    dbc_d = kron( I, (-1).^(0:n-1).*(0:n-1).^2 );
-    ubc_d = kron( I, ones(1,n).*(0:n-1).^2 );
+    lbc_d = sclx*kron( (-1).^(0:n-1).*(0:n-1).^2, I );
+    rbc_d = sclx*kron( ones(1,n).*(0:n-1).^2, I );
+    dbc_d = scly*kron( I, (-1).^(0:n-1).*(0:n-1).^2 );
+    ubc_d = scly*kron( I, ones(1,n).*(0:n-1).^2 );
     normal_d = [ lbc_d ; rbc_d ; dbc_d ; ubc_d ];
 end
 

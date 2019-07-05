@@ -99,17 +99,19 @@ P = cell(numPatches, 1);
 % Check if we can build one solution operator for all patches:
 if ( constantOp )
 
-    % Solution operator:
-    [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
-
-    % Dirichlet-to-Neumann map:
-    D2N = bcrows_d * S;
-
     % Scaling (for all patches):
     domx = dom(1,1:2);
     domy = dom(1,3:4);
     sclx = 2/diff(domx);
     scly = 2/diff(domy);
+    
+    % Solution operator:
+    [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
+
+    % Dirichlet-to-Neumann map:
+    bcrows_d(1:2*n,:) = sclx*bcrows_d(1:2*n,:);
+    bcrows_d(2*n+1:end,:) = scly*bcrows_d(2*n+1:end,:);
+    D2N = bcrows_d * S;
 
     % Loop over each patch:
     for k = 1:numPatches
@@ -218,6 +220,8 @@ else
             normal_d = transformNormalD(domk, xy, n);
         else
             normal_d = bcrows_d;
+            normal_d(1:2*n,:) = scly*normal_d(1:2*n,:);
+            normal_d(2*n+1:end,:) = scly*normal_d(2*n+1:end,:);
         end
 
         % Dirichlet-to-Neumann map:
