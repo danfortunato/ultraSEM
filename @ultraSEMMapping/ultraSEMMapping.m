@@ -1,4 +1,4 @@
-classdef ultraSEMMapping < handle
+classdef ultraSEMMapping
 %ULTRASEMMAPPING  Abstract mapping object from ULTRASEM system.
 
     %#ok<*PROP>
@@ -14,7 +14,20 @@ classdef ultraSEMMapping < handle
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods ( Access = public, Static = false, Abstract = true )
-
+        out = T1(T, x, y);
+        out = T2(T, x, y);
+        out = invT1(T, x, y);
+        out = invT2(T, x, y);
+        out = dinvT11(T, x, y);
+        out = dinvT12(T, x, y);
+        out = dinvT21(T, x, y);
+        out = dinvT22(T, x, y);
+        out = d2invT11(T, x, y); 
+        out = d2invT12(T, x, y); 
+        out = d2invT13(T, x, y);
+        out = d2invT21(T, x, y); 
+        out = d2invT22(T, x, y); 
+        out = d2invT23(T, x, y); 
     end
 
     methods ( Access = public, Static = false, Sealed )
@@ -48,13 +61,11 @@ classdef ultraSEMMapping < handle
                 col = varargin{1};
                 varargin(1) = [];
             else
-%                 col = 'm';
                 col = rand(1, 3);
             end
 
             plotPts = false;
             n = 21;
-
             holdState = ishold();
 
             if ( nargin > 1 && ...
@@ -167,16 +178,6 @@ classdef ultraSEMMapping < handle
             out = T.v;
         end
 
-    end
-
-    methods (Static, Sealed, Access = protected)
-        function cobj = convertObject(~, v)
-            n = size(v, 1);
-            cobj(n,1) = rectangle();
-            for k = 1:n
-                cobj(k,1) = rectangle(v(k,:));
-            end
-        end
     end
 
 end
