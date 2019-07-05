@@ -7,17 +7,7 @@ classdef ultraSEMMapping < handle
     %% CLASS PROPERTIES:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties ( Access = public )
-
         v
-%         T1             % square->domain map 1st coordinate
-%         T2             % square->domain map 2nd coordinate
-%         invT1          % domain->square map 1st coordinate
-%         invT2          % domain->square map 2nd coordinate
-%         dinvT1         % 1st derivatives of T1^{-1}
-%         dinvT2         % 1st derivatives of T2^{-1}
-%         d2invT1        % 2nd derivatives of T1^{-1}
-        d2invT2        % 2nd derivatives of T2^{-1}
-
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
