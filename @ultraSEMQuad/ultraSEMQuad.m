@@ -40,7 +40,6 @@ classdef ultraSEMQuad < ultraSEMMapping
             c = [xmid ; ymid]; 
         end
         
-
         function Q = refine(Q)
             v = vertices(Q);
             c = centroid(Q).';
