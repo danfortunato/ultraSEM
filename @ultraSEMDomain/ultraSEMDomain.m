@@ -170,6 +170,11 @@ classdef ultraSEMDomain
         end
         
         function H = flatMerge(F, G, varargin)
+
+            if ( nargin == 1 )
+                H = F;
+                return
+            end
             
             % Merge multiple pieces:
             if ( nargin > 2 )
@@ -469,8 +474,8 @@ classdef ultraSEMDomain
                     midPt  = [ mean(d(1:2)), mean(d(3:4)) ];
                     dom{k} = [ d(1), midPt(1), d(3), midPt(2) ;
                         midPt(1), d(2), d(3), midPt(2) ;
-                        d(1), midPt(1), midPt(2), d(4) ;
-                        midPt(1), d(2), midPt(2), d(4) ];
+                        midPt(1), d(2), midPt(2), d(4) ;
+                        d(1), midPt(1), midPt(2), d(4)];
                 end
                 T.domain = cell2mat(dom);                  % Revert to a matrix.
                 hMerge = reshape(1:4*nDom, 2, 2*nDom).';   % New horizontal merge.

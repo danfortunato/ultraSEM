@@ -184,12 +184,15 @@ classdef ultraSEMSol
 
                 map = sol.domain(k,:);
                 % Convert to single to avoid mapping issues
-                x = single(map.invT1(x0, y0));
-                y = single(map.invT2(x0, y0));
+                x = map.invT1(x0, y0);
+                y = map.invT2(x0, y0);
                 dom = [-1 1 -1 1];
 
-                idx = ( isreal(x) & isreal(y) & x >= dom(1) & x <= dom(2) & ...
-                       y >= dom(3) & y <= dom(4) );
+                xs = single(x);
+                ys = single(y);
+                
+                idx = ( isreal(xs) & isreal(ys) & xs >= dom(1) & xs <= dom(2) & ...
+                       ys >= dom(3) & ys <= dom(4) );
 
                 if ( any(idx) )
                     u(idx) = util.clenshaw2d(sol.u{k}, x(idx), y(idx));
@@ -330,6 +333,39 @@ classdef ultraSEMSol
             end
 
         end
+        
+        function varargout = subsref(u, index)
+            
+            idx = index(1).subs;
+            switch index(1).type
+
+            %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEVAL / COMPOSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                case '()'
+
+                    % Where to evaluate:
+                    x = idx{1}; 
+                    y = idx{2}; 
+
+                    out = feval(u, x, y);
+
+            %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GET %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                case '.'
+
+                    % Call GET() for .PROP access.
+                    out = u.(idx);
+
+                otherwise
+
+                    error('CHEBFUN:CHEBFUN:subsref:unexpectedType',...
+                        ['??? Unexpected index.type of ', index(1).type]);
+            end
+
+            % Convert to a cell:
+            varargout = {out};
+
+        end
+
+
 
 
         function varargout = surf(sol, varargin)
