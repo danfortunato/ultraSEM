@@ -225,7 +225,8 @@ classdef ultraSEM < handle
         % See also INITIALIZE, BUILD.
 
             % Merge the domains:
-            h = ultraSEM(merge(f.domain, g.domain));
+            h = ultraSEM();
+            h.domain = merge(f.domain, g.domain);
 
             % Merge the patches:
             if ( numel(f.patches) == 1 && numel(g.patches) == 1)
