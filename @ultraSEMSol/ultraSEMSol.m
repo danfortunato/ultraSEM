@@ -203,18 +203,19 @@ classdef ultraSEMSol
             u = reshape(u, sx);
 
         end
-        
+
         function [x, y] = getGrid(sol, kk)
-           
+
             d = sol.domain;
             u = sol.u;
-            
+
             x = cell(size(u));
             y = cell(size(u));
-            
+
             if ( nargin == 1 )
                 kk = 1:size(d, 1);
             end
+
             for k = kk
                 nk = size(u{k}, 1);
                 if ( isnumeric(d(k,:)) )
@@ -224,12 +225,12 @@ classdef ultraSEMSol
                     [x{k,1}, y{k,1}] = transformGrid(d(k,:), xk, yk);
                 end
             end
-            
-            if ( nargin > 1 || numel(kk) == 1 )
+
+            if ( nargin > 1 && numel(kk) == 1 )
                 x = x{1};
                 y = y{1};
             end
-            
+
         end
 
         function out = length(sol)
@@ -364,9 +365,6 @@ classdef ultraSEMSol
             varargout = {out};
 
         end
-
-
-
 
         function varargout = surf(sol, varargin)
 
