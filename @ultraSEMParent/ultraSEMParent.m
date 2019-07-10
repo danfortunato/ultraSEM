@@ -116,6 +116,8 @@ classdef ultraSEMParent < ultraSEMPatch
                 end
                 d2 = q2;
             end
+            d1
+            d2
             d = [d1 ; d2];
 
             if ( nargout == 1 )

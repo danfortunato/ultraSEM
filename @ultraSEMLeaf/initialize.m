@@ -47,6 +47,7 @@ if ( isnumeric(dom) )
     end
 end
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%% DEFINE CORNER CONVENTIONS %%%%%%%%%%%%%%%%%%%%%%%%%
 numIntDOF = (n-2)^2;
@@ -170,12 +171,17 @@ else
     for k = 1:numPatches
 
         % Determine if this is a mapped domain:
-        mapped = ~isnumeric(dom(k,:)) & ~isa(dom(k,:), 'rectangle');
+        mapped = ~isnumeric(dom(k,:)) & ~isRect(dom(k,:));
 
         % Get the current domain:
         domk = dom(k,:);
-        rect = dom(k,:);
-        if ( mapped ), rect = [-1 1 -1 1]; end
+        if ( mapped )
+            rect = [-1 1 -1 1]; 
+        elseif ( isRect(domk) )
+            rect = domk.v;
+        else
+            rect = dom(k,:);
+        end
         % Define the boundary nodes for this patch:
         domx = rect(1:2);
         domy = rect(3:4);

@@ -40,16 +40,37 @@ classdef ultraSEMQuad < ultraSEMMapping
             c = [xmid ; ymid]; 
         end
         
-        function Q = refine(Q)
+        function out = isRect(M)
+            out = false;
+        end
+        
+        function Q = refine(Q, m)
+            % TODO: THis should be moved to the quad class.
+
+            if ( nargin == 1 ), m = 1; end
+            
+            for j = 1:m
+                nQ = numel(Q);
+                Q2 = cell(nQ, 1);
+                for k = 1:nQ
+                    Q2{k} = refine1(Q(k));
+                end
+                Q = vertcat(Q2{:});
+            end
+            
+        end
+        
+        
+        function out = refine1(Q)
             v = vertices(Q);
             c = centroid(Q).';
             vnew = (v([1 2 3 4],:) + v([2 3 4 1],:))/2;
             
-            Q(4,1) = ultraSEMQuad();  
-            Q(1) = ultraSEMQuad([v(1,:) ; vnew(1,:) ; c ; vnew(4,:)]);
-            Q(2) = ultraSEMQuad([v(2,:) ; vnew(2,:) ; c ; vnew(1,:)]);
-            Q(3) = ultraSEMQuad([v(3,:) ; vnew(3,:) ; c ; vnew(2,:)]);
-            Q(4) = ultraSEMQuad([v(4,:) ; vnew(4,:) ; c ; vnew(3,:)]);
+            out(4,1) = ultraSEMQuad();  
+            out(1) = ultraSEMQuad([v(1,:) ; vnew(1,:) ; c ; vnew(4,:)]);
+            out(2) = ultraSEMQuad([v(2,:) ; vnew(2,:) ; c ; vnew(1,:)]);
+            out(3) = ultraSEMQuad([v(3,:) ; vnew(3,:) ; c ; vnew(2,:)]);
+            out(4) = ultraSEMQuad([v(4,:) ; vnew(4,:) ; c ; vnew(3,:)]);
         end
 
         function Q = refineCorner(Q, k)

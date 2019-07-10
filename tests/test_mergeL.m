@@ -1,4 +1,4 @@
-function pass = test_mergeL()
+% function pass = test_mergeL()
 
 tol = 1e-10;
 
@@ -10,11 +10,11 @@ D = l & s;
 op = ultraSEM(D, {1, 0, 1}, -1, 21);
 sol = op\0;
 
-S = ultraSEM.rectangle([-1 1 -1 1], 2, 2);
+S = ultraSEM.rectangle([-1 1 -1 1], 2);
 op = ultraSEM(S, {1, 0, 1}, -1, 21);
 sol2 = op\0;
 
 err = normest(sol - sol2);
 pass(1) = err < tol;
 
-end
+% end

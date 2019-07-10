@@ -374,6 +374,10 @@ classdef ultraSEMSol
 
             vals = coeffs2vals(sol.u);
             [x,y] = getGrid(sol);
+            if ( ~iscell(x) )
+                x = {x};
+                y = {y};
+            end
             
             for k = 1:length(sol)
                 u = vals{k};

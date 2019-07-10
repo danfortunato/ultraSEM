@@ -14,20 +14,20 @@ classdef ultraSEMMapping
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods ( Access = public, Static = false, Abstract = true )
-        out = T1(T, x, y);
-        out = T2(T, x, y);
-        out = invT1(T, x, y);
-        out = invT2(T, x, y);
-        out = dinvT11(T, x, y);
-        out = dinvT12(T, x, y);
-        out = dinvT21(T, x, y);
-        out = dinvT22(T, x, y);
-        out = d2invT11(T, x, y); 
-        out = d2invT12(T, x, y); 
-        out = d2invT13(T, x, y);
-        out = d2invT21(T, x, y); 
-        out = d2invT22(T, x, y); 
-        out = d2invT23(T, x, y); 
+%         out = T1(T, x, y);
+%         out = T2(T, x, y);
+%         out = invT1(T, x, y);
+%         out = invT2(T, x, y);
+%         out = dinvT11(T, x, y);
+%         out = dinvT12(T, x, y);
+%         out = dinvT21(T, x, y);
+%         out = dinvT22(T, x, y);
+%         out = d2invT11(T, x, y); 
+%         out = d2invT12(T, x, y); 
+%         out = d2invT13(T, x, y);
+%         out = d2invT21(T, x, y); 
+%         out = d2invT22(T, x, y); 
+%         out = d2invT23(T, x, y); 
     end
 
     methods ( Access = public, Static = false, Sealed )
