@@ -450,7 +450,7 @@ classdef ultraSEMDomain
                 T = refineRectangle(T, m);
             elseif ( isa(T.domain, 'ultraSEMDomain') )
                 for k = 1:numel(T.domain)
-                    T.domain(k) = refine(T.domain(k, m));
+                    T.domain(k) = refine(T.domain(k), m);
                 end
             else
                 T.domain = refine(T.domain, m);

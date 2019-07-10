@@ -167,10 +167,10 @@ classdef ultraSEM < handle
                 S.patches = vertcat(S.patches.patches);
             end
 
-            if ( isempty(S.patches) || isempty(S.patches{1}.S) )
-                error('ULTRASEM:ULTRASEM:build:notInitialized', ...
-                    '%f has not yet been initialized.', inputname(1))
-            end
+%             if ( isempty(S.patches) || isempty(S.patches{1}.S) )
+%                 error('ULTRASEM:ULTRASEM:build:notInitialized', ...
+%                     '%f has not yet been initialized.', inputname(1))
+%             end
 
             % Build the patches:
             S.patches = build(S.domain, S.patches);

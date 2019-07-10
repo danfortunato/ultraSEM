@@ -16,8 +16,8 @@ function T = trimesh(p, t)
             'Invalid triangular mesh specification.');
     end
 
-    T = [];
-    for k = 1:size(t,1)
+    T = ultraSEM.triangle(p(t(1,:),:));
+    for k = 2:size(t,1)
         T = T & ultraSEM.triangle(p(t(k,:),:));
     end
 

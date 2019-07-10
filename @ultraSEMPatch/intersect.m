@@ -55,6 +55,7 @@ bxy = single(bxy + shift);
 if ( ~isnumeric(a.domain) || ~isnumeric(b.domain) )
 
     [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
+    newDom = ultraSEMDomain([a.domain ; b.domain]);
 
 elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
     % Merge two rectangles.
@@ -87,12 +88,13 @@ elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
     else
         % Resort to calling intersect:
         [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
-
+        newDom = ultraSEMDomain([a.domain ; b.domain]);
     end
 
 else
     % Merge two general domains.
     [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
+    newDom = ultraSEMDomain([a.domain ; b.domain]);
 end
 
 % We forgot about the "corner" indicies. Add them back.
