@@ -338,7 +338,7 @@ function CC = discretizeODOs(pdo, dom, n)
                     y = util.chebpts(n, dom(3:4));
                     [xx,yy] = meshgrid(x,y);
                     [C, D, R] = svd(coeff(xx,yy));
-                    r = rank(D, 1e3*eps);
+                    r = rank(D);
                     C = util.vals2coeffs(C(:,1:r));
                     D = D(1:r,1:r);
                     R = util.vals2coeffs(R(:,1:r));
@@ -402,7 +402,7 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
     for ii = 1:size(B, 1) % For each boundary condition, zero a column.
         C1ii = C1(:,ii); % Constant required to zero entry out.
         if ( ~any( abs(C1ii) > tol ) ), continue, end
-        C1 = C1 - C1ii*B(ii,:);
+        C1 = C1 - C1ii*sparse(B(ii,:));
         Gii = permute(G(ii,:,:), [2 3 1]);
         C2Gii = C2*Gii;
         R = repelem(full(C1ii), n, 1) .* repmat(C2Gii, n, 1);
@@ -410,6 +410,8 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
         R = permute(R, perm);
         E = E - R;
     end
+
+    C1(abs(C1) < tol) = 0;
 
 end
 
