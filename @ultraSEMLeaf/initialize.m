@@ -338,7 +338,7 @@ function CC = discretizeODOs(pdo, dom, n)
                     y = util.chebpts(n, dom(3:4));
                     [xx,yy] = meshgrid(x,y);
                     [C, D, R] = svd(coeff(xx,yy));
-                    r = rank(D);
+                    r = rank(D, 1e3*eps);
                     C = util.vals2coeffs(C(:,1:r));
                     D = D(1:r,1:r);
                     R = util.vals2coeffs(R(:,1:r));
@@ -392,21 +392,23 @@ function [C1, E] = zeroDOF(C1, C2, E, B, G, trans)
         trans = false;
     end
 
+    tol = 100*eps;
+    n = size(C1,1);
+    perm = [2 1 3];
+    if ( trans )
+        perm = [1 2 3];
+    end
+
     for ii = 1:size(B, 1) % For each boundary condition, zero a column.
-        C1ii = full(C1(:,ii)); % Constant required to zero entry out.
+        C1ii = C1(:,ii); % Constant required to zero entry out.
+        if ( ~any( abs(C1ii) > tol ) ), continue, end
         C1 = C1 - C1ii*B(ii,:);
         Gii = permute(G(ii,:,:), [2 3 1]);
         C2Gii = C2*Gii;
-        tol = 10*eps;
-        if ( ~any( abs(C1ii) > tol ) ), continue, end
-        for kk = 1:size(C1, 1)
-            if ( abs(C1ii(kk)) < tol ), continue, end
-            if ( trans )
-                E(:,kk,:) = E(:,kk,:) - C1ii(kk)*permute(C2Gii,[1,3,2]);
-            else
-                E(kk,:,:) = E(kk,:,:) - C1ii(kk)*permute(C2Gii,[3 1 2]);
-            end
-        end
+        R = repelem(full(C1ii), n, 1) .* repmat(C2Gii, n, 1);
+        R = reshape(R, n, n, 4*n);
+        R = permute(R, perm);
+        E = E - R;
     end
 
 end
