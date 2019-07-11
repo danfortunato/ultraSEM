@@ -38,18 +38,7 @@ end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for a constant-coefficient PDO on a uniform domain:
-<<<<<<< Updated upstream
-constantOp = false;
-if ( isnumeric(dom) )
-    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
-    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
-                       ~any(diff(diff(dom(:,3:4),1,2))) )
-        constantOp = true;
-    end
-end
-=======
 constantOp = isConstantOp(op, dom);
->>>>>>> Stashed changes
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%% DEFINE CORNER CONVENTIONS %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -180,14 +169,6 @@ else
     for k = 1:numPatches
 
         % Determine if this is a mapped domain:
-<<<<<<< Updated upstream
-        mapped = ~isnumeric(dom(k,:)) & ~isa(dom(k,:), 'rectangle');
-
-        % Get the current domain:
-        domk = dom(k,:);
-        rect = dom(k,:);
-        if ( mapped ), rect = [-1 1 -1 1]; end
-=======
         mapped = ~(isnumeric(dom(k,:)) || isRect(dom(k,:)));
 
         % Get the current domain:
@@ -199,7 +180,7 @@ else
         else
             rect = quad2rect(domk.v);
         end
->>>>>>> Stashed changes
+
         % Define the boundary nodes for this patch:
         domx = rect(1:2);
         domy = rect(3:4);

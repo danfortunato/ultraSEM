@@ -464,12 +464,8 @@ classdef ultraSEMDomain
                     T.domain(k) = refine(T.domain(k), m);
                 end
             else
-<<<<<<< Updated upstream
-                T = refineQuad(T,m);
-=======
                 [T.domain, newIdx] = refine(T.domain, m);
                 T.mergeIdx = [newIdx, T.mergeIdx];
->>>>>>> Stashed changes
             end
 
         end
@@ -493,24 +489,7 @@ classdef ultraSEMDomain
             end
         end
             
-        
-        function T2 = refineQuad(T, m)
-            % TODO: THis should be moved to the quad class.
-            if ( m > 1 )
-                T2 = refine(refine(T,1), m-1);
-                return
-            end
-            
-            nDom = size(T.domain, 1);
-            T2 = cell(nDom, 1);
-            for k = 1:nDom
-                Qk2 = refine(T.domain(k));
-                T2{k} = ultraSEMDomain(Qk2, {[1 2 ; 3 4], [1 2]});
-            end
-            T2 = merge(T2{:});
-        end
- 
-        
+       
 
         function T = refinex(T, m)
         %REFINEX   Refine a domain in the x-direction.
