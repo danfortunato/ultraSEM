@@ -120,6 +120,30 @@ classdef ultraSEMDomain
         % See also TRANSPOSE().
             T = transpose(T); % This method is simply a wrapper for TRANSPOSE().
         end
+        
+        function T = flatten(T)
+            % Try to flatten merges (for efficiency)
+            
+            if ( numel(T) > 1 )
+                for k = 1:numel(T)
+                    T(k) = flatten(T(k));
+                end
+                flattenthis_TODO
+                return
+            end
+            for k = 1:numel(T.domain)
+                if ( isa(T.domain(k), 'ultraSEMDomain') && ...
+                        isa(T.domain(k).domain, 'ultraSEMDomain') )
+                    T.domain(k) = flatten(T.domain(k));
+                end
+            end
+            
+            if ( isRect(T.domain(1).domain(1)) == isRect(T.domain(2).domain(1)) )
+                T = oldMerge(T.domain(1), T.domain(2));
+            end        
+            
+            
+        end
 
 %         function T = fliplr(T)
 %         %FLIPLR   Flip an ultraSEMDomain horizontally about its center.
@@ -156,6 +180,8 @@ classdef ultraSEMDomain
             else
                 H = ultraSEMDomain(newDomain);
             end
+            
+            H = flatten(H);
 
         end
         

@@ -43,7 +43,8 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
         %   upwards by imag(C). C must be a scalar.
         %
         % See also MINUS().
-
+            
+            if ( isnumeric(T) ), [T, c] = deal(c, T); end
             if ( ~isnumeric(c) )
                 error('ULTRASEM:ULTRASEMMAPPING:plus:unknown', ...
                     'Cannot multiply an ultraSEMMapping by an object of type %s.', ...
@@ -55,7 +56,7 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
             % Shift the domain:
             for k = 1:numel(T)
-                T(k).v(:,1) = c*T(k).v(:,1);
+                T(k).v = c*T(k).v;
             end
 
         end
