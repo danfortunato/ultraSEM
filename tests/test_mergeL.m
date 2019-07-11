@@ -1,4 +1,4 @@
-% function pass = test_mergeL()
+function pass = test_mergeL()
 
 tol = 1e-10;
 
@@ -17,4 +17,4 @@ sol2 = op\0;
 err = normest(sol - sol2);
 pass(1) = err < tol;
 
-% end
+end

@@ -44,14 +44,19 @@ classdef ultraSEMRect < ultraSEMQuad
             out = true;
         end
         
-        function T = refine(T, m)
+        function [T, mergeIdx] = refine(T, m)
+            
             if ( nargin == 1 )
                 m = 1;
+            elseif ( m == 0 )
+                mergeIdx = [];
+                return
             end
-            
+
             v = quad2rect(T.v);
-            for l = 1:m % Refine m times.
-                
+            mergeIdx = {};
+            
+            for l = 1:m % Refine m times.  
                 nDom = size(v, 1);
                 dom = mat2cell(v, ones(nDom, 1)); % Convert to cell.
                 for k = 1:nDom
@@ -63,12 +68,12 @@ classdef ultraSEMRect < ultraSEMQuad
                         d(1), midPt(1), midPt(2), d(4)];
                 end
                 v = (vertcat(dom{:}));
-                
-%                 T.domain = cell2mat(dom);                  % Revert to a matrix.
-%                 hMerge = reshape(1:4*nDom, 2, 2*nDom).';   % New horizontal merge.
-%                 vMerge = reshape(1:2*nDom, 2, nDom).';     % New vertical merge.
-%                 T.mergeIdx = [hMerge, vMerge, T.mergeIdx]; % Append to existing.
+
+                hMerge = reshape(1:4*nDom, 2, 2*nDom).';   % New horizontal merge.
+                vMerge = reshape(1:2*nDom, 2, nDom).';     % New vertical merge.
+                mergeIdx = [hMerge, vMerge, mergeIdx];     % Append to existing.
             end
+
             T = ultraSEMRect(rect2quad(v));
         end
 

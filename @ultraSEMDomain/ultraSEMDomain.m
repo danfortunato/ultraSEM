@@ -335,6 +335,17 @@ classdef ultraSEMDomain
         %   H = PLOT(T, ...) returns a figure handle of the form returned
         %   by H = FILL(...), where FILL() is the built-in MATLAB method.
 
+            if ( numel(T) > 1 ) 
+                holdState = ishold();
+                for k = 1:numel(T)
+                    plot(T(k), varargin{:}); hold on
+                end
+                if ( ~holdState )
+                    hold off
+                end
+                return
+            end
+        
             if ( ~isnumeric(T.domain) )
                 if ( isa(T.domain, 'ultraSEMDomain') )
                     holdState = ishold();
@@ -393,7 +404,7 @@ classdef ultraSEMDomain
         %   upwards by imag(C). C must be a scalar.
         %
         % See also MINUS().
-
+        
             if ( ~isa(T, 'ultraSEMDomain') )
                 % Ensure T is the ultraSEMDomain:
                 T = plus(c, T);
@@ -413,8 +424,7 @@ classdef ultraSEMDomain
             end
 
             % Shift the domain:
-            T.domain(:,1:2) = T.domain(:,1:2) + real(c);
-            T.domain(:,3:4) = T.domain(:,3:4) + imag(c);
+            T.domain = T.domain + c;
 
         end
 
@@ -429,6 +439,8 @@ classdef ultraSEMDomain
         
             if ( nargin < 2 )
                 m = 1;
+            elseif ( m == 0 ) 
+                return
             end
             
             if ( isempty(T.domain) )
@@ -453,18 +465,12 @@ classdef ultraSEMDomain
                     T.domain(k) = refine(T.domain(k), m);
                 end
             else
-                T.domain = refine(T.domain, m);
+                [T.domain, newIdx] = refine(T.domain, m);
+                T.mergeIdx = [newIdx, T.mergeIdx];
             end
 
         end
-        
-%         function T = refineCorner(T, pt)
-%             nDom = size(T.domain, 1);
-%             dom = T.domain
-%             anydom(:,1) == 
-%         end
-        
-        
+
         function T = refineRectangle(T, m)
             for l = 1:m % Refine m times.
                 nDom = size(T.domain, 1);
@@ -484,77 +490,77 @@ classdef ultraSEMDomain
             end
         end
             
-        function T = refinex(T, m)
-        %REFINEX   Refine a domain in the x-direction.
-        %   REFINEX(T) will divide each subdomain of T horizontally into
-        %   two new equally-sized pieces. The tree index information in the
-        %   result is updated to reflect the new subdomains, which are the
-        %   first to be merged.
-        
-        %   REFINEX(T, M) will refine M times.
-
-            if ( isempty(T.domain) )
-                return
-            end
-            if ( isempty(T.mergeIdx) && length(T) > 1)
-                warning('Empty tree index encountered. Building a default one.');
-                T.mergeIdx = defaultIdx(T.domain);
-            end
-            if ( nargin < 2 )
-                m = 1;
-            end
-
-            for l = 1:m % Refine m times.
-                nDom = size(T.domain, 1);
-                dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
-                for k = 1:nDom
-                    d = dom{k}; % Subdivide this square into two new pieces:
-                    midPt  = mean(d(1:2));
-                    dom{k} = [ d(1), midPt, d(3:4) ;
-                               midPt, d(2), d(3:4) ];
-                end
-                T.domain = cell2mat(dom);              % Revert to a matrix.
-                hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
-                T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
-            end
-
-        end
-
-        function T = refiney(T, m)
-        %REFINEY   Refine a domain in the y-direction.
-        %   REFINEY(T) will divide each subdomain of T vertically into two
-        %   new equally-sized pieces. The tree index information in the
-        %   result is updated to reflect the new subdomains, which are the
-        %   first to be merged.
-        %
-        %   REFINEY(T, M) will refine M times.
-
-            if ( isempty(T.domain) )
-                return
-            end
-            if ( isempty(T.mergeIdx) && length(T) > 1)
-                warning('Empty tree index encountered. Building a default one.');
-                T.mergeIdx = defaultIdx(T.domain);
-            end
-            if ( nargin < 2 )
-                m = 1;
-            end
-
-            for l = 1:m % Refine m times.
-                nDom = size(T.domain, 1);
-                dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
-                for k = 1:nDom
-                    d = dom{k}; % Subdivide this square into two new pieces:
-                    midPt  = mean(d(3:4));
-                    dom{k} = [ d(1:2), d(3), midPt ;
-                               d(1:2), midPt, d(4) ];
-                end
-                T.domain = cell2mat(dom);              % Revert to a matrix.
-                hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
-                T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
-            end
-
-        end
+%         function T = refinex(T, m)
+%         %REFINEX   Refine a domain in the x-direction.
+%         %   REFINEX(T) will divide each subdomain of T horizontally into
+%         %   two new equally-sized pieces. The tree index information in the
+%         %   result is updated to reflect the new subdomains, which are the
+%         %   first to be merged.
+%         
+%         %   REFINEX(T, M) will refine M times.
+% 
+%             if ( isempty(T.domain) )
+%                 return
+%             end
+%             if ( isempty(T.mergeIdx) && length(T) > 1)
+%                 warning('Empty tree index encountered. Building a default one.');
+%                 T.mergeIdx = defaultIdx(T.domain);
+%             end
+%             if ( nargin < 2 )
+%                 m = 1;
+%             end
+% 
+%             for l = 1:m % Refine m times.
+%                 nDom = size(T.domain, 1);
+%                 dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
+%                 for k = 1:nDom
+%                     d = dom{k}; % Subdivide this square into two new pieces:
+%                     midPt  = mean(d(1:2));
+%                     dom{k} = [ d(1), midPt, d(3:4) ;
+%                                midPt, d(2), d(3:4) ];
+%                 end
+%                 T.domain = cell2mat(dom);              % Revert to a matrix.
+%                 hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
+%                 T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
+%             end
+% 
+%         end
+% 
+%         function T = refiney(T, m)
+%         %REFINEY   Refine a domain in the y-direction.
+%         %   REFINEY(T) will divide each subdomain of T vertically into two
+%         %   new equally-sized pieces. The tree index information in the
+%         %   result is updated to reflect the new subdomains, which are the
+%         %   first to be merged.
+%         %
+%         %   REFINEY(T, M) will refine M times.
+% 
+%             if ( isempty(T.domain) )
+%                 return
+%             end
+%             if ( isempty(T.mergeIdx) && length(T) > 1)
+%                 warning('Empty tree index encountered. Building a default one.');
+%                 T.mergeIdx = defaultIdx(T.domain);
+%             end
+%             if ( nargin < 2 )
+%                 m = 1;
+%             end
+% 
+%             for l = 1:m % Refine m times.
+%                 nDom = size(T.domain, 1);
+%                 dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
+%                 for k = 1:nDom
+%                     d = dom{k}; % Subdivide this square into two new pieces:
+%                     midPt  = mean(d(3:4));
+%                     dom{k} = [ d(1:2), d(3), midPt ;
+%                                d(1:2), midPt, d(4) ];
+%                 end
+%                 T.domain = cell2mat(dom);              % Revert to a matrix.
+%                 hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
+%                 T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
+%             end
+% 
+%         end
 
         function T = removePatch(T, k)
         %REMOVEPATCH   Remove a patch (or patches) from a domain.

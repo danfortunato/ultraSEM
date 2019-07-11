@@ -25,6 +25,7 @@ classdef ultraSEMQuad < ultraSEMMapping
             end
             
             obj.v = v;
+
         end
 
     end
@@ -43,12 +44,21 @@ classdef ultraSEMQuad < ultraSEMMapping
         function out = isRect(M)
             out = false;
         end
-        
-        function Q = refine(Q, m)
-            % TODO: THis should be moved to the quad class.
+       
+    end
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% METHODS
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    methods
+        
+        function [Q, mergeIdx] = refine(Q, m)
+
+            mergeIdx = {}; 
             if ( nargin == 1 ), m = 1; end
-            
+            if ( m == 0 ), return, end
+
             for j = 1:m
                 nQ = numel(Q);
                 Q2 = cell(nQ, 1);
@@ -57,11 +67,13 @@ classdef ultraSEMQuad < ultraSEMMapping
                 end
                 Q = vertcat(Q2{:});
             end
-            
+
         end
         
         
-        function out = refine1(Q)
+
+        function [out, mergeIdx] = refine1(Q)
+
             v = vertices(Q);
             c = centroid(Q).';
             vnew = (v([1 2 3 4],:) + v([2 3 4 1],:))/2;
@@ -71,6 +83,10 @@ classdef ultraSEMQuad < ultraSEMMapping
             out(2) = ultraSEMQuad([v(2,:) ; vnew(2,:) ; c ; vnew(1,:)]);
             out(3) = ultraSEMQuad([v(3,:) ; vnew(3,:) ; c ; vnew(2,:)]);
             out(4) = ultraSEMQuad([v(4,:) ; vnew(4,:) ; c ; vnew(3,:)]);
+
+            mergeIdx = {[1 2 ; 3 4], [1 2]};
+            out = ultraSEMDomain(out, mergeIdx);
+
         end
 
         function Q = refineCorner(Q, k)

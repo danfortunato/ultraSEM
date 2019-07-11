@@ -1,6 +1,6 @@
 function pass = test_logo
 
-tol = 1e-10;
+tol = 1e-5;
 
 pdo = {{1, 0, 1}, {0, 0}, 100};
 U = ultraSEM.alphabet('u');

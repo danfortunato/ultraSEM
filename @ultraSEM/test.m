@@ -1,7 +1,7 @@
 function test()
 
 % Locate tthe test directory:
-ultraSEMDir = fileparts(which('README.md'));
+ultraSEMDir = ultraSEMroot();
 testDir = fullfile(ultraSEMDir, 'tests');
 
 % Store the current directory: (We will return here when we're done.)

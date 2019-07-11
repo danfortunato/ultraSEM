@@ -38,14 +38,7 @@ end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for a constant-coefficient PDO on a uniform domain:
-constantOp = false;
-if ( isnumeric(dom) )
-    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
-    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
-                       ~any(diff(diff(dom(:,3:4),1,2))) )
-        constantOp = true;
-    end
-end
+constantOp = isConstantOp(op, dom);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,9 +90,15 @@ end
 % Initialize
 P = cell(numPatches, 1);
 
+mydom = dom;
+if ( isa(dom, 'ultraSEMRect') )
+    %TODO: Fix this hack.
+    dom = quad2rect(dom.v);
+end
+
 % Check if we can build one solution operator for all patches:
 if ( constantOp )
-
+    
     % Scaling (for all patches):
     domx = dom(1,1:2);
     domy = dom(1,3:4);
@@ -140,7 +139,7 @@ if ( constantOp )
         end
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, Ainv);
+        P{k} = ultraSEMLeaf(mydom(k,:), S, D2N, xy, Ainv);
 
     end
 
@@ -171,17 +170,18 @@ else
     for k = 1:numPatches
 
         % Determine if this is a mapped domain:
-        mapped = ~isnumeric(dom(k,:)) & ~isRect(dom(k,:));
+        mapped = ~(isnumeric(dom(k,:)) || isRect(dom(k,:)));
 
         % Get the current domain:
         domk = dom(k,:);
         if ( mapped )
             rect = [-1 1 -1 1]; 
-        elseif ( isRect(domk) )
-            rect = domk.v;
+        elseif ( isnumeric(domk) )
+            rect = domk;
         else
-            rect = dom(k,:);
+            rect = quad2rect(domk.v);
         end
+        
         % Define the boundary nodes for this patch:
         domx = rect(1:2);
         domy = rect(3:4);
@@ -550,4 +550,20 @@ function x = schurSolve(A, b, m)
     y = c(:,1:nb) - c(:,i3)*x;
     x = [x ; y];
 
+end
+
+function constantOp = isConstantOp(op, dom)
+
+constantOp = false;
+if ( isa(dom, 'ultraSEMRect') )
+    % TODO: This breaks encapsulation. Ignore it for now.
+    dom = quad2rect(dom.v);
+end
+if ( isnumeric(dom) )
+    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
+    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
+                       ~any(diff(diff(dom(:,3:4),1,2))) )
+        constantOp = true;
+    end
+end
 end
