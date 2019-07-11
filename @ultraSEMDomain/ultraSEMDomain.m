@@ -33,7 +33,7 @@ classdef ultraSEMDomain
 
     methods
 
-        function obj = ultraSEMDomain(dom, tree)
+        function obj = ultraSEMDomain(dom, mergeIdx)
             %ULTRASEMDOMAIN   Class constructor for the @ultraSEMDomain class.
 
             % Construct empty domain:
@@ -49,12 +49,12 @@ classdef ultraSEMDomain
             % Assign the domain:
             obj.domain = dom;
 
-            % Assign the tree (if given):
+            % Assign the merge index (if given):
             if ( nargin > 1 )
-                obj.mergeIdx = tree;
+                obj.mergeIdx = mergeIdx;
             else
                 % Just make the default guess at the tree:
-                obj.mergeIdx = ultraSEMDomain.defaultIdx( dom );
+                obj.mergeIdx = ultraSEMDomain.defaultIdx(dom);
             end
 
         end
@@ -121,19 +121,19 @@ classdef ultraSEMDomain
             T = transpose(T); % This method is simply a wrapper for TRANSPOSE().
         end
 
-        function T = fliplr(T)
-        %FLIPLR   Flip an ultraSEMDomain horizontally about its center.
-            minx = min(T.domain(:,1));
-            maxx = max(T.domain(:,2));
-            T.domain(:,[1 2]) = minx + maxx - T.domain(:,[2 1]);
-        end
+%         function T = fliplr(T)
+%         %FLIPLR   Flip an ultraSEMDomain horizontally about its center.
+%             minx = min(T.domain(:,1));
+%             maxx = max(T.domain(:,2));
+%             T.domain(:,[1 2]) = minx + maxx - T.domain(:,[2 1]);
+%         end
 
-        function T = flipud(T)
-        %FLIPUD   Flip an ultraSEMDomain vertically about its center.
-            miny = min(T.domain(:,3));
-            maxy = max(T.domain(:,4));
-            T.domain(:,[3 4]) = miny + maxy - T.domain(:,[4 3]);
-        end
+%         function T = flipud(T)
+%         %FLIPUD   Flip an ultraSEMDomain vertically about its center.
+%             miny = min(T.domain(:,3));
+%             maxy = max(T.domain(:,4));
+%             T.domain(:,[3 4]) = miny + maxy - T.domain(:,[4 3]);
+%         end
 
         function [d, ia, ib] = intersect(S, T)
         %INTERSECT   Compute the intersecting patches of two ultraSEMDomains.
@@ -148,18 +148,8 @@ classdef ultraSEMDomain
         function H = merge(varargin)
         %MERGE   Merge two or more ultraSEMDomains.
         
-        % Old-style merge:
-%         H = flatMerge(varargin{:}); return
-        
-        % FlatMerge any numeric domains. (We may want to have some compatibility
-        % check (i.e., same side lengths?)
-            isnum = cellfun(@(d) isnumeric(d.domain), varargin);
-            if ( sum(isnum) > 1 )
-                tmp = varargin(isnum);
-                H = flatMerge(tmp{:});
-                varargin = {H, varargin{~isnum}};
-            end
-            
+%             H = oldMerge(varargin{:}); return % Old-style merge: 
+
             newDomain = vertcat(varargin{:});
             if ( numel(newDomain) == 1 )
                 H = newDomain;
@@ -169,7 +159,7 @@ classdef ultraSEMDomain
 
         end
         
-        function H = flatMerge(F, G, varargin)
+        function H = oldMerge(F, G, varargin)
 
             if ( nargin == 1 )
                 H = F;
@@ -248,10 +238,10 @@ classdef ultraSEMDomain
                 T = plus(c, (-T));
             elseif ( isnumeric(c) )
                 T = plus(T, (-c));
-            elseif ( isa(T,'ultraSEMDomain') && isa(c,'ultraSEMDomain') )
-                % TODO: Allow us to cut out shapes from a domain.
-                [~, iT, ~] = intersect(T, c);
-                T = removePatch(T, iT);
+%             elseif ( isa(T,'ultraSEMDomain') && isa(c,'ultraSEMDomain') )
+%                 % TODO: Allow us to cut out shapes from a domain.
+%                 [~, iT, ~] = intersect(T, c);
+%                 T = removePatch(T, iT);
             else
                 error('ULTRASEM:ULTRASEMDOMAIN:plus:unknown', ...
                     'Cannot subtract a %s from a %s.', class(c), class(T));
@@ -286,38 +276,38 @@ classdef ultraSEMDomain
 
         end
 
-        function E = not(T, pad)
-        %NOT   Take the complement of an ultraSEMDomain.
-        %   ~T forms a rectangular domain by constructing a rectangular
-        %   domain R containing T and removing T from it. The size of R
-        %   will be one patch size greater than the extremities of T.
-        %
-        %   NOT(T, P) is similar to the above, but will pad by an amount P
-        %   on each side of T. If P is a 4x1 vector then it is interpreted
-        %   as P = [P_left, P_right, P_bottom, P_top].
-
-            % Determine padding size:
-            if ( nargin == 1 )
-                pad = [1 1 1 1];
-            elseif ( isscalar(pad) )
-                pad = repmat(pad, 1, 4);
-            end
-
-            % Determine sizes:
-            dom = T.domain;
-            dx = diff(dom(1,1:2)); dy = diff(dom(1,3:4));
-            x1 = min(dom(:,1));    x2 = max(dom(:,2));
-            y1 = min(dom(:,3));    y2 = max(dom(:,4));
-
-            % Construct containing rectangle:
-            newDom = [x1-pad(1)*dx, x2+pad(2)*dx y1-pad(3)*dy y2+pad(4)*dy];
-            m = diff(newDom(1:2))/dx; n = diff(newDom(3:4))/dy;
-            R = ultraSEM.rectangle(newDom, m, n);
-
-            % Extract T from R:
-            E = R - T;
-
-        end
+%         function E = not(T, pad)
+%         %NOT   Take the complement of an ultraSEMDomain.
+%         %   ~T forms a rectangular domain by constructing a rectangular
+%         %   domain R containing T and removing T from it. The size of R
+%         %   will be one patch size greater than the extremities of T.
+%         %
+%         %   NOT(T, P) is similar to the above, but will pad by an amount P
+%         %   on each side of T. If P is a 4x1 vector then it is interpreted
+%         %   as P = [P_left, P_right, P_bottom, P_top].
+% 
+%             % Determine padding size:
+%             if ( nargin == 1 )
+%                 pad = [1 1 1 1];
+%             elseif ( isscalar(pad) )
+%                 pad = repmat(pad, 1, 4);
+%             end
+% 
+%             % Determine sizes:
+%             dom = T.domain;
+%             dx = diff(dom(1,1:2)); dy = diff(dom(1,3:4));
+%             x1 = min(dom(:,1));    x2 = max(dom(:,2));
+%             y1 = min(dom(:,3));    y2 = max(dom(:,4));
+% 
+%             % Construct containing rectangle:
+%             newDom = [x1-pad(1)*dx, x2+pad(2)*dx y1-pad(3)*dy y2+pad(4)*dy];
+%             m = diff(newDom(1:2))/dx; n = diff(newDom(3:4))/dy;
+%             R = ultraSEM.rectangle(newDom, m, n);
+% 
+%             % Extract T from R:
+%             E = R - T;
+% 
+%         end
 
         function varargout = plot(T, varargin)
         %PLOT   Plot an ultraSEMDomain.
@@ -371,7 +361,6 @@ classdef ultraSEMDomain
                 c = varargin{1};
                 varargin(1) = [];
             else
-                c = 'm';
                 c = rand(1, 3);
             end
 
@@ -443,12 +432,16 @@ classdef ultraSEMDomain
                 return
             end
             
-            if ( isempty(T.domain) )
-                return
-            elseif ( numel(T) > 1 )
+            % If multiple domains, then refine each one:    
+            if ( numel(T) > 1 )
                 for k = 1:numel(T)
                     T(k) = refine(T(k), m);
                 end
+                return
+            end
+            
+            % Trivial case:
+            if ( isempty(T.domain) )
                 return
             end
             
@@ -470,97 +463,6 @@ classdef ultraSEMDomain
             end
 
         end
-
-        function T = refineRectangle(T, m)
-            for l = 1:m % Refine m times.
-                nDom = size(T.domain, 1);
-                dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
-                for k = 1:nDom
-                    d = dom{k}; % Subdivide this square into four new pieces:
-                    midPt  = [ mean(d(1:2)), mean(d(3:4)) ];
-                    dom{k} = [ d(1), midPt(1), d(3), midPt(2) ;
-                        midPt(1), d(2), d(3), midPt(2) ;
-                        midPt(1), d(2), midPt(2), d(4) ;
-                        d(1), midPt(1), midPt(2), d(4)];
-                end
-                T.domain = cell2mat(dom);                  % Revert to a matrix.
-                hMerge = reshape(1:4*nDom, 2, 2*nDom).';   % New horizontal merge.
-                vMerge = reshape(1:2*nDom, 2, nDom).';     % New vertical merge.
-                T.mergeIdx = [hMerge, vMerge, T.mergeIdx]; % Append to existing.
-            end
-        end
-            
-%         function T = refinex(T, m)
-%         %REFINEX   Refine a domain in the x-direction.
-%         %   REFINEX(T) will divide each subdomain of T horizontally into
-%         %   two new equally-sized pieces. The tree index information in the
-%         %   result is updated to reflect the new subdomains, which are the
-%         %   first to be merged.
-%         
-%         %   REFINEX(T, M) will refine M times.
-% 
-%             if ( isempty(T.domain) )
-%                 return
-%             end
-%             if ( isempty(T.mergeIdx) && length(T) > 1)
-%                 warning('Empty tree index encountered. Building a default one.');
-%                 T.mergeIdx = defaultIdx(T.domain);
-%             end
-%             if ( nargin < 2 )
-%                 m = 1;
-%             end
-% 
-%             for l = 1:m % Refine m times.
-%                 nDom = size(T.domain, 1);
-%                 dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
-%                 for k = 1:nDom
-%                     d = dom{k}; % Subdivide this square into two new pieces:
-%                     midPt  = mean(d(1:2));
-%                     dom{k} = [ d(1), midPt, d(3:4) ;
-%                                midPt, d(2), d(3:4) ];
-%                 end
-%                 T.domain = cell2mat(dom);              % Revert to a matrix.
-%                 hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
-%                 T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
-%             end
-% 
-%         end
-% 
-%         function T = refiney(T, m)
-%         %REFINEY   Refine a domain in the y-direction.
-%         %   REFINEY(T) will divide each subdomain of T vertically into two
-%         %   new equally-sized pieces. The tree index information in the
-%         %   result is updated to reflect the new subdomains, which are the
-%         %   first to be merged.
-%         %
-%         %   REFINEY(T, M) will refine M times.
-% 
-%             if ( isempty(T.domain) )
-%                 return
-%             end
-%             if ( isempty(T.mergeIdx) && length(T) > 1)
-%                 warning('Empty tree index encountered. Building a default one.');
-%                 T.mergeIdx = defaultIdx(T.domain);
-%             end
-%             if ( nargin < 2 )
-%                 m = 1;
-%             end
-% 
-%             for l = 1:m % Refine m times.
-%                 nDom = size(T.domain, 1);
-%                 dom = mat2cell(T.domain, ones(nDom, 1)); % Convert to cell.
-%                 for k = 1:nDom
-%                     d = dom{k}; % Subdivide this square into two new pieces:
-%                     midPt  = mean(d(3:4));
-%                     dom{k} = [ d(1:2), d(3), midPt ;
-%                                d(1:2), midPt, d(4) ];
-%                 end
-%                 T.domain = cell2mat(dom);              % Revert to a matrix.
-%                 hMerge = reshape(1:2*nDom, 2, nDom).'; % New horizontal merge.
-%                 T.mergeIdx = [hMerge, T.mergeIdx];     % Append to existing.
-%             end
-% 
-%         end
 
         function T = removePatch(T, k)
         %REMOVEPATCH   Remove a patch (or patches) from a domain.
@@ -715,15 +617,4 @@ end
 %% METHODS IMPLEMENTED IN THIS FILE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function h = rect2quad(f)
-
-sf = size(f, 1);
-h(sf,1) = ultraSEMQuad();
-for k = 1:sf
-    d = f(k,:);
-    v = [d([1 2 2 1]) ; d([3 3 4 4])]';
-    h(k) = ultraSEMQuad(v);
-end
-
-end
 

@@ -15,15 +15,17 @@ classdef ultraSEMQuad < ultraSEMMapping
                 return
             end
             
-            % Ensure v is of the form [x, y], not [x ; y]:
-            if ( size(v,1) == 2 ), v = v.'; end
-
-            % Ensure vertices are oriented in an anticlockwise direction:
-            if ( ultraSEMDomain.isClockwise(v) )
-                % Switch the second and fourth indices.
-                v([2,4],:) = v([4,2],:);
+            % Construct multiple ultraSEMQuads:
+            if ( iscell(v) )
+                obj(numel(v),1) = ultraSEMQuad();
+                for k = 1:numel(v)
+                    obj(k,1) = ultraSEMQuad( v{k} );
+                end
+                return
             end
             
+%             v = ultraSEMQuad.assertIsQuad(v);
+                        
             obj.v = v;
 
         end
@@ -52,42 +54,45 @@ classdef ultraSEMQuad < ultraSEMMapping
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     methods
-        
+                
         function [Q, mergeIdx] = refine(Q, m)
-
+            
+            % Parse inputs:
             mergeIdx = {}; 
             if ( nargin == 1 ), m = 1; end
             if ( m == 0 ), return, end
 
-            for j = 1:m
-                nQ = numel(Q);
-                Q2 = cell(nQ, 1);
-                for k = 1:nQ
-                    Q2{k} = refine1(Q(k));
-                end
-                Q = vertcat(Q2{:});
-            end
-
-        end
-        
-        
-
-        function [out, mergeIdx] = refine1(Q)
-
-            v = vertices(Q);
-            c = centroid(Q).';
-            vnew = (v([1 2 3 4],:) + v([2 3 4 1],:))/2;
+            n = numel(Q);       % Number of Quads
             
-            out(4,1) = ultraSEMQuad();  
-            out(1) = ultraSEMQuad([v(1,:) ; vnew(1,:) ; c ; vnew(4,:)]);
-            out(2) = ultraSEMQuad([v(2,:) ; vnew(2,:) ; c ; vnew(1,:)]);
-            out(3) = ultraSEMQuad([v(3,:) ; vnew(3,:) ; c ; vnew(2,:)]);
-            out(4) = ultraSEMQuad([v(4,:) ; vnew(4,:) ; c ; vnew(3,:)]);
-
-            mergeIdx = {[1 2 ; 3 4], [1 2]};
-            out = ultraSEMDomain(out, mergeIdx);
-
-        end
+            % Initialize:
+            v = cell(4*n, 1);
+            idx1 = cell(n,1);
+            idx2 = cell(n,1);
+            
+            % Divide into four using centroid and centre of edges:
+            for k = 1:n
+                vk = Q(k).v;
+                c = centroid(Q(k)).';
+                vnew = (vk([1 2 3 4],:) + vk([2 3 4 1],:))/2;
+                v(4*(k-1)+(1:4)) = ...
+                     {[vk(1,:) ; vnew(1,:) ; c ; vnew(4,:)];
+                      [vk(2,:) ; vnew(2,:) ; c ; vnew(1,:)];
+                      [vk(3,:) ; vnew(3,:) ; c ; vnew(2,:)];
+                      [vk(4,:) ; vnew(4,:) ; c ; vnew(3,:)]};
+                idx1{k} = [1 2 ; 3 4] + 4*(k-1);
+                idx2{k} = [1 2] + 2*(k-1);
+            end
+            
+            % Assemble Quad:
+            mergeIdx = {vertcat(idx1{:}), vertcat(idx2{:})};
+            Q = ultraSEMQuad(v);           
+            
+            % Recurse for more refinement:
+            [Q, idxNew] = refine(Q, m-1);
+            
+            % Append merge info:
+            mergeIdx = [idxNew, mergeIdx];
+        end        
 
         function Q = refineCorner(Q, k)
             if ( k ~= 1)
@@ -429,6 +434,25 @@ classdef ultraSEMQuad < ultraSEMMapping
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     methods ( Access = public, Static = true )
+        
+        function v = assertIsQuad(v)
+        %ASSERTISQUAD    Check we have valid vertices for a ultraSEMQuad.
+        
+            if ( ~isnumeric(v) )
+                error('Input should be numeric.');
+            end
+            % Ensure v is of the form [x, y], not [x ; y]:
+            if ( size(v,2) ~= 2 ), v = v.'; end
+            % Check dimension:
+            if ( size(v,2) ~= 2 || size(v, 1) ~= 4 )
+                error('Incorrect vertices dimension.')
+            end
+            % Ensure vertices are oriented in an anticlockwise direction:
+            if ( ultraSEMDomain.isClockwise(v) )
+                % Switch the second and fourth indices.
+                v([2,4],:) = v([4,2],:);
+            end
+        end
 
     end
 

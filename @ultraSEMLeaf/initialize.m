@@ -40,7 +40,6 @@ end
 % Check for a constant-coefficient PDO on a uniform domain:
 constantOp = isConstantOp(op, dom);
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%% DEFINE CORNER CONVENTIONS %%%%%%%%%%%%%%%%%%%%%%%%%
 numIntDOF = (n-2)^2;
@@ -91,7 +90,7 @@ end
 P = cell(numPatches, 1);
 
 mydom = dom;
-if ( isa(dom, 'ultraSEMRect') )
+if ( isRect(dom) )
     %TODO: Fix this hack.
     dom = quad2rect(dom.v);
 end
@@ -100,10 +99,8 @@ end
 if ( constantOp )
     
     % Scaling (for all patches):
-    domx = dom(1,1:2);
-    domy = dom(1,3:4);
-    sclx = 2/diff(domx);
-    scly = 2/diff(domy);
+    sclx = 2/diff(dom(1,1:2));
+    scly = 2/diff(dom(1,3:4));
     
     % Solution operator:
     [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);

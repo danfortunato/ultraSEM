@@ -36,6 +36,29 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             [xx, yy] = util.chebpts2(n, n, map.domain);
             [xx, yy] = transformGrid(map, xx, yy);
         end
+        
+        function T = mtimes(T, c)
+        %MTIMES   Scale an ultraSEMMapping.
+        %   T + C will shift the ultraSEMDomain to the right by real(c) and
+        %   upwards by imag(C). C must be a scalar.
+        %
+        % See also MINUS().
+
+            if ( ~isnumeric(c) )
+                error('ULTRASEM:ULTRASEMMAPPING:plus:unknown', ...
+                    'Cannot multiply an ultraSEMMapping by an object of type %s.', ...
+                    class(c));
+            elseif ( ~isscalar(c) )
+                error('ULTRASEM:ULTRASEMMAPPING:plus:scalar', ...
+                    'C must be a scalar.')
+            end
+
+            % Shift the domain:
+            for k = 1:numel(T)
+                T(k).v(:,1) = c*T(k).v(:,1);
+            end
+
+        end
 
         function n = normals( Q )
         %NORMALS   Outward pointing normal vectors to the edges of a quad.
@@ -75,7 +98,7 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
             for k = 1:numel(T)
                 % Plot domain:
-                vertices = T(k).v
+                vertices = T(k).v;
                 h(k,1) = fill(vertices([1:end, 1],1), vertices([1:end, 1],2), col, ...
                     'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
                 % Add text to center of patch:
@@ -123,6 +146,8 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             end
 
         end
+        
+        
 
         function normal_d = transformNormalD( T, xy, n )
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
