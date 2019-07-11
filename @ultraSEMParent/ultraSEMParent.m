@@ -101,6 +101,7 @@ classdef ultraSEMParent < ultraSEMPatch
             % Cast rectangular domains to Quads.
             % TODO: This is annoying. It will be better when we don't cheat and
             % do rectangular domains properly.
+<<<<<<< Updated upstream
             if ( isnumeric(d1) && ~isnumeric(d2) )
                 for k = 1:size(d1, 1)
                     d1k = d1(k,:);
@@ -116,6 +117,24 @@ classdef ultraSEMParent < ultraSEMPatch
                 end
                 d2 = q2;
             end
+=======
+%             if ( isnumeric(d1) && ~isnumeric(d2) )
+%                 for k = 1:size(d1, 1)
+%                     d1k = d1(k,:);
+%                     v1 = rect2quad(d1k);
+%                     q1(k,1) = ultraSEMQuad(v1);
+%                 end
+%                 d1 = q1;
+%             elseif ( ~isnumeric(d1) && isnumeric(d2) )
+%                 for k = 1:size(d2, 1)
+%                     d2k = d2(k,:);
+%                     v2 = rect2quad(d2k);
+%                     q2(k,1) = ultraSEMQuad(v2);
+%                 end
+%                 d2 = q2;
+%             end
+
+>>>>>>> Stashed changes
             d = [d1 ; d2];
 
             if ( nargout == 1 )

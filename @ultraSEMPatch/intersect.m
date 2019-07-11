@@ -32,7 +32,6 @@ function [i1, i2, i4a, i4b, flip1, flip2, newDom] = intersect(a, b)
 
 % The new domain will be NaN except in the special case when we are
 % merging two rectangluar patches horizontally or vertically.
-newDom = NaN;
 
 % Remove corners before we test intersection:
 axy = a.xy; bxy = b.xy;

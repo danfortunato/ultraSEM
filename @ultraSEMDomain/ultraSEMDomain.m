@@ -335,6 +335,17 @@ classdef ultraSEMDomain
         %   H = PLOT(T, ...) returns a figure handle of the form returned
         %   by H = FILL(...), where FILL() is the built-in MATLAB method.
 
+            if ( numel(T) > 1 ) 
+                holdState = ishold();
+                for k = 1:numel(T)
+                    plot(T(k), varargin{:}); hold on
+                end
+                if ( ~holdState )
+                    hold off
+                end
+                return
+            end
+        
             if ( ~isnumeric(T.domain) )
                 if ( isa(T.domain, 'ultraSEMDomain') )
                     holdState = ishold();
@@ -393,7 +404,7 @@ classdef ultraSEMDomain
         %   upwards by imag(C). C must be a scalar.
         %
         % See also MINUS().
-
+        
             if ( ~isa(T, 'ultraSEMDomain') )
                 % Ensure T is the ultraSEMDomain:
                 T = plus(c, T);
@@ -413,8 +424,7 @@ classdef ultraSEMDomain
             end
 
             % Shift the domain:
-            T.domain(:,1:2) = T.domain(:,1:2) + real(c);
-            T.domain(:,3:4) = T.domain(:,3:4) + imag(c);
+            T.domain = T.domain + c;
 
         end
 
@@ -429,6 +439,8 @@ classdef ultraSEMDomain
         
             if ( nargin < 2 )
                 m = 1;
+            elseif ( m == 0 ) 
+                return
             end
             
             if ( isempty(T.domain) )
@@ -452,18 +464,16 @@ classdef ultraSEMDomain
                     T.domain(k) = refine(T.domain(k), m);
                 end
             else
+<<<<<<< Updated upstream
                 T = refineQuad(T,m);
+=======
+                [T.domain, newIdx] = refine(T.domain, m);
+                T.mergeIdx = [newIdx, T.mergeIdx];
+>>>>>>> Stashed changes
             end
 
         end
-        
-%         function T = refineCorner(T, pt)
-%             nDom = size(T.domain, 1);
-%             dom = T.domain
-%             anydom(:,1) == 
-%         end
-        
-        
+
         function T = refineRectangle(T, m)
             for l = 1:m % Refine m times.
                 nDom = size(T.domain, 1);

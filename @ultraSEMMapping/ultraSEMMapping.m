@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 classdef ultraSEMMapping < handle
+=======
+classdef ultraSEMMapping < matlab.mixin.Heterogeneous
+>>>>>>> Stashed changes
 %ULTRASEMMAPPING  Abstract mapping object from ULTRASEM system.
 
     %#ok<*PROP>
@@ -94,6 +98,30 @@ classdef ultraSEMMapping < handle
 
             if ( ~holdState )
                 hold off
+            end
+
+        end
+        
+        function T = plus(T, c)
+        %PLUS   Shift an ultraSEMDomain.
+        %   T + C will shift the ultraSEMDomain to the right by real(c) and
+        %   upwards by imag(C). C must be a scalar.
+        %
+        % See also MINUS().
+
+            if ( ~isnumeric(c) )
+                error('ULTRASEM:ULTRASEMDOMAIN:plus:unknown', ...
+                    'Cannot add an object of type %s to a ultraSEMDomain.', ...
+                    class(c));
+            elseif ( ~isscalar(c) )
+                error('ULTRASEM:ULTRASEMDOMAIN:plus:scalar', ...
+                    'C must be a scalar.')
+            end
+
+            % Shift the domain:
+            for k = 1:numel(T)
+                T(k).v(:,1) = T(k).v(:,1) + real(c);
+                T(k).v(:,2) = T(k).v(:,2) + imag(c);
             end
 
         end

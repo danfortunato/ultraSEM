@@ -143,7 +143,7 @@ classdef ultraSEMSol
                 u = fevalMapped(sol, x, y);
                 return
             end
-
+            
             minx = min(sol.domain(:,1));
             miny = min(sol.domain(:,3));
 
