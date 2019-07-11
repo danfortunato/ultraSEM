@@ -106,11 +106,31 @@ classdef ultraSEMQuad < ultraSEMMapping
         function Q = refineCorner(Q, k)
             v = vertices(Q);
             c = centroid(Q);
-            vnew = (v(:,1:end) + v(:,[2:end, 1]))/2;
             Q(3,1) = ultraSEMQuad();
-            Q(1) = ultraSEMQuad([v(:,1) vnew(:,1) c vnew(:,4)]);
-            Q(2) = ultraSEMQuad([v(:,2) v(:,3) c vnew(:,1)]);            
-            Q(3) = ultraSEMQuad([v(:,4) vnew(:,4) c v(:,3)]);
+            if ( k == 1 )
+                vnew = (v(:,1) + v(:,[2,4]))/2;
+                v1 = [v(:,1) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[2 3]) c vnew(:,1)];
+                v3 = [v(:,4) vnew(:,2) c v(:,3)];
+            elseif ( k == 2 )
+                vnew = (v(:,2) + v(:,[3,1]))/2;
+                v1 = [v(:,2) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[3 4]) c vnew(:,1)];
+                v3 = [v(:,1) vnew(:,2) c v(:,4)];                
+            elseif ( k == 3 )
+                vnew = (v(:,3) + v(:,[4,2]))/2;
+                v1 = [v(:,3) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[4 1]) c vnew(:,1)];
+                v3 = [v(:,2) vnew(:,2) c v(:,1)]; 
+            elseif ( k == 4 )
+                vnew = (v(:,4) + v(:,[1,3]))/2;
+                v1 = [v(:,4) vnew(:,1) c vnew(:,2)];
+                v2 = [v(:,[1 2]) c vnew(:,1)];
+                v3 = [v(:,3) vnew(:,2) c v(:,2)];                 
+            end 
+            Q(1) = ultraSEMQuad(v1);
+            Q(2) = ultraSEMQuad(v2);            
+            Q(3) = ultraSEMQuad(v3);
         end
             
         
