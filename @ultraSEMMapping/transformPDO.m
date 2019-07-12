@@ -89,24 +89,34 @@ end
 new_dx = [new_dx ' + ' dy '.*' dsdy ''];
 new_dy = [new_dy ' + ' dy '.*' dtdy ''];
 
-% zeroth term;
-if ( isa(b, 'function_handle') )
-    new_b = @(s,t) b(T.T1(s,t), T.T2(s,t));
-else
-    new_b = b;
-end
-
 new_dxx = eval(new_dxx);
 new_dxy = eval(new_dxy);
 new_dyy = eval(new_dyy);
 new_dx = eval(new_dx);
 new_dy = eval(new_dy);
 
+sing = @(s,t) (s/2+1/2).^2;
+syms s t
+e = simplify( sing(s,t) .* new_dxx(s,t) ); new_dxx = @(s,t) eval(e);
+e = simplify( sing(s,t) .* new_dxy(s,t) ); new_dxy = @(s,t) eval(e);
+e = simplify( sing(s,t) .* new_dyy(s,t) ); new_dyy = @(s,t) eval(e);
+e = simplify( sing(s,t) .* new_dx(s,t) );  new_dx  = @(s,t) eval(e);
+e = simplify( sing(s,t) .* new_dy(s,t) );  new_dy  = @(s,t) eval(e);
+
+% zeroth term;
+if ( isa(b, 'function_handle') )
+    new_b = @(s,t) sing(s,t) .* b(T.T1(s,t), T.T2(s,t));
+else
+    new_b = @(s,t) sing(s,t) .* b;
+end
+
 new_PDO = ultraSEMPDO({new_dxx, new_dxy, new_dyy}, {new_dx, new_dy}, new_b);
 
 % righthand side:
 if ( isa(rhs, 'function_handle') )
-    rhs = @(s,t) rhs(T.T1(s,t), T.T2(s,t));
+    rhs = @(s,t) sing(s,t) .* rhs(T.T1(s,t), T.T2(s,t));
+else
+    rhs = @(s,t) sing(s,t) .* rhs;
 end
 
 end
