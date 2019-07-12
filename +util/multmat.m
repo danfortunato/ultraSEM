@@ -25,4 +25,6 @@ else
     error('Inappropriate ultraS parameter.')
 end
 
+M(abs(M) < 100*eps) = 0;
+
 end
