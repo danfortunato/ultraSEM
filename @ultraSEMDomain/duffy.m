@@ -1,7 +1,7 @@
 function T = duffy(varargin)
 
 if ( nargin == 0 )
-    vertices = [];
+    vertices = [0 0; 1 0; 0 1];
 else
     vertices = varargin{1};
 

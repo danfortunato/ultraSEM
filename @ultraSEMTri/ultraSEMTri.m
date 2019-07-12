@@ -51,25 +51,25 @@ classdef ultraSEMTri < ultraSEMMapping
 
         function out = T1(obj, x, y)
 
-            out = (x+1)/2;
+            out = (x-1)/2;
 
         end
 
         function out = T2(obj, x, y)
 
-            out = (x+1)/2.*(y+1)/2;
+            out = (x-1)/2.*(y-1)/2;
 
         end
 
         function out = invT1(obj, s, t)
 
-            out = 2*s - 1;
+            out = 2*s+1;
 
         end
 
         function out = invT2(obj, s, t)
 
-            out = 2*(t./s)-1;
+            out = 2*(t./s)+1;
 
         end
 
