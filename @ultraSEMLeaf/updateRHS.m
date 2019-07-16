@@ -25,6 +25,12 @@ dom = P.domain;
 numIntDOF = (n-2)^2;
 [XX, YY] = util.chebpts2(n);
 
+mydom = dom;
+if ( isRect(dom) )
+    %TODO: Fix this hack.
+    dom = quad2rect(dom.v);
+end
+
 % Define the scaling for this domain:
 if ( isnumeric(dom) )
     domx = dom(1:2);
@@ -70,8 +76,8 @@ S = imposeBCs(S, Px, Py, Bx, By, Gx, Gy, n);
 P.S(:,end) = S;
 
 % Normal derivative operator:
-if ( ~isnumeric(dom) && ~isa(dom, 'rectangle') )
-    normal_d = transformNormalD(dom, P.xy, n);
+if ( ~isRect(mydom) )
+    normal_d = transformNormalD(mydom, P.xy, n);
 else
     % Construct normal derivatives conditions along the four edges:
     I = speye(n);

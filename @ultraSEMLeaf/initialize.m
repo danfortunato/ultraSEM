@@ -36,6 +36,8 @@ if ( ~isa(op, 'ultraSEMPDO') )
     op = ultraSEMPDO(op);
 end
 
+% assert(isa(dom, 'ultraSEMMapping'), 'Domain should be an ultraSEMMapping.')
+
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for a constant-coefficient PDO on a uniform domain:
 constantOp = isConstantOp(op, dom);
@@ -54,7 +56,6 @@ upIdx    = sub2ind([n n], n*ones(n,1), (1:n).');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%% DEFINE BOUNDARY CONDITIONS %%%%%%%%%%%%%%%%%%%%%%%%%
-
 % Construct normal derivatives conditions along the four edges:
 I = speye(n);
 lbc_d = kron( (-1).^(0:n-1).*(0:n-1).^2, I );
@@ -89,14 +90,14 @@ end
 % Initialize
 P = cell(numPatches, 1);
 
-mydom = dom;
-if ( isRect(dom) )
-    %TODO: Fix this hack.
-    dom = quad2rect(dom.v);
-end
-
 % Check if we can build one solution operator for all patches:
 if ( constantOp )
+    
+    mydom = dom;
+    if ( isRect(dom) )
+        %TODO: Fix this hack.
+        dom = quad2rect(dom.v);
+    end
     
     % Scaling (for all patches):
     sclx = 2/diff(dom(1,1:2));
@@ -231,7 +232,7 @@ else
         D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(domk, S, D2N, xy, Ainv);
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, Ainv);
 
     end
 
