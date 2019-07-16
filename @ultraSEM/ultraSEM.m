@@ -419,6 +419,12 @@ classdef ultraSEM < handle
             [varargout{1:nargout}] = ultraSEMDomain.triangle(varargin{:});
         end
 
+        function varargout = duffy(varargin)
+        %DUFFY  Construct an ultraSEMTri triangle domain.
+        %   ultraSEM.duffy(V) constructs a triangle with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.duffy(varargin{:});
+        end
+
         function varargout = polygon(varargin)
         %POLYGON  Construct an ultraSEMDomain convex polygon domain.
         %   ultraSEM.polygon(V) constructs a convex polygon with vertices

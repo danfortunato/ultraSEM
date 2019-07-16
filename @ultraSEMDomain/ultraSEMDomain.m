@@ -650,6 +650,9 @@ classdef ultraSEMDomain
         % Construct triangular domains:
         T = triangle(varargin);
 
+        % Construct triangular domains:
+        T = duffy(varargin);
+
         % Construct convex polygonal domains:
         T = polygon(varargin);
 
