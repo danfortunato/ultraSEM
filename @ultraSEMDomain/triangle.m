@@ -25,8 +25,8 @@ function T = triangle(v)
     m13 = mean( v([1,3],:) );
     m23 = mean( v([2,3],:) );
     v1 = [ v(1,:) ; m12 ; c ; m13];
-    v2 = [ m13 ; c ; m23 ; v(3,:) ];
-    v3 = [ m12 ; v(2,:) ; m23 ; c ];
+    v2 = [ m12 ; v(2,:) ; m23 ; c ];
+    v3 = [ m13 ; c ; m23 ; v(3,:) ];
 
     % Construct kites:
     K(3,1) = ultraSEMQuad();

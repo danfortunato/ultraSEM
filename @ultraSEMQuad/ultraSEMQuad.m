@@ -24,7 +24,7 @@ classdef ultraSEMQuad < ultraSEMMapping
                 return
             end
             
-%             v = ultraSEMQuad.assertIsQuad(v);
+            v = ultraSEMQuad.assertIsQuad(v);
                         
             obj.v = v;
 
@@ -76,9 +76,9 @@ classdef ultraSEMQuad < ultraSEMMapping
                 vnew = (vk([1 2 3 4],:) + vk([2 3 4 1],:))/2;
                 v(4*(k-1)+(1:4)) = ...
                      {[vk(1,:) ; vnew(1,:) ; c ; vnew(4,:)];
-                      [vk(2,:) ; vnew(2,:) ; c ; vnew(1,:)];
-                      [vk(3,:) ; vnew(3,:) ; c ; vnew(2,:)];
-                      [vk(4,:) ; vnew(4,:) ; c ; vnew(3,:)]};
+                      [vnew(1,:) ; vk(2,:) ; vnew(2,:) ; c];
+                      [c ; vnew(2,:) ; vk(3,:) ; vnew(3,:) ; ];
+                      [vnew(4,:) ; c ; vnew(3,:) ; vk(4,:)]};                  
                 idx1{k} = [1 2 ; 3 4] + 4*(k-1);
                 idx2{k} = [1 2] + 2*(k-1);
             end
