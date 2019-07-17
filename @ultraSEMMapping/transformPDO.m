@@ -17,16 +17,16 @@ function [new_PDO, rhs] = transformPDO( T, PDO, rhs )
 % DEVELOPER NOTE: Manipulating function handles is expensive, so we use strings.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dsdx  = 'T.dinvT1{1}( T.T1(s,t), T.T2(s,t) )';
-dsdy  = 'T.dinvT1{2}( T.T1(s,t), T.T2(s,t) )';
-dtdx  = 'T.dinvT2{1}( T.T1(s,t), T.T2(s,t) )';
-dtdy  = 'T.dinvT2{2}( T.T1(s,t), T.T2(s,t) )';
-dsdxx = 'T.d2invT1{1}( T.T1(s,t), T.T2(s,t) )';
-dsdxy = 'T.d2invT1{2}( T.T1(s,t), T.T2(s,t) )';
-dsdyy = 'T.d2invT1{3}( T.T1(s,t), T.T2(s,t) )';
-dtdxx = 'T.d2invT2{1}( T.T1(s,t), T.T2(s,t) )';
-dtdxy = 'T.d2invT2{2}( T.T1(s,t), T.T2(s,t) )';
-dtdyy = 'T.d2invT2{3}( T.T1(s,t), T.T2(s,t) )';
+dsdx  = 'T.dinvT11( T.T1(s,t), T.T2(s,t) )';
+dsdy  = 'T.dinvT12( T.T1(s,t), T.T2(s,t) )';
+dtdx  = 'T.dinvT21( T.T1(s,t), T.T2(s,t) )';
+dtdy  = 'T.dinvT22( T.T1(s,t), T.T2(s,t) )';
+dsdxx = 'T.d2invT11( T.T1(s,t), T.T2(s,t) )';
+dsdxy = 'T.d2invT12( T.T1(s,t), T.T2(s,t) )';
+dsdyy = 'T.d2invT13( T.T1(s,t), T.T2(s,t) )';
+dtdxx = 'T.d2invT21( T.T1(s,t), T.T2(s,t) )';
+dtdxy = 'T.d2invT22( T.T1(s,t), T.T2(s,t) )';
+dtdyy = 'T.d2invT23( T.T1(s,t), T.T2(s,t) )';
 
 dxx = PDO.dxx;
 dxy = PDO.dxy;
@@ -89,25 +89,50 @@ end
 new_dx = [new_dx ' + ' dy '.*' dsdy ''];
 new_dy = [new_dy ' + ' dy '.*' dtdy ''];
 
-% zeroth term;
-if ( isa(b, 'function_handle') )
-    new_b = @(s,t) b(T.T1(s,t), T.T2(s,t));
-else
-    new_b = b;
-end
-
 new_dxx = eval(new_dxx);
 new_dxy = eval(new_dxy);
 new_dyy = eval(new_dyy);
 new_dx = eval(new_dx);
 new_dy = eval(new_dy);
 
+if ( isa(T, 'ultraSEMTri') )
+    sing = @(s,t) (s/2-1/2).^2;
+    syms s t
+    e = simplify( sing(s,t) .* new_dxx(s,t) ); new_dxx = @(s,t) eval(e);
+    e = simplify( sing(s,t) .* new_dxy(s,t) ); new_dxy = @(s,t) eval(e);
+    e = simplify( sing(s,t) .* new_dyy(s,t) ); new_dyy = @(s,t) eval(e);
+    e = simplify( sing(s,t) .* new_dx(s,t) );  new_dx  = @(s,t) eval(e);
+    e = simplify( sing(s,t) .* new_dy(s,t) );  new_dy  = @(s,t) eval(e);
+
+    % zeroth term;
+    if ( isa(b, 'function_handle') )
+        new_b = @(s,t) sing(s,t) .* b(T.T1(s,t), T.T2(s,t));
+    else
+        new_b = @(s,t) sing(s,t) .* b;
+    end
+
+    % righthand side:
+    if ( isa(rhs, 'function_handle') )
+        rhs = @(s,t) sing(s,t) .* rhs(T.T1(s,t), T.T2(s,t));
+    else
+        rhs = @(s,t) sing(s,t) .* rhs;
+    end
+else
+        % zeroth term;
+    if ( isa(b, 'function_handle') )
+        new_b = @(s,t) b(T.T1(s,t), T.T2(s,t));
+    else
+        new_b = b;
+    end
+
+    % righthand side:
+    if ( isa(rhs, 'function_handle') )
+        rhs = @(s,t) rhs(T.T1(s,t), T.T2(s,t));
+    end
+end
+
 new_PDO = ultraSEMPDO({new_dxx, new_dxy, new_dyy}, {new_dx, new_dy}, new_b);
 
-% righthand side:
-if ( isa(rhs, 'function_handle') )
-    rhs = @(s,t) rhs(T.T1(s,t), T.T2(s,t));
-end
 
 end
 

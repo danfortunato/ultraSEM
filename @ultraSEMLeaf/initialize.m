@@ -36,16 +36,11 @@ if ( ~isa(op, 'ultraSEMPDO') )
     op = ultraSEMPDO(op);
 end
 
+% assert(isa(dom, 'ultraSEMMapping'), 'Domain should be an ultraSEMMapping.')
+
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for a constant-coefficient PDO on a uniform domain:
-constantOp = false;
-if ( isnumeric(dom) )
-    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
-    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
-                       ~any(diff(diff(dom(:,3:4),1,2))) )
-        constantOp = true;
-    end
-end
+constantOp = isConstantOp(op, dom);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%% DEFINE CORNER CONVENTIONS %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +56,6 @@ upIdx    = sub2ind([n n], n*ones(n,1), (1:n).');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%% DEFINE BOUNDARY CONDITIONS %%%%%%%%%%%%%%%%%%%%%%%%%
-
 % Construct normal derivatives conditions along the four edges:
 I = speye(n);
 lbc_d = kron( (-1).^(0:n-1).*(0:n-1).^2, I );
@@ -98,12 +92,16 @@ P = cell(numPatches, 1);
 
 % Check if we can build one solution operator for all patches:
 if ( constantOp )
-
+    
+    mydom = dom;
+    if ( isRect(dom) )
+        %TODO: Fix this hack.
+        dom = quad2rect(dom.v);
+    end
+    
     % Scaling (for all patches):
-    domx = dom(1,1:2);
-    domy = dom(1,3:4);
-    sclx = 2/diff(domx);
-    scly = 2/diff(domy);
+    sclx = 2/diff(dom(1,1:2));
+    scly = 2/diff(dom(1,3:4));
     
     % Solution operator:
     [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), n);
@@ -139,7 +137,7 @@ if ( constantOp )
         end
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, Ainv);
+        P{k} = ultraSEMLeaf(mydom(k,:), S, D2N, xy, Ainv);
 
     end
 
@@ -170,12 +168,18 @@ else
     for k = 1:numPatches
 
         % Determine if this is a mapped domain:
-        mapped = ~isnumeric(dom(k,:)) & ~isa(dom(k,:), 'rectangle');
+        mapped = ~(isnumeric(dom(k,:)) || isRect(dom(k,:)));
 
         % Get the current domain:
         domk = dom(k,:);
-        rect = dom(k,:);
-        if ( mapped ), rect = [-1 1 -1 1]; end
+        if ( mapped )
+            rect = [-1 1 -1 1]; 
+        elseif ( isnumeric(domk) )
+            rect = domk;
+        else
+            rect = quad2rect(domk.v);
+        end
+        
         % Define the boundary nodes for this patch:
         domx = rect(1:2);
         domy = rect(3:4);
@@ -228,7 +232,7 @@ else
         D2N = normal_d * S;
 
         % Assemble the patch:
-        P{k} = ultraSEMLeaf(domk, S, D2N, xy, Ainv);
+        P{k} = ultraSEMLeaf(dom(k,:), S, D2N, xy, Ainv);
 
     end
 
@@ -548,4 +552,20 @@ function x = schurSolve(A, b, m)
     y = c(:,1:nb) - c(:,i3)*x;
     x = [x ; y];
 
+end
+
+function constantOp = isConstantOp(op, dom)
+
+constantOp = false;
+if ( isa(dom, 'ultraSEMRect') )
+    % TODO: This breaks encapsulation. Ignore it for now.
+    dom = quad2rect(dom.v);
+end
+if ( isnumeric(dom) )
+    [~, isConstant] = feval(op, dom(1,1), dom(1,2));
+    if ( isConstant && ~any(diff(diff(dom(:,1:2),1,2))) && ...
+                       ~any(diff(diff(dom(:,3:4),1,2))) )
+        constantOp = true;
+    end
+end
 end

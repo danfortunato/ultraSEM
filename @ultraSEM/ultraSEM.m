@@ -85,7 +85,7 @@ classdef ultraSEM < handle
             end
 
             % Assign the domain:
-            obj.domain = dom;
+            obj.domain = dom; % TODO: Vaidate domain,
 
             if ( nargin < 3 )
                 % Default to homogeneous problem:
@@ -104,7 +104,7 @@ classdef ultraSEM < handle
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% METHODS
+    %% METHODS (PRIVATE)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     methods ( Access = public, Static = false )
@@ -119,7 +119,7 @@ classdef ultraSEM < handle
             end
 
             % Get boundary points:
-            xy = S.patches{1}.xy;
+            xy = S.patches{1}.xy; % TODO: Breaks encapsulation
 
             % Initialize boundary data. We should have n coefficients for
             % each boundary.
@@ -146,7 +146,20 @@ classdef ultraSEM < handle
             coeffs = cat(1, coeffs{:});
 
         end
-
+        
+        function out = isInitialized(S)
+        %ISINITIALIZED   Check to see if an ultraSEM has been initialized.
+            out = ~isempty(S.patches) && size(S.patches{1}.S, 2) > 0;
+        end
+        
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% METHODS (PUBLIC)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+    methods ( Access = public, Static = false )
+        
         function build(S)
         %BUILD   Build the merge tree of patches in an ultraSEM object.
         %   BUILD(S) will construct the global solution operator from the
@@ -164,13 +177,13 @@ classdef ultraSEM < handle
                     build(S.patches(k));
                 end
                 % Concatenate (since S already contains domain info.)
-                S.patches = vertcat(S.patches.patches);
+                S.patches = vertcat(S.patches.patches); % TODO: breaks encapsulation
             end
 
-%             if ( isempty(S.patches) || isempty(S.patches{1}.S) )
-%                 error('ULTRASEM:ULTRASEM:build:notInitialized', ...
-%                     '%f has not yet been initialized.', inputname(1))
-%             end
+            if ( ~isInitialized(S) )
+                error('ULTRASEM:ULTRASEM:build:notInitialized', ...
+                    '%f has not yet been initialized.', inputname(1))
+            end
 
             % Build the patches:
             S.patches = build(S.domain, S.patches);
@@ -239,7 +252,7 @@ classdef ultraSEM < handle
         %   MLDIVIDE is a shorthand for SOLVE().
         %
         % See also SOLVE.
-
+        
             % MLDIVIDE() is simply a wrapper for SOLVE():
             [varargout{1:nargout}] = solve(varargin{:});
 
@@ -265,11 +278,8 @@ classdef ultraSEM < handle
             % Build the ultraSEM if required:
             if ( numel(S.patches) > 1 ), build(S); end
 
-            if ( numel(S.patches) == 0 )
-                error('ULTRASEM:ULTRASEM:solve:notInitialized', ...
-                    'The ultraSEM object `%s` has not been initialized.', ...
-                    inputname(1));
-            end
+            assert(isInitialized(S), ['The ultraSEM object `%s` has not been', ...
+                'initialized.'], inputname(1));
 
             % Build the boundary conditions:
             coeffs = bc2coeffs(S, bc);
@@ -373,9 +383,9 @@ classdef ultraSEM < handle
                 IO = isInterior(dt);
                 list = dt(IO,:);
             end
+            
             pts = dt.Points(:,:);
-
-            %% Build domain:
+            % Build domain:
             nt = size(list,1);
             T = [];
             for k = 1:nt
@@ -407,6 +417,12 @@ classdef ultraSEM < handle
         %TRIANGLE  Construct an ultraSEMDomain triangle domain.
         %   ultraSEM.triangle(V) constructs a triangle with vertices V.
             [varargout{1:nargout}] = ultraSEMDomain.triangle(varargin{:});
+        end
+
+        function varargout = duffy(varargin)
+        %DUFFY  Construct an ultraSEMTri triangle domain.
+        %   ultraSEM.duffy(V) constructs a triangle with vertices V.
+            [varargout{1:nargout}] = ultraSEMDomain.duffy(varargin{:});
         end
 
         function varargout = polygon(varargin)

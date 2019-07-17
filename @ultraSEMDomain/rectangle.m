@@ -30,79 +30,75 @@ if ( nargin < 3 )
     n = m;
 end
 
-% TODO: m and n are implemented the wrong way around below...
-tmp = m;
-m = n;
-n = tmp;
-
 % Initialize tree:
-T.dom = dom;
-T.idx = {};
+idx = {};
 
-if ( n == 1 && m == 1 )
+if ( m == 1 && n == 1 )
     % Only a single patch. No subdivision or merge info required.
-    T = ultraSEMDomain(T.dom, {[1 NaN]});
+    dom = ultraSEMRect(rect2quad(dom));
+    T = ultraSEMDomain(dom, {[1 NaN]});
     return
 end
 
-x = linspace(dom(1), dom(2), m+1);
-y = linspace(dom(3), dom(4), n+1);
+x = linspace(dom(1), dom(2), n+1);
+y = linspace(dom(3), dom(4), m+1);
 l = 0;
-for j = 1:n
-    for k = 1:m
+for j = 1:m
+    for k = 1:n
         l = l+1;
-        T.dom(l,:) = [x(k), x(k+1), y(j), y(j+1)];
+        dom(l,:) = [x(k), x(k+1), y(j), y(j+1)];
     end
 end
 
-if ( (log2(m) == round(log2(m))) && (log2(n) == round(log2(n))) )
+if ( (log2(n) == round(log2(n))) && (log2(m) == round(log2(m))) )
     % Powers of two are easier to contend with
 
     l = 1;
-    while ( m*n > 1 )
-        tmp = reshape(1:m*n, m, n);
-        if ( m >= n )
+    while ( n*m > 1 )
+        tmp = reshape(1:n*m, n, m);
+        if ( n >= m )
             % Merge up
-            m = m/2;
+            n = n/2;
         else
             % Merge right
             tmp = tmp.';
-            n = n/2;
+            m = m/2;
         end
-        tmp = reshape(tmp, 2, m*n)';
-        T.idx{l} = tmp; l = l + 1;
+        tmp = reshape(tmp, 2, n*m)';
+        idx{l} = tmp; l = l + 1;
     end
 
 else
 
     l = 0;
-    while ( m*n > 1 )
+    while ( n*m > 1 )
         l = l+1;
-        T.idx{l} = [];
-        if ( n <= m )   % Merge right
-            for k = 1:n
-                idx = (k-1)*m + (1:m);
-                if ( mod(m, 2) )
-                    idx = [idx, NaN]; %#ok<AGROW>
+        idx{l} = [];
+        if ( m <= n )   % Merge right
+            for k = 1:m
+                idxk = (k-1)*n + (1:n);
+                if ( mod(n, 2) )
+                    idxk = [idxk, NaN]; %#ok<AGROW>
                 end
-                idx = reshape(idx, 2, length(idx)/2)';
-                T.idx{l} = [T.idx{l} ; idx];
-            end
-            m = ceil(m/2);
-        else            % Merge up
-            for k = 1:ceil(n/2)
-                idx = 2*(k-1)*m + (1:2*m);
-                idx(idx > m*n) = NaN;
-                idx = reshape(idx, length(idx)/2, 2);
-                idx(all(isnan(idx), 2),:) = [];
-                T.idx{l} = [T.idx{l} ; idx];
+                idxk = reshape(idxk, 2, length(idxk)/2)';
+                idx{l} = [idx{l} ; idxk];
             end
             n = ceil(n/2);
+        else            % Merge up
+            for k = 1:ceil(m/2)
+                idxk = 2*(k-1)*n + (1:2*n);
+                idxk(idxk > n*m) = NaN;
+                idxk = reshape(idxk, length(idxk)/2, 2);
+                idxk(all(isnan(idxk), 2),:) = [];
+                idx{l} = [idx{l} ; idxk];
+            end
+            m = ceil(m/2);
         end
     end
 
 end
 
-T = ultraSEMDomain(T.dom, T.idx);
+dom = ultraSEMRect(rect2quad(dom));
+T = ultraSEMDomain(dom, idx);
 
 end

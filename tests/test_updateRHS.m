@@ -5,7 +5,7 @@ function pass = test_updateRHS()
 tol = 1e-7;
 
 S = ultraSEM.rectangle([-1 1 -1 1]);
-T = refine(S, 3);
+T = refine(S, 2);
 
 op = {1, 0, @(x,y) y};
 rhs = -1;

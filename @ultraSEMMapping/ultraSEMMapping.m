@@ -7,23 +7,27 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
     %% CLASS PROPERTIES:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties ( Access = public )
-
-        T1             % square->domain map 1st coordinate
-        T2             % square->domain map 2nd coordinate
-        invT1          % domain->square map 1st coordinate
-        invT2          % domain->square map 2nd coordinate
-        dinvT1         % 1st derivatives of T1^{-1}
-        dinvT2         % 1st derivatives of T2^{-1}
-        d2invT1        % 2nd derivatives of T1^{-1}
-        d2invT2        % 2nd derivatives of T2^{-1}
-
+        v
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods ( Access = public, Static = false, Abstract = true )
-
+%         out = T1(T, x, y);
+%         out = T2(T, x, y);
+%         out = invT1(T, x, y);
+%         out = invT2(T, x, y);
+%         out = dinvT11(T, x, y);
+%         out = dinvT12(T, x, y);
+%         out = dinvT21(T, x, y);
+%         out = dinvT22(T, x, y);
+%         out = d2invT11(T, x, y); 
+%         out = d2invT12(T, x, y); 
+%         out = d2invT13(T, x, y);
+%         out = d2invT21(T, x, y); 
+%         out = d2invT22(T, x, y); 
+%         out = d2invT23(T, x, y); 
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,6 +39,30 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
         function [xx, yy] = chebGrid(n, map)
             [xx, yy] = util.chebpts2(n, n, map.domain);
             [xx, yy] = transformGrid(map, xx, yy);
+        end
+        
+        function T = mtimes(T, c)
+        %MTIMES   Scale an ultraSEMMapping.
+        %   T + C will shift the ultraSEMDomain to the right by real(c) and
+        %   upwards by imag(C). C must be a scalar.
+        %
+        % See also MINUS().
+            
+            if ( isnumeric(T) ), [T, c] = deal(c, T); end
+            if ( ~isnumeric(c) )
+                error('ULTRASEM:ULTRASEMMAPPING:plus:unknown', ...
+                    'Cannot multiply an ultraSEMMapping by an object of type %s.', ...
+                    class(c));
+            elseif ( ~isscalar(c) )
+                error('ULTRASEM:ULTRASEMMAPPING:plus:scalar', ...
+                    'C must be a scalar.')
+            end
+
+            % Shift the domain:
+            for k = 1:numel(T)
+                T(k).v = c*T(k).v;
+            end
+
         end
 
         function n = normals( Q )
@@ -49,62 +77,81 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             n = n * diag(1./sqrt(sum( n.^2 )));  % Normalize
         end
 
-% <<<<<<< HEAD
-%         function plot( T, varargin )
-%             % Plot the mapped domain and grid:
-%             
-%             % Choose a color:
-%             if ( nargin > 1 && ischar(varargin{1}) && ...
-%                     ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
-%                 col = varargin{1};
-%                 varargin(1) = [];
-%             elseif ( nargin > 1 && isnumeric(varargin{1}) )
-%                 col = varargin{1};
-%                 varargin(1) = [];
-%             else
-% %                 col = 'm';
-%                 col = rand(1, 3);
-%             end
-% 
-%             plotPts = false;
-%             n = 21;
-% 
-%             holdState = ishold();
-% 
-%             if ( nargin > 1 && ...
-%                     ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
-%                 plotPts = true;
-%             end
-% 
-%             for k = 1:numel(T)
-%                 % Plot domain:
-%                 v = vertices(T(k));
-%                 h(k,1) = fill(v(1,[1:end, 1]), v(2,[1:end, 1]), col, ...
-%                     'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
-%                 % Add text to center of patch:
-% 
-%                 if ( plotPts )
-%                     % Plot the grid:
-%                     [xx, yy] = chebGrid( n, T(k) );
-%                     plot(xx, yy, varargin{:})
-%                 end
-% 
-%                 % Add text to centre of patch:
-%                 if ( numel(T) < 100 ) % Don't add text on large meshes
-%                     c = centroid(T(k));
-%                     text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
-%                 end
-% 
-%             end
-% 
-%             if ( ~holdState )
-%                 hold off
-%             end
-% 
-%         end
-% 
-% =======
-% >>>>>>> feature-rectangles
+        function plot( T, varargin )
+            % Plot the mapped domain and grid:
+            
+            % Choose a color:
+            if ( nargin > 1 && ischar(varargin{1}) && ...
+                    ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
+                col = varargin{1};
+                varargin(1) = [];
+            elseif ( nargin > 1 && isnumeric(varargin{1}) )
+                col = varargin{1};
+                varargin(1) = [];
+            else
+                col = rand(1, 3);
+            end
+
+            plotPts = false;
+            n = 21;
+            holdState = ishold();
+
+            if ( nargin > 1 && ...
+                    ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
+                plotPts = true;
+            end
+
+            for k = 1:numel(T)
+                % Plot domain:
+                vertices = T(k).v;
+                h(k,1) = fill(vertices([1:end, 1],1), vertices([1:end, 1],2), col, ...
+                    'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
+                % Add text to center of patch:
+
+                if ( plotPts )
+                    % Plot the grid:
+                    [xx, yy] = chebGrid( n, T(k) );
+                    plot(xx, yy, varargin{:})
+                end
+
+                % Add text to centre of patch:
+                if ( numel(T) < 100 ) % Don't add text on large meshes
+                    c = centroid(T(k));
+                    text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
+                end
+
+            end
+
+            if ( ~holdState )
+                hold off
+            end
+
+        end
+        
+        function T = plus(T, c)
+        %PLUS   Shift an ultraSEMDomain.
+        %   T + C will shift the ultraSEMDomain to the right by real(c) and
+        %   upwards by imag(C). C must be a scalar.
+        %
+        % See also MINUS().
+
+            if ( ~isnumeric(c) )
+                error('ULTRASEM:ULTRASEMDOMAIN:plus:unknown', ...
+                    'Cannot add an object of type %s to a ultraSEMDomain.', ...
+                    class(c));
+            elseif ( ~isscalar(c) )
+                error('ULTRASEM:ULTRASEMDOMAIN:plus:scalar', ...
+                    'C must be a scalar.')
+            end
+
+            % Shift the domain:
+            for k = 1:numel(T)
+                T(k).v(:,1) = T(k).v(:,1) + real(c);
+                T(k).v(:,2) = T(k).v(:,2) + imag(c);
+            end
+
+        end
+        
         function normal_d = transformNormalD( T, xy, n )
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
 
@@ -130,10 +177,10 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             Ds_u = ubc * Ds; Dt_u = ubc * Dt;
 
             % Derivatives of (s,t) with respect to (x,y)
-            dsdx = @(x,y) T.dinvT1{1}(x,y);
-            dsdy = @(x,y) T.dinvT1{2}(x,y);
-            dtdx = @(x,y) T.dinvT2{1}(x,y);
-            dtdy = @(x,y) T.dinvT2{2}(x,y);
+            dsdx = @(x,y) T.dinvT11(x,y);
+            dsdy = @(x,y) T.dinvT12(x,y);
+            dtdx = @(x,y) T.dinvT21(x,y);
+            dtdy = @(x,y) T.dinvT22(x,y);
 
             % Boundary points on the four sides
             xxl = xy{1}(:,1); yyl = xy{1}(:,2);
@@ -179,11 +226,8 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             Y = T.T2(x, y);
         end
         
-        function v = vertices(M)
-            xRef = [-1 1 1 -1]; yRef = [-1 -1 1 1];
-            x = M.T1(xRef, yRef);
-            y = M.T2(xRef, yRef);
-            v = [x ; y];
+        function out = vertices(T)
+            out = T.v;
         end
 
     end
@@ -194,59 +238,12 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     methods ( Access = public, Static = false, Sealed )
-    
-            function plot( T, varargin )
-            % Plot the mapped domain and grid:
 
-            plotPts = false;
-            n = 21;
-
-            holdState = ishold();
-
-            if ( nargin > 1 && ...
-                    ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
-                plotPts = true;
-            end
-
-            for k = 1:numel(T)
-                % Plot domain:
-                v = vertices(T(k));
-                plot(v(1,[1:end, 1]), v(2,[1:end, 1]), 'k-', 'LineWidth', 2); hold on
-
-                if ( plotPts )
-                    % Plot the grid:
-                    [xx, yy] = chebGrid( n, T(k) );
-                    plot(xx, yy, varargin{:})
-                end
-
-                % Add text to centre of patch:
-                if ( numel(T) < 100 ) % Don't add text on large meshes
-                    c = centroid(T(k));
-                    text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
-                end
-
-            end
-
-            if ( ~holdState )
-                hold off
-            end
-
-            end
         
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS METHODS (STATIC)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-
-    methods (Static, Sealed, Access = protected)
-        function cobj = convertObject(~, v)
-            n = size(v, 1);
-            cobj(n,1) = rectangle();
-            for k = 1:n
-                cobj(k,1) = rectangle(v(k,:));
-            end
-        end
-    end
 
 end
