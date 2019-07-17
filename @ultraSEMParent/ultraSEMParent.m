@@ -3,7 +3,6 @@ classdef ultraSEMParent < ultraSEMPatch
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
     %#ok<*PROP>
-    %#ok<*PROPLC> 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:
@@ -15,6 +14,8 @@ classdef ultraSEMParent < ultraSEMPatch
         child2 = []     % Child patch
         idx1            % How p.xy relates to p.child1.xy
         idx2            % How p.xy relates to p.child2.xy
+        flip1           % How to flip the interface for child1
+        flip2           % How to flip the interface for child2
 
     end
 
@@ -24,7 +25,7 @@ classdef ultraSEMParent < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMParent(domain, S, D2N, xy, child1, child2, idx1, idx2)
+        function P = ultraSEMParent(domain, S, D2N, xy, child1, child2, idx1, idx2, flip1, flip2)
         %ULTRASEMPARENT   Class constructor for the @ultraSEMParent class.
         %   P = ultraSEMParent(DOMAIN, S, D2N, XY, CHILD1, CHILD2, IDX1, IDX2)
         %   assigns each of the inputs to their associated properties in
@@ -46,6 +47,8 @@ classdef ultraSEMParent < ultraSEMPatch
             P.child2 = child2;
             P.idx1 = idx1;
             P.idx2 = idx2;
+            P.flip1 = flip1;
+            P.flip2 = flip2;
 
         end
 
@@ -84,9 +87,9 @@ classdef ultraSEMParent < ultraSEMPatch
 
             % Assemble boundary conditions for child patches:
             ubc1 = ones(size(P.child1.S, 2)-1, 1);
-            ubc1(idx1) = [bc(i1) ; u];
+            ubc1(idx1) = [bc(i1) ; P.flip1.*u];
             ubc2 = ones(size(P.child2.S, 2)-1, 1);
-            ubc2(idx2) = [bc(i2) ; u];
+            ubc2(idx2) = [bc(i2) ; P.flip2.*u];
 
             % Solve for the child patches:
             [u1, d1] = solve(P.child1, ubc1);
@@ -118,6 +121,8 @@ classdef ultraSEMParent < ultraSEMPatch
             s1 = P.idx1{2};
             i2 = P.idx2{1};
             s2 = P.idx2{2};
+            flip1 = P.flip1;
+            flip2 = P.flip2;
 
             % Extract D2N maps:
             D2Na = a.D2N; D2Nb = b.D2N;
@@ -125,15 +130,15 @@ classdef ultraSEMParent < ultraSEMPatch
             % a.D2N = []; b.D2N = [];
 
             % Compute new solution operator:
-            S = lsqminnorm( -( D2Na(s1,s1) + D2Nb(s2,s2) ), ...
-                               D2Na(s1,end) + D2Nb(s2,end) );
+            S = lsqminnorm( -( flip1.*D2Na(s1,s1).*flip1.' + flip2.*D2Nb(s2,s2).*flip2.' ), ...
+                               flip1.*D2Na(s1,end) + flip2.*D2Nb(s2,end) );
             %                 |------------------ rhs ------------------|
 
             % Compute new D2N maps:
             %      |--- rhs ----|
             D2N = [ D2Na(i1,end) ;
                     D2Nb(i2,end) ] ...
-                + [ D2Na(i1,s1) ; D2Nb(i2,s2) ] * S;
+                + [ D2Na(i1,s1).*flip1.' ; D2Nb(i2,s2).*flip2.' ] * S;
 
             P.S(:,end) = S;
             P.D2N(:,end) = D2N;

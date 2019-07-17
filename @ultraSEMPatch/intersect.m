@@ -1,4 +1,4 @@
-function [i1, i2, i4a, i4b, newDom] = intersect(a, b)
+function [i1, i2, i4a, i4b, flip1, flip2, newDom] = intersect(a, b)
 %INTERSECT   Compute the indicies of the glue between two patches.
 %   [I1, I2, I4A, I4B, FLIP1, FLIP2] = INTERSECT(A, B) returns the indicies
 %   of the glue w.r.t. A.xy and B.xy of two patches A and B. For
@@ -32,6 +32,7 @@ function [i1, i2, i4a, i4b, newDom] = intersect(a, b)
 
 % The new domain will be NaN except in the special case when we are
 % merging two rectangluar patches horizontally or vertically.
+newDom = NaN;
 
 % Remove corners before we test intersection:
 axy = a.xy; bxy = b.xy;
@@ -54,7 +55,9 @@ bxy = single(bxy + shift);
 if ( ~isnumeric(a.domain) || ~isnumeric(b.domain) )
 
     [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
-    newDom = ultraSEMDomain([a.domain ; b.domain]);
+    try
+        newDom = ultraSEMDomain([a.domain, b.domain]); % Only for debugging. Remove.
+    end
 
 elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
     % Merge two rectangles.
@@ -87,13 +90,17 @@ elseif ( numel(a.domain) == 4 && numel(b.domain) == 4 )
     else
         % Resort to calling intersect:
         [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
-        newDom = ultraSEMDomain([a.domain ; b.domain]);
+        try
+            newDom = ultraSEMDomain([a.domain, b.domain]); % Only for debugging. Remove.
+        end
     end
 
 else
     % Merge two general domains.
     [~, i4a, i4b] = intersect(axy, bxy, 'rows', 'stable');
-    newDom = ultraSEMDomain([a.domain ; b.domain]);
+    try
+        newDom = ultraSEMDomain([a.domain, b.domain]); % Only for debugging. Remove.
+    end
 end
 
 % We forgot about the "corner" indicies. Add them back.
@@ -105,9 +112,6 @@ flags1 = find(all(diff(reshape(i4a,na-2,numel(ia))) == -1));
 flags2 = find(all(diff(reshape(i4b,nb-2,numel(ib))) == -1));
 if ( isempty(i4a) ), flags1 = []; end
 if ( isempty(i4b) ), flags2 = []; end
-if ( any(flags1) || any(flags2) )
-    error('should not need to flip!')
-end
 
 % Now create the non-flipped glue indices.
 i4a = (1:na).' + (ia-1)*na; i4a = i4a(:);
@@ -119,10 +123,10 @@ i2 = (1:(size(bxy,1)+2*length(b.xy))).'; i2(i4b) = [];
 
 % % To "flip" the corresponding glue coefficients, multiply them by
 % % [1 -1 1 -1 ...]
-% flip1 = ones(size(i4a,1),1);
-% flip2 = ones(size(i4b,1),1);
-% if ~isempty(flags1), flip1((2:2:na)'+(flags1-1)*na) = -1; end
-% if ~isempty(flags2), flip2((2:2:nb)'+(flags2-1)*nb) = -1; end
+flip1 = ones(size(i4a,1),1);
+flip2 = ones(size(i4b,1),1);
+if ~isempty(flags1), flip1((2:2:na)'+(flags1-1)*na) = -1; end
+if ~isempty(flags2), flip2((2:2:nb)'+(flags2-1)*nb) = -1; end
 
 
 end

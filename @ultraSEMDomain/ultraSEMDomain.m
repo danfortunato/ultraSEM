@@ -363,58 +363,9 @@ classdef ultraSEMDomain
                 if ( ~holdState )
                     hold off
                 end
-                return
-            end
-        
-            if ( ~isnumeric(T.domain) )
-                if ( isa(T.domain, 'ultraSEMDomain') )
-                    holdState = ishold();
-                    for k = 1:numel(T.domain)
-                        [varargout{1:nargout}] = plot(T.domain(k), varargin{:});
-                        hold on
-                    end
-                    if ( ~holdState )
-                        hold off
-                    end
-                else
-                    [varargout{1:nargout}] = plot(T.domain, varargin{:});
-                end
-                return
-            end
-
-            % Choose a color:
-            if ( nargin > 1 && ischar(varargin{1}) && ...
-                    ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
-                c = varargin{1};
-                varargin(1) = [];
-            elseif ( nargin > 1 && isnumeric(varargin{1}) )
-                c = varargin{1};
-                varargin(1) = [];
             else
-                c = rand(1, 3);
+                [varargout{1:nargout}] = plot(T.domain, varargin{:});
             end
-
-            holdState = ishold();
-
-            % Loop over the patches:
-            for k = 1:length(T)
-                domk = T.domain(k,:);
-                % Call the built-in FILL method:
-                h(k,1) = fill(domk([1 2 2 1]), domk([3 3 4 4]), c, ...
-                    'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
-                % Add text to center of patch:
-                if ( length(T) < 100 ) % Don't add text on large meshes
-                    text(mean(domk(1:2)), mean(domk(3:4)), int2str(k), ...
-                        'HorizontalAlignment', 'center')
-                end
-            end
-            axis equal
-
-            % Return hold state:
-            if ( ~holdState), hold off, end
-            % Assign output if required:
-            if ( nargout > 0 ), varargout = {h}; end
-
         end
         
         function plottree(T)

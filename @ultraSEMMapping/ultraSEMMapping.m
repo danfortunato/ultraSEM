@@ -96,7 +96,7 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             n = 21;
             holdState = ishold();
 
-            if ( nargin > 1 && ...
+            if ( nargin > 1 && ~isempty(varargin) && ...
                     ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
                 plotPts = true;
             end

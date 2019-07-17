@@ -482,6 +482,7 @@ classdef ultraSEMQuad < ultraSEMMapping
                 % Switch the second and fourth indices.
                 v([2,4],:) = v([4,2],:);
             end
+            
         end
 
     end

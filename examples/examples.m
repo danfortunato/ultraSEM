@@ -188,12 +188,12 @@ exampleplot(sol)
 
 %% Penrose snowflake
 
-n = 20;
-pdo = {{1,0,1}, {0,0}, @(x,y) 30*(1-y)};
+n = 10;
+pdo = {{1,0,1}, {0,0}, 20};
 rhs = -1;
 bc = 0;
 
-T = pentaflake(2, 0, -5);       % Construct Penrose snowflake shape
+T = pentaflake(2, 0, 0);       % Construct Penrose snowflake shape
 T = rmholes(T);                 % Remove holes
 tri = triangulation(T);         % Triangulate
 dom = ultraSEM.trimesh(tri);    % Convert to ultraSEMDomain
