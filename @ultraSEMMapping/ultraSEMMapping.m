@@ -1,4 +1,4 @@
-classdef ultraSEMMapping < handle
+classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 %ULTRASEMMAPPING  Abstract mapping object from ULTRASEM system.
 
     %#ok<*PROP>
@@ -26,7 +26,11 @@ classdef ultraSEMMapping < handle
 
     end
 
-    methods ( Access = public, Static = false, Sealed )
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% CLASS METHODS (NOT SEALED)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    methods ( Access = public, Static = false )
 
         function [xx, yy] = chebGrid(n, map)
             [xx, yy] = util.chebpts2(n, n, map.domain);
@@ -45,59 +49,62 @@ classdef ultraSEMMapping < handle
             n = n * diag(1./sqrt(sum( n.^2 )));  % Normalize
         end
 
-        function plot( T, varargin )
-            % Plot the mapped domain and grid:
-            
-            % Choose a color:
-            if ( nargin > 1 && ischar(varargin{1}) && ...
-                    ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
-                col = varargin{1};
-                varargin(1) = [];
-            elseif ( nargin > 1 && isnumeric(varargin{1}) )
-                col = varargin{1};
-                varargin(1) = [];
-            else
-%                 col = 'm';
-                col = rand(1, 3);
-            end
-
-            plotPts = false;
-            n = 21;
-
-            holdState = ishold();
-
-            if ( nargin > 1 && ...
-                    ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
-                plotPts = true;
-            end
-
-            for k = 1:numel(T)
-                % Plot domain:
-                v = vertices(T(k));
-                h(k,1) = fill(v(1,[1:end, 1]), v(2,[1:end, 1]), col, ...
-                    'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
-                % Add text to center of patch:
-
-                if ( plotPts )
-                    % Plot the grid:
-                    [xx, yy] = chebGrid( n, T(k) );
-                    plot(xx, yy, varargin{:})
-                end
-
-                % Add text to centre of patch:
-                if ( numel(T) < 100 ) % Don't add text on large meshes
-                    c = centroid(T(k));
-                    text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
-                end
-
-            end
-
-            if ( ~holdState )
-                hold off
-            end
-
-        end
-
+% <<<<<<< HEAD
+%         function plot( T, varargin )
+%             % Plot the mapped domain and grid:
+%             
+%             % Choose a color:
+%             if ( nargin > 1 && ischar(varargin{1}) && ...
+%                     ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )
+%                 col = varargin{1};
+%                 varargin(1) = [];
+%             elseif ( nargin > 1 && isnumeric(varargin{1}) )
+%                 col = varargin{1};
+%                 varargin(1) = [];
+%             else
+% %                 col = 'm';
+%                 col = rand(1, 3);
+%             end
+% 
+%             plotPts = false;
+%             n = 21;
+% 
+%             holdState = ishold();
+% 
+%             if ( nargin > 1 && ...
+%                     ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
+%                 plotPts = true;
+%             end
+% 
+%             for k = 1:numel(T)
+%                 % Plot domain:
+%                 v = vertices(T(k));
+%                 h(k,1) = fill(v(1,[1:end, 1]), v(2,[1:end, 1]), col, ...
+%                     'FaceAlpha', .25, varargin{:}); hold on %#ok<AGROW>
+%                 % Add text to center of patch:
+% 
+%                 if ( plotPts )
+%                     % Plot the grid:
+%                     [xx, yy] = chebGrid( n, T(k) );
+%                     plot(xx, yy, varargin{:})
+%                 end
+% 
+%                 % Add text to centre of patch:
+%                 if ( numel(T) < 100 ) % Don't add text on large meshes
+%                     c = centroid(T(k));
+%                     text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
+%                 end
+% 
+%             end
+% 
+%             if ( ~holdState )
+%                 hold off
+%             end
+% 
+%         end
+% 
+% =======
+% >>>>>>> feature-rectangles
         function normal_d = transformNormalD( T, xy, n )
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
 
@@ -173,8 +180,6 @@ classdef ultraSEMMapping < handle
         end
         
         function v = vertices(M)
-%             xRef = M.domain([1 2 2 1]);
-%             yRef = M.domain([3 3 4 4]);
             xRef = [-1 1 1 -1]; yRef = [-1 -1 1 1];
             x = M.T1(xRef, yRef);
             y = M.T2(xRef, yRef);
@@ -182,6 +187,57 @@ classdef ultraSEMMapping < handle
         end
 
     end
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% CLASS METHODS (NOT SEALED)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    methods ( Access = public, Static = false, Sealed )
+    
+            function plot( T, varargin )
+            % Plot the mapped domain and grid:
+
+            plotPts = false;
+            n = 21;
+
+            holdState = ishold();
+
+            if ( nargin > 1 && ...
+                    ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
+                plotPts = true;
+            end
+
+            for k = 1:numel(T)
+                % Plot domain:
+                v = vertices(T(k));
+                plot(v(1,[1:end, 1]), v(2,[1:end, 1]), 'k-', 'LineWidth', 2); hold on
+
+                if ( plotPts )
+                    % Plot the grid:
+                    [xx, yy] = chebGrid( n, T(k) );
+                    plot(xx, yy, varargin{:})
+                end
+
+                % Add text to centre of patch:
+                if ( numel(T) < 100 ) % Don't add text on large meshes
+                    c = centroid(T(k));
+                    text(c(1), c(2), int2str(k), 'HorizontalAlignment', 'center')
+                end
+
+            end
+
+            if ( ~holdState )
+                hold off
+            end
+
+            end
+        
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% CLASS METHODS (STATIC)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 
     methods (Static, Sealed, Access = protected)
         function cobj = convertObject(~, v)
