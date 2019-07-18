@@ -166,6 +166,8 @@ else
 
     % Loop over each patch:
     for k = 1:numPatches
+        rhs = rhs_orig;
+        op = op_orig;
 
         % Determine if this is a mapped domain:
         mapped = ~(isnumeric(dom(k,:)) || isRect(dom(k,:)));
