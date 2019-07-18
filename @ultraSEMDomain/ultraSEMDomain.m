@@ -424,7 +424,7 @@ classdef ultraSEMDomain
 
         end
 
-        function T = refine(T, m)
+        function T = refine(T, m, varargin)
         %REFINE   Refine an ultraSEMDomain.
         %   REFINE(T) will divide each subdomain of T into four new
         %   equally-sized pieces. The tree index information in the result
@@ -435,7 +435,10 @@ classdef ultraSEMDomain
         
             if ( nargin < 2 )
                 m = 1;
-            elseif ( m == 0 ) 
+            elseif ( size(m,2) == 2 )
+                T = refinePoint(T, m, varargin{:});
+                return
+            elseif( m == 0 ) 
                 return
             end
             
@@ -470,6 +473,69 @@ classdef ultraSEMDomain
             end
 
         end
+                
+        function [T, newIdx] = refinePoint(T, z, m)
+            
+            newIdx = {};
+            if ( nargin < 3 ), m = 1; end
+            if ( m == 0 ), return, end
+ 
+            if ( numel(T) > 1 )
+                for k = 1:numel(T)
+                    T(k) = refinePoint(T(k), z, m);
+                end
+                return 
+            end
+            n = numel(T.domain);
+            newDom = cell(n,1);
+            idx = cell(n,1);
+            s = [0, 0];
+            for k = 1:n
+                [newDom{k}, newIdx] = refinePoint(T.domain(k), z);
+                if ( numel( newIdx ) == 1 )
+                    newIdx = {[1, NaN], [1, NaN]};
+                end
+                idx{k,1} = newIdx{1} + s(1);
+                idx{k,2} = newIdx{2} + s(2);
+                s = [max(idx{k,1}(:)), max(idx{k,2}(:))];
+            end
+            idx = {vertcat(idx{:,1}), vertcat(idx{:,2})};
+            
+            T.domain = vertcat(newDom{:});
+            T.mergeIdx = [idx, T.mergeIdx];
+            
+            [T, newIdx] = refinePoint(T, z, m-1);
+            
+            % Stacked
+%             newIdx = {};
+%             if ( nargin < 3 ), m = 1; end
+%             if ( m == 0 ), return, end
+% 
+%             if ( numel(T) > 1 )
+%                 for k = 1:numel(T)
+%                     T(k) = refinePoint(T(k), z, m);
+%                 end
+%                 return 
+%             end
+%             
+%             prevDom = T.domain;
+%             if ( ~isa(T.domain(1), 'ultraSEMDomain') )
+%                 dom = {};
+%                 for k = 1:numel(T.domain)
+%                     dom{k} = ultraSEMDomain(T.domain(k));
+%                 end
+%                 T.domain = vertcat(dom{:});
+%             end
+%             
+%             newDom = {};
+%             for k = 1:numel(T.domain)
+%                 [T.domain(k), newIdx] = refinePoint(prevDom(k), z);
+%                 T.domain(k).mergeIdx = newIdx;
+%             end
+%                         
+%             [T, newIdx] = refinePoint(T, z, m-1);
+
+        end  
 
         function T = removePatch(T, k)
         %REMOVEPATCH   Remove a patch (or patches) from a domain.
