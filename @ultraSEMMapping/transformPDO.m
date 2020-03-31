@@ -126,7 +126,7 @@ else
     end
 
     % righthand side:
-    if ( isa(rhs, 'function_handle') )
+    if ( nargin > 3 && isa(rhs, 'function_handle') )
         rhs = @(s,t) rhs(T.T1(s,t), T.T2(s,t));
     end
 end

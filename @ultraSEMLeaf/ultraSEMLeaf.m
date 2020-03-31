@@ -42,6 +42,10 @@ classdef ultraSEMLeaf < ultraSEMPatch
             P.domain = dom;       % Domain.
             P.S = S;              % Solution operator.
             P.D2N = D2N;          % Dirichlet-to-Neumann map.
+            if ( isnumeric(xy) )
+                p = length(xy)/4;
+                xy = mat2cell(xy, [p p p p], 2);
+            end
             P.xy = xy;            % Boundary nodes.
             if ( nargin > 4 )
                 P.Ainv = Ainv;    % Local solution operator.

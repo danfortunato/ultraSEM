@@ -4,7 +4,6 @@ if ( size(v, 2) ~= 4 )
     v = v.';
 end
 
-
 out = {};
 for k = 1:size(v, 1)
     vk = v(k,:);

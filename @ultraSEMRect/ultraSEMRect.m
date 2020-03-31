@@ -44,6 +44,50 @@ classdef ultraSEMRect < ultraSEMQuad
             out = true;
         end
         
+        function v = rectVertices(R)
+            v = quad2rect(R.v);
+        end
+        
+        function v = quadVertices(R)
+            v = rect2quad(R.v);
+        end
+        
+        function [X, Y, XY] = transformGrid(T, x, y)
+            rect = rectVertices(T);
+            domx = rect(1:2);    domy = rect(3:4); 
+            sclx = 2/diff(domx); scly = 2/diff(domy);
+            X = (x+1)/sclx + domx(1); 
+            Y = (y+1)/scly + domy(1);
+            if ( nargout == 3 ), XY = [X Y]; end
+        end
+        
+        function normal_d = transformNormalD(T, xy, p)
+        %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
+        
+            persistent bcrows_d
+            if ( size(bcrows_d, 2) ~= p )
+                % Construct normal derivatives conditions along the four edges:
+                I = speye(p);
+                lbc_d = kron( (-1).^(0:p-1).*(0:p-1).^2, I );
+                rbc_d = kron( ones(1,p).*(0:p-1).^2, I );
+                dbc_d = kron( I, (-1).^(0:p-1).*(0:p-1).^2 );
+                ubc_d = kron( I, ones(1,p).*(0:p-1).^2 );
+                bcrows_d = [ lbc_d ; rbc_d ; dbc_d ; ubc_d ];
+            end
+
+            rect = rectVertices(T);
+            domx = rect(1:2);    domy = rect(3:4); 
+            sclx = 2/diff(domx); scly = 2/diff(domy);
+            normal_d = bcrows_d;
+            normal_d(1:2*p,:) = sclx*normal_d(1:2*p,:);
+            normal_d(2*p+1:end,:) = scly*normal_d(2*p+1:end,:);
+        
+        end
+        
+        function [op, rhs] = transformPDO(dom, op, rhs)
+
+        end
+        
         function [R, mergeIdx] = refine(R, m)
         %REFINE    Refine ultraSEMRect objects.    
             

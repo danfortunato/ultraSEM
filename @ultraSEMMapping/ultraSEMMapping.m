@@ -130,8 +130,11 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             dsdy = @(x,y) T.dinvT12(x,y);
             dtdx = @(x,y) T.dinvT21(x,y);
             dtdy = @(x,y) T.dinvT22(x,y);
-
+            
             % Boundary points on the four sides
+            if ( isnumeric(xy) )
+                xy = mat2cell(xy, [n n n n], 2);
+            end
             xxl = xy{1}(:,1); yyl = xy{1}(:,2);
             xxr = xy{2}(:,1); yyr = xy{2}(:,2);
             xxd = xy{3}(:,1); yyd = xy{3}(:,2);
@@ -170,9 +173,10 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
         end
 
-        function [X, Y] = transformGrid( T, x, y )
+        function [X, Y, XY] = transformGrid(T, x, y)
             X = T.T1(x, y);
             Y = T.T2(x, y);
+            if ( nargout == 3 ), XY = [X Y]; end
         end
         
         function out = vertices(T)

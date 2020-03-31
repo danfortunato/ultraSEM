@@ -219,7 +219,7 @@ classdef ultraSEM < handle
                 end
                 S.patches = S_sub;
             else
-                S.patches = ultraSEMLeaf.initialize(D, varargin{:});
+                S.patches = ultraSEMLeaf.initialize(D.domain, varargin{:});
             end
             
         end

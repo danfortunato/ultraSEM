@@ -7,14 +7,11 @@ function S = convertmat(n, k1, k2)
 %   basis with parameter K. If K2 < K1, S is the N-by-N identity matrix.
 
 persistent storeS
-
 if ( isempty(storeS) )
     storeS = cell(2,2);
-else
-    if ( length(storeS{k1+1,k2+1}) == n )
-        S = storeS{k1+1, k2+1};
-        return
-    end
+elseif ( all(size(storeS)>[k1,k2]) && length(storeS{k1+1,k2+1}) == n )
+    S = storeS{k1+1, k2+1};
+    return
 end
 
 S = speye(n);
