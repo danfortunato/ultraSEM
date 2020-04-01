@@ -10,30 +10,32 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
         v
     end
 
+    methods
+        function obj = set.v(obj,value)
+            obj.v = value;
+            % Recompute the mapping when the vertices change.
+            obj = parametrize(obj);
+        end
+    end
+
+    methods (Static, Sealed, Access = protected)
+        function defaultObject = getDefaultScalarElement
+            defaultObject = ultraSEMQuad;
+        end
+    end
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods ( Access = public, Static = false, Abstract = true )
-%         out = T1(T, x, y);
-%         out = T2(T, x, y);
-%         out = invT1(T, x, y);
-%         out = invT2(T, x, y);
-%         out = dinvT11(T, x, y);
-%         out = dinvT12(T, x, y);
-%         out = dinvT21(T, x, y);
-%         out = dinvT22(T, x, y);
-%         out = d2invT11(T, x, y); 
-%         out = d2invT12(T, x, y); 
-%         out = d2invT13(T, x, y);
-%         out = d2invT21(T, x, y); 
-%         out = d2invT22(T, x, y); 
-%         out = d2invT23(T, x, y); 
+        % The parametrization defining the mapping.
+        obj = parametrize(obj);
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS METHODS (NOT SEALED)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     methods ( Access = public, Static = false )
 
         function [xx, yy] = chebGrid(n, map)
@@ -67,8 +69,8 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
         function n = normals( Q )
         %NORMALS   Outward pointing normal vectors to the edges of a quad.
-            v = [ Q.T1([-1 1 1 -1],[-1 -1 1 1]) ;
-                  Q.T2([-1 1 1 -1],[-1 -1 1 1]) ].';
+            v = [ Q.x([-1 1 1 -1],[-1 -1 1 1]) ;
+                  Q.y([-1 1 1 -1],[-1 -1 1 1]) ].';
             v = [ v ; v(1,:) ];
             dx = diff(v(:,1));
             dy = diff(v(:,2));
@@ -174,8 +176,8 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
         end
 
         function [X, Y, XY] = transformGrid(T, x, y)
-            X = T.T1(x, y);
-            Y = T.T2(x, y);
+            X = T.x(x, y);
+            Y = T.y(x, y);
             if ( nargout == 3 ), XY = [X Y]; end
         end
         
@@ -185,14 +187,12 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
     end
     
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% CLASS METHODS (NOT SEALED)
+    %% CLASS METHODS (SEALED)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     methods ( Access = public, Static = false, Sealed )
 
-        
         function plot( T, varargin )
             % Plot the mapped domain and grid:
             

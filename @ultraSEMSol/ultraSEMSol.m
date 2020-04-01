@@ -184,8 +184,8 @@ classdef ultraSEMSol
 
                 map = sol.domain(k,:);
                 % Convert to single to avoid mapping issues
-                x = map.invT1(x0, y0);
-                y = map.invT2(x0, y0);
+                x = map.r(x0, y0);
+                y = map.s(x0, y0);
                 dom = [-1 1 -1 1];
 
                 xs = single(x);

@@ -4,9 +4,29 @@ classdef ultraSEMQuad < ultraSEMMapping
     %#ok<*PROP>
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% CLASS PROPERTIES:
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    properties ( Access = public )
+        % Coefficients in the bilinear map:
+        %   x = a1 + b1*r + c1*s + d1*r.*s
+        %   y = a2 + b2*r + c2*s + d2*r.*s
+        a1
+        b1
+        c1
+        d1
+        a2
+        b2
+        c2
+        d2
+        scl % Scale factor for RHS
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     methods
+
         function obj = ultraSEMQuad( v )
             %ULTRASEMQUAD  Class constructor for the @ultraSEMQuad class.
 
@@ -14,19 +34,17 @@ classdef ultraSEMQuad < ultraSEMMapping
             if ( nargin == 0 )
                 return
             end
-            
-            % Construct multiple ultraSEMQuads:
-            if ( iscell(v) )
-                obj(numel(v),1) = ultraSEMQuad();
-                for k = 1:numel(v)
-                    obj(k,1) = ultraSEMQuad( v{k} );
-                end
-                return
+
+            if ( ~iscell(v) )
+                v = {v};
             end
-            
-            v = ultraSEMQuad.assertIsQuad(v);
-                        
-            obj.v = v;
+            nobj = numel(v);
+            obj = repelem(obj,nobj,1);
+            for k = 1:nobj
+                v{k} = ultraSEMQuad.assertIsQuad(v{k});
+                obj(k).v = v{k};
+                obj(k).scl = @(r,s) obj(k).det(r,s).^3;
+            end
 
         end
 
@@ -38,6 +56,19 @@ classdef ultraSEMQuad < ultraSEMMapping
 
     methods
         
+        function obj = parametrize(obj)
+            % Compute the change of variables:
+            M = [1 -1 -1  1;  % (-1, 1)
+                 1  1 -1 -1;  % (1, -1)
+                 1  1  1  1;  % (1,  1)
+                 1 -1  1 -1];
+            params = M \ obj.v;
+            obj.a1 = params(1,1); obj.a2 = params(1,2);
+            obj.b1 = params(2,1); obj.b2 = params(2,2);
+            obj.c1 = params(3,1); obj.c2 = params(3,2);
+            obj.d1 = params(4,1); obj.d2 = params(4,2);
+        end
+
         function c = centroid(Q)
             [xmid, ymid] = centroid(polyshape(Q.v));
             c = [xmid ; ymid]; 
@@ -46,14 +77,6 @@ classdef ultraSEMQuad < ultraSEMMapping
         function out = isRect(M)
             out = false;
         end
-       
-    end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% METHODS
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    methods
                 
         function [Q, mergeIdx] = refine(Q, m)
             
@@ -147,327 +170,172 @@ classdef ultraSEMQuad < ultraSEMMapping
             Q(1) = ultraSEMQuad(v3');
             idx = {[1 2 ; 3 NaN], [1 2]};
         end
-        
-        function out = T1(obj, x, y)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            out = c(1) + c(2)*x + c(3)*y + c(4)*x.*y;
+        function x = x(obj, r, s)
+            % Map from square (r,s) to quad (x,y)
+            x = obj.a1 + obj.b1*r + obj.c1*s + obj.d1*r.*s;
         end
-        
-        function out = T2(obj, x, y)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
 
-            % Solve 4x4 linear system:
-            d = M \ v(:,2);
-            out = d(1) + d(2)*x + d(3)*y + d(4)*x.*y;
+        function y = y(obj, r, s)
+            % Map from square (r,s) to quad (x,y)
+            y = obj.a2 + obj.b2*r + obj.c2*s + obj.d2*r.*s;
         end
-        
-        function out = invT1(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
-            B = @(s,t) c(2)*d(3) + c(1)*d(4) - c(4)*d(1) - c(3)*d(2) - d(4)*s + c(4)*t;
-            C = @(s,t) c(1)*d(3) - c(3)*d(1) - d(3)*s + c(3)*t;
+        function r = r(obj, x, y)
+            % Map from quad (x,y) to square (r,s)
+            A = obj.b1*obj.d2 - obj.d1*obj.b2;
+            B = @(x,y) obj.b1*obj.c2 - obj.c1*obj.b2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*x + obj.d1*y;
+            C = @(x,y) obj.a1*obj.c2 - obj.c1*obj.a2 - obj.c2*x + obj.c1*y;
             if ( A == 0 )
-                out = -C(s,t)./B(s,t);
+                r = -C(x,y)./B(x,y);
             else
-                out = (-B(s,t) + sqrt(B(s,t).^2-4*A*C(s,t))) / (2*A);
-            end
-        end
-        
-        function out = invT2(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);
-            B = @(s,t) c(3)*d(2) + c(1)*d(4) - c(4)*d(1) - c(2)*d(3) - d(4)*s+c(4)*t;
-            C = @(s,t) c(1)*d(2) - c(2)*d(1) - d(2)*s + c(2)*t;
-            if ( A == 0 )
-                out = -C(s,t)./B(s,t);
-            else
-                out = (-B(s,t) - sqrt(B(s,t).^2-4*A*C(s,t))) / (2*A);
-            end
-        end
-        
-        function out = dinvT11(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
-            B = @(s,t) c(2)*d(3) + c(1)*d(4) - c(4)*d(1) - c(3)*d(2) - d(4)*s + c(4)*t;
-            C = @(s,t) c(1)*d(3) - c(3)*d(1) - d(3)*s + c(3)*t;
-            if ( A == 0 )
-                out = -(-d(3)*(B(s,t)+d(4)*s) + (C(s,t)+d(3)*s)*d(4))./(B(s,t).^2);    
-            else
-                out = d(4)/(2*A) + (-2*d(4)*B(s,t)+4*d(3)*A)./(4*A*(sqrt(B(s,t).^2-4*A*C(s,t))));
-            end
-        end
-        
-        function out = dinvT12(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
-            B = @(s,t) c(2)*d(3) + c(1)*d(4) - c(4)*d(1) - c(3)*d(2) - d(4)*s + c(4)*t;
-            C = @(s,t) c(1)*d(3) - c(3)*d(1) - d(3)*s + c(3)*t;                
-            if ( A == 0 )
-                out = -(c(3)*(B(s,t)-c(4)*t) - (C(s,t)-c(3)*t)*c(4))./(B(s,t).^2);
-            else
-                out = -c(4)/(2*A) + (2*c(4)*B(s,t)-4*c(3)*A)./(4*A*(sqrt(B(s,t).^2-4*A*C(s,t))));
-            end
-        end   
-        
-        function out = dinvT21(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);
-            B = @(s,t) c(3)*d(2)+c(1)*d(4)-c(4)*d(1)-c(2)*d(3)-d(4)*s+c(4)*t;
-            C = @(s,t) c(1)*d(2)-c(2)*d(1)-d(2)*s+c(2)*t;
-            if ( A == 0 )
-                out = -(-d(2)*(B(s,t)+d(4)*s) + (C(s,t)+d(2)*s)*d(4))./(B(s,t).^2);
-            else
-                out = d(4)/(2*A) - (-2*d(4)*B(s,t)+4*d(2)*A)./(4*A*(sqrt(B(s,t).^2-4*A*C(s,t))));
+                r = (-B(x,y) + sqrt(B(x,y).^2-4*A*C(x,y))) / (2*A);
             end
         end
 
-        function out = dinvT22(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);
-            B = @(s,t) c(3)*d(2)+c(1)*d(4)-c(4)*d(1)-c(2)*d(3)-d(4)*s+c(4)*t;
-            C = @(s,t) c(1)*d(2)-c(2)*d(1)-d(2)*s+c(2)*t;            
+        function s = s(obj, x, y)
+            % Map from quad (x,y) to square (r,s)
+            A = obj.c1*obj.d2 - obj.d1*obj.c2;
+            B = @(x,y) obj.c1*obj.b2 - obj.b1*obj.c2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*x + obj.d1*y;
+            C = @(x,y) obj.a1*obj.b2 - obj.b1*obj.a2 - obj.b2*x + obj.b1*y;
             if ( A == 0 )
-                out = -(c(2)*(B(s,t)-c(4)*t) - (C(s,t)-c(2)*t)*c(4))./(B(s,t).^2);
+                s = -C(x,y)./B(x,y);
             else
-                out = -c(4)/(2*A) - (2*c(4)*B(s,t)-4*c(2)*A)./(4*A*(sqrt(B(s,t).^2-4*A*C(s,t))));
-            end
-        end   
-        
-        function out = d2invT11(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
-
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
-            if ( A == 0 )
-                out = (2*d(4)*(-c(2)*d(3)^2 + c(4)*d(3)*(d(1) - t) + c(3)*(d(2)*d(3) - d(1)*d(4) + d(4)*t)))./(c(3)*d(2) - c(2)*d(3) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;  
-            else
-                out = (2*(c(4)*d(3) - c(3)*d(4))*(d(2)*d(3) + d(4)*(-d(1) + t)))./((c(4)*d(1) + c(3)*d(2)-c(2)*d(3) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(2) - c(2)*d(4))*(d(3)*(c(1) - s) + c(3)*(-d(1) + t))).^(3/2);
+                s = (-B(x,y) - sqrt(B(x,y).^2-4*A*C(x,y))) / (2*A);
             end
         end
-        
-        function out = d2invT12(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
+        function dxdr = dxdr(obj, r, s)
+            dxdr = obj.b1 + obj.d1*s;
+        end
 
+        function dxds = dxds(obj, r, s)
+            dxds = obj.c1 + obj.d1*r;
+        end
+
+        function dydr = dydr(obj, r, s)
+            dydr = obj.b2 + obj.d2*s;
+        end
+
+        function dyds = dyds(obj, r, s)
+            dyds = obj.c2 + obj.d2*r;
+        end
+
+        function drdx = drdx(obj, x, y)
+            drdx = obj.dyds(x,y);
+        end
+
+        function drdy = drdy(obj, x, y)
+            drdy = -obj.dxds(x,y);
+        end
+
+        function dsdx = dsdx(obj, x, y)
+            dsdx = -obj.dydr(x,y);
+        end
+
+        function dsdy = dsdy(obj, x, y)
+            dsdy = obj.dxdr(x,y);
+        end
+
+        function det = det(obj, r, s)
+            det = (obj.b1*obj.c2 - obj.b2*obj.c1) + obj.ddetdr*r + obj.ddetds*s;
+        end
+
+        function ddetdr = ddetdr(obj)
+            ddetdr = obj.b1*obj.d2 - obj.b2*obj.d1;
+        end
+
+        function ddetds = ddetds(obj)
+            ddetds = obj.c2*obj.d1 - obj.c1*obj.d2;
+        end
+
+        function ddetdx = ddetdx(obj, x, y)
+            ddetdx = obj.ddetdr*obj.drdx(x,y) + obj.ddetds*obj.dsdx(x,y);
+        end
+
+        function ddetdy = ddetdy(obj, x, y)
+            ddetdy = obj.ddetdr*obj.drdy(x,y) + obj.ddetds*obj.dsdy(x,y);
+        end
+
+        function drdxx = drdxx(obj, x, y)
+            drdxx = obj.d2*obj.drdx(x,y).*obj.det(x,y) - obj.drdx(x,y).*obj.ddetdx(x,y);
+        end
+
+        function dsdxx = dsdxx(obj, x, y)
+            dsdxx = -obj.d2*obj.dsdx(x,y).*obj.det(x,y) - obj.dsdx(x,y).*obj.ddetdx(x,y);
+        end
+
+        function drdyy = drdyy(obj, x, y)
+            drdyy = -obj.d1*obj.drdy(x,y).*obj.det(x,y) - obj.drdy(x,y).*obj.ddetdy(x,y);
+
+        end
+
+        function dsdyy = dsdyy(obj, x, y)
+            dsdyy = obj.d1*obj.dsdy(x,y).*obj.det(x,y) - obj.dsdy(x,y).*obj.ddetdy(x,y);
+        end
+
+        function drdxy = drdxy(obj, x, y)
+            drdxy = obj.d2*obj.drdy(x,y).*obj.det(x,y) - obj.drdx(x,y).*obj.ddetdy(x,y);
+        end
+
+        function dsdxy = dsdxy(obj, x, y)
+            dsdxy = obj.d1*obj.dsdx(x,y).*obj.det(x,y) - obj.dsdy(x,y).*obj.ddetdx(x,y);
+        end
+
+        function out = dinvT11(obj, r, s)
             % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
+            A = obj.b1*obj.d2 - obj.d1*obj.b2;
+            B = @(r,s) obj.b1*obj.c2 - obj.c1*obj.b2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*r + obj.d1*s;
+            C = @(r,s) obj.a1*obj.c2 - obj.c1*obj.a2 - obj.c2*r + obj.c1*s;
             if ( A == 0 )
-                out = (c(3)*d(4)*(-c(3)*d(2) + c(2)*d(3) + c(1)*d(4) - d(4)*s) + c(4)^2*d(3)*(-d(1) + t) + c(4)*(d(3)*(c(2)*d(3) - c(1)*d(4) + d(4)*s) - c(3)*(d(2)*d(3) - d(1)*d(4) + d(4)*t)))./(c(3)*d(2) - c(2)*d(3) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;   
+                out = -(-obj.c2*(B(r,s)+obj.d2*r) + (C(r,s)+obj.c2*r)*obj.d2)./(B(r,s).^2);
             else
-                out = ((-c(4)*d(3) + c(3)*d(4))*(c(3)*d(2) + c(2)*d(3) - c(1)*d(4) + d(4)*s + c(4)*(-d(1) + t)))./((c(4)*d(1) + c(3)*d(2) - c(2)*d(3) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(2) - c(2)*d(4)).*(d(3)*(c(1) - s) + c(3)*(-d(1) + t))).^(3/2);
-
+                out = obj.d2/(2*A) + (-2*obj.d2*B(r,s)+4*obj.c2*A)./(4*A*(sqrt(B(r,s).^2-4*A*C(r,s))));
             end
-        end  
-        
-        function out = d2invT13(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
+        end
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
+        function out = dinvT12(obj, r, s)
             % Fill in Aaron's formulas for the quad transformations:
-            A = c(2)*d(4) - c(4)*d(2);
+            A = obj.b1*obj.d2 - obj.d1*obj.b2;
+            B = @(r,s) obj.b1*obj.c2 - obj.c1*obj.b2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*r + obj.d1*s;
+            C = @(r,s) obj.a1*obj.c2 - obj.c1*obj.a2 - obj.c2*r + obj.c1*s;
             if ( A == 0 )
-                out = (2*c(4)*(c(3)^2*d(2) - c(3)*(c(2)*d(3) + d(4)*(c(1) - s)) + c(4)*d(3)*(c(1) - s)))./(c(3)*d(2) - c(2)*d(3) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;    
+                out = -(obj.c1*(B(r,s)-obj.d1*s) - (C(r,s)-obj.c1*s)*obj.d1)./(B(r,s).^2);
             else
-                out = (2*(c(4)*d(3) - c(3)*d(4))*(c(2)*c(3) + c(4)*(-c(1) + s)))./((c(4)*d(1) + c(3)*d(2) - c(2)*d(3) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(2) - c(2)*d(4)).*(d(3)*(c(1) - s) + c(3)*(-d(1) + t))).^(3/2);
-
+                out = -obj.d1/(2*A) + (2*obj.d1*B(r,s)-4*obj.c1*A)./(4*A*(sqrt(B(r,s).^2-4*A*C(r,s))));
             end
-        end              
-        
-        function out = d2invT21(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
+        end
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
+        function out = dinvT21(obj, r, s)
             % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);        
+            A = obj.c1*obj.d2 - obj.d1*obj.c2;
+            B = @(r,s) obj.c1*obj.b2 - obj.b1*obj.c2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*r + obj.d1*s;
+            C = @(r,s) obj.a1*obj.b2 - obj.b1*obj.a2 - obj.b2*r + obj.b1*s;
             if ( A == 0 )
-                out = (2*d(4)*(-c(3)*d(2)^2 + c(4)*d(2)*(d(1) - t) + c(2)*(d(3)*d(2) - d(1)*d(4) + d(4)*t)))./(c(2)*d(3) - c(3)*d(2) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;
+                out = -(-obj.b2*(B(r,s)+obj.d2*r) + (C(r,s)+obj.b2*r)*obj.d2)./(B(r,s).^2);
             else
-                out = (2*(-c(4)*d(2) + c(2)*d(4))*(d(3)*d(2) + d(4)*(-d(1) + t)))./((c(4)*d(1) + c(2)*d(3)-c(3)*d(2) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(3) - c(3)*d(4))*(d(2)*(c(1) - s) + c(2)*(-d(1) + t))).^(3/2);
+                out = obj.d2/(2*A) - (-2*obj.d2*B(r,s)+4*obj.b2*A)./(4*A*(sqrt(B(r,s).^2-4*A*C(r,s))));
             end
-        end 
-        
-        function out = d2invT22(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
+        end
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
+        function out = dinvT22(obj, r, s)
             % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);        
+            A = obj.c1*obj.d2 - obj.d1*obj.c2;
+            B = @(r,s) obj.c1*obj.b2 - obj.b1*obj.c2 + ...
+                       obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*r + obj.d1*s;
+            C = @(r,s) obj.a1*obj.b2 - obj.b1*obj.a2 - obj.b2*r + obj.b1*s;
             if ( A == 0 )
-                out = (c(2)*d(4)*(-c(2)*d(3) + c(3)*d(2) + c(1)*d(4) - d(4)*s) + c(4)^2*d(2)*(-d(1) + t) + c(4)*(d(2)*(c(3)*d(2) - c(1)*d(4) + d(4)*s) - c(2)*(d(3)*d(2) - d(1)*d(4) + d(4)*t)))./(c(2)*d(3) - c(3)*d(2) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;
+                out = -(obj.b1*(B(r,s)-obj.d1*s) - (C(r,s)-obj.b1*s)*obj.d1)./(B(r,s).^2);
             else
-                out = -((-c(4)*d(2) + c(2)*d(4))*(c(2)*d(3) + c(3)*d(2) - c(1)*d(4) + d(4)*s + c(4)*(-d(1) + t)))./((c(4)*d(1) + c(2)*d(3) - c(3)*d(2) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(3) - c(3)*d(4)).*(d(2)*(c(1) - s) + c(2)*(-d(1) + t))).^(3/2);
+                out = -obj.d1/(2*A) - (2*obj.d1*B(r,s)-4*obj.b1*A)./(4*A*(sqrt(B(r,s).^2-4*A*C(r,s))));
             end
-        end 
-        
-        function out = d2invT23(obj, s, t)
-            
-            v = obj.v;
-            
-            % Compute the change of variables:
-            M = [1 -1 -1  1;    % (-1, 1)
-                 1  1 -1 -1;    % (1, -1)
-                 1  1  1  1;    % (1,  1)
-                 1 -1  1 -1];
+        end
 
-            % Solve 4x4 linear system:
-            c = M \ v(:,1);
-            d = M \ v(:,2);
-
-            % Fill in Aaron's formulas for the quad transformations:
-            A = c(3)*d(4)-c(4)*d(3);        
-            if ( A == 0 )
-                out = (2*c(4)*(c(2)^2*d(3) - c(2)*(c(3)*d(2) + d(4)*(c(1) - s)) + c(4)*d(2)*(c(1) - s)))./(c(2)*d(3) - c(3)*d(2) - c(1)*d(4) + d(4)*s + c(4)*(d(1) - t)).^3;
-            else
-                out = (2*(-c(4)*d(2) + c(2)*d(4))*(c(3)*c(2) + c(4)*(-c(1) + s)))./((c(4)*d(1) + c(2)*d(3) - c(3)*d(2) - c(1)*d(4) + d(4)*s - c(4)*t).^2 + 4*(c(4)*d(3) - c(3)*d(4)).*(d(2)*(c(1) - s) + c(2)*(-d(1) + t))).^(3/2);
-            end
-        end         
-        
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
