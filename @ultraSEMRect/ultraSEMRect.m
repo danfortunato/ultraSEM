@@ -13,7 +13,7 @@ classdef ultraSEMRect < ultraSEMQuad
             % Construct empty ultraSEMRect:
             args = {};
             if ( nargin ~= 0 )
-                args{1} = rect2quad(dom);
+                args{1} = util.rect2quad(dom);
             end
 
             % Call the superclass constructor
@@ -33,11 +33,11 @@ classdef ultraSEMRect < ultraSEMQuad
         end
         
         function v = rectVertices(R)
-            v = quad2rect(R.v);
+            v = util.quad2rect(R.v);
         end
         
         function v = quadVertices(R)
-            v = rect2quad(R.v);
+            v = util.rect2quad(R.v);
         end
         
         function [X, Y, XY] = transformGrid(T, x, y)
@@ -91,7 +91,7 @@ classdef ultraSEMRect < ultraSEMQuad
                 return
             end
 
-            v = quad2rect(R.v);         % Convert quad representation to rect.
+            v = util.quad2rect(R.v);    % Convert quad representation to rect.
             
             for l = 1:m                 % Refine m times.  
                 n = size(v, 1);         % Number of Rects.
