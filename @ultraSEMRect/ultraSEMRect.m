@@ -7,29 +7,17 @@ classdef ultraSEMRect < ultraSEMQuad
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        function obj = ultraSEMRect( v )
-            %ULTRASEMRECT  Class constructor for the @ultraSEMRect class.
+        function obj = ultraSEMRect( dom )
+            %ULTRASEMRECT   Class constructor for the @ultraSEMRect class.
 
             % Construct empty ultraSEMRect:
-            if ( nargin == 0 )
-                return
+            args = {};
+            if ( nargin ~= 0 )
+                args{1} = rect2quad(dom);
             end
-            
-            % Construct multiple ultraSEMRects:
-            if ( iscell(v) )
-                obj(numel(v),1) = ultraSEMRect();
-                for k = 1:numel(v)
-                    obj(k,1) = ultraSEMRect( v{k} );
-                end
-                return
-            end
-            
-            % Validate vertices:
-%             v = ultraSEMRect.assertIsRect(v); % Necessary?
-            
-            % Assign vertices:
-            obj.v = v;
-            
+
+            % Call the superclass constructor
+            obj = obj@ultraSEMQuad(args{:});
         end
 
     end
@@ -83,8 +71,12 @@ classdef ultraSEMRect < ultraSEMQuad
             normal_d(2*p+1:end,:) = scly*normal_d(2*p+1:end,:);
         
         end
-        
+
         function [op, rhs] = transformPDO(dom, op, rhs)
+
+            if ( nargin > 2 && isa(rhs, 'function_handle') )
+                rhs = @(r,s) rhs(dom.x(r,s), dom.y(r,s));
+            end
 
         end
         
@@ -120,7 +112,7 @@ classdef ultraSEMRect < ultraSEMQuad
                 mergeIdx = [hIdx, vIdx, mergeIdx]; %#ok<AGROW> Append to existing.  
             end
             
-            R = ultraSEMRect(rect2quad(v));        % Assign new vertices..
+            R = ultraSEMRect(v);        % Assign new vertices..
             
         end
         
