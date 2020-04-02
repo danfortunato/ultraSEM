@@ -35,7 +35,7 @@ idx = {};
 
 if ( m == 1 && n == 1 )
     % Only a single patch. No subdivision or merge info required.
-    dom = ultraSEMRect(rect2quad(dom));
+    dom = ultraSEMRect(dom);
     T = ultraSEMDomain(dom, {[1 NaN]});
     return
 end
@@ -98,7 +98,7 @@ else
 
 end
 
-dom = ultraSEMRect(rect2quad(dom));
+dom = ultraSEMRect(dom);
 T = ultraSEMDomain(dom, idx);
 
 end

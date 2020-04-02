@@ -243,10 +243,10 @@ classdef ultraSEMDomain
 
             if ( isnumeric(F.domain) && ~isnumeric(G.domain) )
 %                 F.domain = ultraSEM.rectangle(F.domain, 'makeObj');
-                F.domain = rect2quad(F.domain);
+                F.domain = util.rect2quad(F.domain);
             elseif  ( ~isnumeric(F.domain) && isnumeric(G.domain) )
 %                 G.domain = ultraSEM.rectangle(G.domain, 'makeObj');
-                G.domain = rect2quad(G.domain);
+                G.domain = util.rect2quad(G.domain);
             end
 
             % Construct the new ultraSEMDomain:

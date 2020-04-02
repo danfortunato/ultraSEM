@@ -160,15 +160,14 @@ end
             [~, ~, xy] = transformGrid(domk, XY(:,1), XY(:,2));
             
             % Transform the equation:
-            op_k = transformPDO(domk, op);
+            [op_k, rhs_k] = transformPDO(domk, op, rhs);
             
             % Transform the normal derivative:
             normal_d = transformNormalD(domk, xy, p);
             
             % Evaluate non-constant RHSs if required:
-            if ( ~isnumeric(rhs) )
-                [x, y] = transformGrid(domk, X, Y);
-                rhs_eval = evaluateRHS(rhs, x, y, p, numIntDOF);
+            if ( ~isnumeric(rhs_k) )
+                rhs_eval = evaluateRHS(rhs_k, X, Y, p, numIntDOF);
             end
             
             % Solution operator:
@@ -218,7 +217,7 @@ end
 BC = reshape(BC, (p-2)^2, 4*p);
 
 % Solve for every possible BC.
-[S22, Ainv] = mysolve(A, BC, rhs);
+[S22, Ainv] = mysolve(A, BC, rhs, p);
 
 % Add in the boundary data
 Gx(:,:,end+1) = zeros(2, p);
@@ -488,16 +487,17 @@ coeffs = coeffs(1:p-2, 1:p-2);
 out = reshape(coeffs, numIntDOF, 1);
 end
 
-function [S22, Ainv] = mysolve(A, BC, rhs)
+function [S22, Ainv] = mysolve(A, BC, rhs, p)
 % This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
 % system O(p) times, which we do in O(p^4) using Schur complements /
 % Woodbury.
 
 % Simply use backslash:
-S22 = A \ [BC, rhs]; Ainv = @(u) A\u;
+%S22 = A \ [BC, rhs]; Ainv = @(u) A\u;
 
 % Woodbury formula
-%     S22 = schurSolve(A, [BC, rhs], 2*n-2);
+S22 = schurSolve(A, [BC, rhs], 2*p-2);
+Ainv = @(u) schurSolve(A, u, 2*p-2);
 
 % Do sparse LU by hand so we can store L U factors:
 %     P = symrcm(A);

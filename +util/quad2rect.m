@@ -10,7 +10,7 @@ if ( iscell(v) )
     nv = numel(v);
     out = zeros(nv,4);
     for k = 1:nv
-        out(k,:) = quad2rect(v{k});
+        out(k,:) = util.quad2rect(v{k});
     end
     return
 end       

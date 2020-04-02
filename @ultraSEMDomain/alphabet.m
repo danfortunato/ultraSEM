@@ -234,7 +234,7 @@ switch letter
 
 end
 
-dom = ultraSEMRect(rect2quad(dom));
+dom = ultraSEMRect(dom);
 T = ultraSEMDomain(dom, idx);
 
 end

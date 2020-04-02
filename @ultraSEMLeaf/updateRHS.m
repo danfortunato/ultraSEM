@@ -28,7 +28,7 @@ numIntDOF = (n-2)^2;
 mydom = dom;
 if ( isRect(dom) )
     %TODO: Fix this hack.
-    dom = quad2rect(dom.v);
+    dom = util.quad2rect(dom.v);
 end
 
 % Define the scaling for this domain:

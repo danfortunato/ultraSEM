@@ -7,29 +7,18 @@ classdef ultraSEMRect < ultraSEMQuad
     %% CLASS CONSTRUCTOR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        function obj = ultraSEMRect( v )
-            %ULTRASEMRECT  Class constructor for the @ultraSEMRect class.
+        function obj = ultraSEMRect( dom )
+            %ULTRASEMRECT   Class constructor for the @ultraSEMRect class.
 
             % Construct empty ultraSEMRect:
-            if ( nargin == 0 )
-                return
+            args = {};
+            if ( nargin ~= 0 )
+                args{1} = util.rect2quad(dom);
             end
-            
-            % Construct multiple ultraSEMRects from cell input:
-            if ( iscell(v) )
-                obj(numel(v),1) = ultraSEMRect();
-                for k = 1:numel(v)
-                    obj(k,1) = ultraSEMRect( v{k} );
-                end
-                return
-            end
-            
-            % Validate vertices:
-%             v = ultraSEMRect.assertIsRect(v); % Necessary?
-            
-            % Assign vertices:
-            obj.v = v;
-            
+
+            % Call the superclass constructor
+            obj = obj@ultraSEMQuad(args{:});
+
         end
 
     end
@@ -48,14 +37,15 @@ classdef ultraSEMRect < ultraSEMQuad
         function v = rectVertices(R)
         %RECTVERTICES Return the vertices of the Rect as 1x4 vector:
         % v = [min(x), max(x), min(y), max(y)] 
-            v = quad2rect(R.v); 
+            v = util.quad2rect(R.v); 
         end
         
         function v = quadVertices(R)
         %QUADVERTICECS Return the vertices of the Rect as a 4x2 vector:
         % v = [x1,y1;x2,y2;x3,y3;x4,y4]
-            v = rect2quad(R.v); 
+            v = util.quad2rect(R.v);
         end
+        
         
         function [X, Y, XY] = transformGrid(T, x, y)
         %TRANSFORMGRID Map points in [-1 1 -1 1] to the domain of the Rect.
@@ -89,9 +79,11 @@ classdef ultraSEMRect < ultraSEMQuad
             normal_d(2*p+1:end,:) = scly*normal_d(2*p+1:end,:);
         
         end
-        
+
         function [op, rhs] = transformPDO(dom, op, rhs)
-            % This is a dummy method.
+            if ( nargin > 2 && isa(rhs, 'function_handle') )
+                rhs = @(r,s) rhs(dom.x(r,s), dom.y(r,s));
+            end
         end
         
         function [R, mergeIdx] = refine(R, m)
@@ -104,7 +96,7 @@ classdef ultraSEMRect < ultraSEMQuad
             elseif ( m == 0 )
                 return
             end
-
+            
             v = rectVertices(R);        % Get 1x4 vector of vertices.
             
             for l = 1:m                 % Refine m times.  
@@ -127,7 +119,7 @@ classdef ultraSEMRect < ultraSEMQuad
                 mergeIdx = [hIdx, vIdx, mergeIdx]; %#ok<AGROW> Append to existing.  
             end
             
-            R = ultraSEMRect(rect2quad(v));        % Assign new vertices..
+            R = ultraSEMRect(v);        % Assign new vertices..
             
         end
         

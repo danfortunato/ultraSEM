@@ -40,6 +40,10 @@ classdef ultraSEMTri < ultraSEMMapping
 
     methods
 
+        function obj = parametrize(obj)
+
+        end
+
         function c = centroid(Q)
             [xmid, ymid] = centroid(polyshape(Q.v));
             c = [xmid ; ymid];

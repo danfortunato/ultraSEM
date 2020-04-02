@@ -1,5 +1,10 @@
 function out = rect2quad(v)
 
+if ( isempty(v) )
+    out = [];
+    return
+end
+
 if ( size(v, 2) ~= 4 )
     v = v.';
 end
