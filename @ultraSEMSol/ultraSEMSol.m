@@ -7,6 +7,7 @@ classdef ultraSEMSol
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
     %#ok<*PROP>
+    %#ok<*PROPLC>
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:
@@ -16,6 +17,12 @@ classdef ultraSEMSol
 
         domain % Domain of the patch.
         u      % Coefficients of solution.
+
+    end
+
+    properties (Constant)
+
+        nplotpts = 200; % Number of plot points.
 
     end
 
@@ -111,10 +118,9 @@ classdef ultraSEMSol
             end
 
             % Loop over the patches:
-            vals = coeffs2vals(sol.u);
-            [x,y] = getGrid(sol);
+            [x, y] = plotpts(sol);
             for k = 1:length(sol)
-                u = vals{k};
+                u = coeffs2plotvals(sol.u{k});
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
@@ -233,6 +239,35 @@ classdef ultraSEMSol
 
         end
 
+        function [x, y] = plotpts(sol, kk)
+
+            d = sol.domain;
+            u = sol.u;
+
+            x = cell(size(u));
+            y = cell(size(u));
+
+            if ( nargin < 2 )
+                kk = 1:size(d, 1);
+            end
+
+            for k = kk
+                if ( isnumeric(d(k,:)) )
+                    [x{k,1}, y{k,1}] = meshgrid(linspace(d(k,1), d(k,2), sol.nplotpts), ...
+                                                linspace(d(k,3), d(k,4), sol.nplotpts));
+                else
+                    [xk, yk] = meshgrid(linspace(-1, 1, sol.nplotpts));
+                    [x{k,1}, y{k,1}] = transformGrid(d(k,:), xk, yk);
+                end
+            end
+
+            if ( nargin > 1 && numel(kk) == 1 )
+                x = x{1};
+                y = y{1};
+            end
+
+        end
+
         function out = length(sol)
             out = length(sol.u);
         end
@@ -316,7 +351,7 @@ classdef ultraSEMSol
             vals = coeffs2vals(sol.u);
             [x,y] = getGrid(sol);
             for k = 1:numPatches
-                scatter(x{k}, y{k}, vals{k}, 'edgealpha', 0, varargin{:});
+                scatter(x{k}, y{k}, vals{k}, 'EdgeAlpha', 0, varargin{:});
                 hold on
             end
             view(0, 90)
@@ -370,19 +405,18 @@ classdef ultraSEMSol
 
             holdState = ishold();
 
-            vals = coeffs2vals(sol.u);
-            [x,y] = getGrid(sol);
+            [x, y] = plotpts(sol);
             if ( ~iscell(x) )
                 x = {x};
                 y = {y};
             end
             
             for k = 1:length(sol)
-                u = vals{k};
+                u = coeffs2plotvals(sol.u{k});
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                h(k) = surf(x{k}, y{k}, u, 'edgealpha', 1, varargin{:});
+                h(k) = surf(x{k}, y{k}, u, 'EdgeAlpha', 1, varargin{:});
                 hold on
             end
             shading interp
@@ -410,15 +444,14 @@ classdef ultraSEMSol
 
             holdState = ishold();
 
-            vals = coeffs2vals(sol.u);
-            [x,y] = getGrid(sol);
-            
+            [x,y] = plotpts(sol);
+
             for k = 1:length(sol)
-                u = vals{k};
+                u = coeffs2plotvals(sol.u{k});
                 if ( ~isreal(u) )
                     u = abs(u);
                 end
-                h(k) = surface(x{k}, y{k}, 0*u, u, 'edgealpha', 1, varargin{:});
+                h(k) = surface(x{k}, y{k}, 0*u, u, 'EdgeAlpha', 1, varargin{:});
                 hold on
             end
             shading interp
@@ -471,4 +504,26 @@ function V = coeffs2vals(C)
     for k = 1:length(C)
         V{k} = util.coeffs2vals(util.coeffs2vals(C{k}).').';
     end
+end
+
+function V = coeffs2plotvals(C)
+
+    persistent Eval
+    nplotpts = ultraSEMSol.nplotpts;
+    pmax = 100; % Maximum p to precompute
+
+    if ( isempty(Eval) )
+        Eval = zeros(nplotpts, pmax);
+        x = linspace(-1, 1, nplotpts).';
+        c = zeros(pmax, 1);
+        for k = 1:nplotpts
+            c(k) = 1;
+            Eval(:,k) = util.clenshaw(c, x);
+            c(k) = 0;
+        end
+    end
+
+    [px,py] = size(C);
+    V = Eval(:,1:py) * C * Eval(:,1:px)';
+
 end
