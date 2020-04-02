@@ -103,7 +103,7 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
 
         end
         
-        function normal_d = transformNormalD( T, xy, n )
+        function normal_d = transformNormalD( T, n )
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
 
             % Chebyshev differentiation matrices in (s,t), i.e. mapped
@@ -114,7 +114,15 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             Dcheb = S\D;
             Ds = kron( Dcheb, I );
             Dt = kron( I, Dcheb );
-
+            
+            leftIdx  = sub2ind([n n], (1:n).', ones(n,1));
+            rightIdx = sub2ind([n n], (1:n).', n*ones(n,1));
+            downIdx  = sub2ind([n n], ones(n,1), (1:n).');
+            upIdx    = sub2ind([n n], n*ones(n,1), (1:n).');
+            allIdx = [leftIdx ; rightIdx ; downIdx ; upIdx];
+            [X, Y] = util.chebpts2(n); % Chebyshev points and grid.
+            X = X(allIdx); Y = Y(allIdx);
+            
             % Evaluation matrices on the four sides
             lbc = kron( (-1).^(0:n-1), I );
             rbc = kron( ones(1,n), I );
@@ -126,21 +134,21 @@ classdef ultraSEMMapping < matlab.mixin.Heterogeneous
             Ds_r = rbc * Ds; Dt_r = rbc * Dt;
             Ds_d = dbc * Ds; Dt_d = dbc * Dt;
             Ds_u = ubc * Ds; Dt_u = ubc * Dt;
-
+            
+            % ^^ Everything above can be precomputed for a given n ^^
+            
+            % Boundary points on the four sides
+            [x, y] = transformGrid(T, X, Y);
+            xxl = x(1:n,1);           yyl = y(1:n,1);
+            xxr = x((n+1):2*n,1);     yyr = y((n+1):2*n,1);
+            xxd = x((2*n+1):3*n,1);   yyd = y((2*n+1):3*n,1);
+            xxu = x((3*n+1):4*n,1);   yyu = y((3*n+1):4*n,1);
+            
             % Derivatives of (s,t) with respect to (x,y)
             dsdx = @(x,y) T.dinvT11(x,y);
             dsdy = @(x,y) T.dinvT12(x,y);
             dtdx = @(x,y) T.dinvT21(x,y);
             dtdy = @(x,y) T.dinvT22(x,y);
-            
-            % Boundary points on the four sides
-            if ( isnumeric(xy) )
-                xy = mat2cell(xy, [n n n n], 2);
-            end
-            xxl = xy{1}(:,1); yyl = xy{1}(:,2);
-            xxr = xy{2}(:,1); yyr = xy{2}(:,2);
-            xxd = xy{3}(:,1); yyd = xy{3}(:,2);
-            xxu = xy{4}(:,1); yyu = xy{4}(:,2);
 
             % Get the 1D Chebyshev coefficients of d(s,t)/d(x,y) on the
             % four sides through evaluation at the boundary nodes, and

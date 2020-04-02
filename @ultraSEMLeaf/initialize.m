@@ -45,17 +45,10 @@ end
 numIntDOF = (p-2)^2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% %%%%%%%%%%%%%%%%%%%%% DEFINE BOUNDARY NODES %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%% DEFINE REFERENCE GRID %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
-leftIdx  = sub2ind([p p], (1:p).', ones(p,1));
-rightIdx = sub2ind([p p], (1:p).', p*ones(p,1));
-downIdx  = sub2ind([p p], ones(p,1), (1:p).');
-upIdx    = sub2ind([p p], p*ones(p,1), (1:p).');
-% Store the four sides for the reference domain [-1 1 -1 1]:
-XY = [ X(leftIdx)  Y(leftIdx)  ;
-    X(rightIdx) Y(rightIdx) ;
-    X(downIdx)  Y(downIdx)  ;
-    X(upIdx)    Y(upIdx)    ];
+XY = [-1 -1 -1 1 ; 1 -1 1 1 ; -1 -1 1 -1 ; -1 1 1 1]; % Edges
+xy = 0*XY; % Allocate storage for transformed points.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%% CONSTANT RHS? %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,7 +97,7 @@ end
         [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), p);
         
         % Dirichlet-to-Neumann map (same for each patch):
-        normal_d = transformNormalD(dom(1,:), [], p);
+        normal_d = transformNormalD(dom(1,:), p);
         D2N = normal_d * S;
         
         % Loop over patches. Transform grid and evaluate RHS where req'd.
@@ -112,7 +105,8 @@ end
             
             % Define the boundary nodes for this patch:
             domk = dom(k);
-            [~, ~, xy] = transformGrid(domk, XY(:,1), XY(:,2));
+            vk = domk.v;
+            xy = [vk([1,2,1,4],:) vk([4,3,2,3],:)];
             
             % Evaluate non-constant RHSs:
             if ( ~isnumeric(rhs) )
@@ -121,8 +115,7 @@ end
             end
             
             % Assemble the patch:
-            L{k} = ultraSEMLeaf(domk, S, D2N, xy, Ainv);
-            
+            L{k} = ultraSEMLeaf(domk, S, D2N, [xy, repmat(p,4,1)], Ainv);
         end
         
         % Append particular parts if necessary (i.e., non constant RHS):
@@ -157,13 +150,14 @@ end
             
             % Transform the boundary nodes for this patch:
             domk = dom(k,:);
-            [~, ~, xy] = transformGrid(domk, XY(:,1), XY(:,2));
+            vk = domk.v;
+            xy = [vk([1,2,1,4],:) vk([4,3,2,3],:)];
             
             % Transform the equation:
             [op_k, rhs_k] = transformPDO(domk, op, rhs);
             
             % Transform the normal derivative:
-            normal_d = transformNormalD(domk, xy, p);
+            normal_d = transformNormalD(domk, p);
             
             % Evaluate non-constant RHSs if required:
             if ( ~isnumeric(rhs_k) )
@@ -177,7 +171,7 @@ end
             D2N = normal_d * S;
             
             % Assemble the patch:
-            L{k} = ultraSEMLeaf(domk, S, D2N, xy, Ainv);
+            L{k} = ultraSEMLeaf(domk, S, D2N, [xy, repmat(p,4,1)], Ainv);
             
         end
     end

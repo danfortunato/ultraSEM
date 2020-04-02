@@ -57,7 +57,7 @@ classdef ultraSEMRect < ultraSEMQuad
             if ( nargout == 3 ), XY = [X Y]; end
         end
         
-        function normal_d = transformNormalD(T, xy, p)
+        function normal_d = transformNormalD(T, p)
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
         
             persistent bcrows_d % Store for efficiency.

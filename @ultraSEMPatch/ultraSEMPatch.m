@@ -14,7 +14,7 @@ classdef ( Abstract ) ultraSEMPatch
         domain % Domain of the patch.
         S      % Solution operator for patch.
         D2N    % Dirichlet-to-Neumann map for patch.
-        xy     % Boundary nodes of patch.
+        edges  % Boundary edges of patch.
         % The boundary nodes are stored in a cell array, with cell i
         % containing the nodes (including the corners) of face i of the
         % patch. Though we are in coefficient space, the boundary nodes are

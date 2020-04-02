@@ -28,10 +28,11 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMLeaf(dom, S, D2N, xy, Ainv)
+        function P = ultraSEMLeaf(dom, S, D2N, edges, Ainv)
         %ULTRASEMLEAF   Class constructor for the @ultraSEMLeaf class.
-        %   P = ultraSEMLeaf(DOMAIN, S, D2N, XY) assigns each of the inputs to
-        %   their associated properties in the ultraSEMLeaf object OBJ.
+        %   P = ultraSEMLeaf(DOMAIN, S, D2N, EDGES) assigns each of the
+        %   inputs to their associated properties in the ultraSEMLeaf
+        %   object OBJ.
 
             % Construct empty patch:
             if ( nargin == 0 )
@@ -42,11 +43,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
             P.domain = dom;       % Domain.
             P.S = S;              % Solution operator.
             P.D2N = D2N;          % Dirichlet-to-Neumann map.
-            if ( isnumeric(xy) )
-                p = length(xy)/4;
-                xy = mat2cell(xy, [p p p p], 2);
-            end
-            P.xy = xy;            % Boundary nodes.
+            P.edges = edges;      % Edges.
             if ( nargin > 4 )
                 P.Ainv = Ainv;    % Local solution operator.
             end

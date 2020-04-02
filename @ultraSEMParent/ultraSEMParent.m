@@ -25,9 +25,9 @@ classdef ultraSEMParent < ultraSEMPatch
 
     methods
 
-        function P = ultraSEMParent(domain, S, D2N, xy, child1, child2, idx1, idx2, flip1, flip2)
+        function P = ultraSEMParent(domain, S, D2N, edges, child1, child2, idx1, idx2, flip1, flip2)
         %ULTRASEMPARENT   Class constructor for the @ultraSEMParent class.
-        %   P = ultraSEMParent(DOMAIN, S, D2N, XY, CHILD1, CHILD2, IDX1, IDX2)
+        %   P = ultraSEMParent(DOMAIN, S, D2N, EDGES, CHILD1, CHILD2, IDX1, IDX2)
         %   assigns each of the inputs to their associated properties in
         %   the ultraSEMParent object P.
 
@@ -40,7 +40,7 @@ classdef ultraSEMParent < ultraSEMPatch
             P.domain = domain;
             P.S = S;
             P.D2N = D2N;
-            P.xy = xy;
+            P.edges = edges;
 
             % Assign children:
             P.child1 = child1;
