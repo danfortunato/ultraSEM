@@ -15,7 +15,7 @@ classdef ultraSEMRect < ultraSEMQuad
                 return
             end
             
-            % Construct multiple ultraSEMRects:
+            % Construct multiple ultraSEMRects from cell input:
             if ( iscell(v) )
                 obj(numel(v),1) = ultraSEMRect();
                 for k = 1:numel(v)
@@ -41,18 +41,24 @@ classdef ultraSEMRect < ultraSEMQuad
     methods
         
         function out = isRect(R)
+        %ISRECT  Check if the mapping domain is rectangular (always true).
             out = true;
         end
         
         function v = rectVertices(R)
-            v = quad2rect(R.v);
+        %RECTVERTICES Return the vertices of the Rect as 1x4 vector:
+        % v = [min(x), max(x), min(y), max(y)] 
+            v = quad2rect(R.v); 
         end
         
         function v = quadVertices(R)
-            v = rect2quad(R.v);
+        %QUADVERTICECS Return the vertices of the Rect as a 4x2 vector:
+        % v = [x1,y1;x2,y2;x3,y3;x4,y4]
+            v = rect2quad(R.v); 
         end
         
         function [X, Y, XY] = transformGrid(T, x, y)
+        %TRANSFORMGRID Map points in [-1 1 -1 1] to the domain of the Rect.
             rect = rectVertices(T);
             domx = rect(1:2);    domy = rect(3:4); 
             sclx = 2/diff(domx); scly = 2/diff(domy);
@@ -64,9 +70,9 @@ classdef ultraSEMRect < ultraSEMQuad
         function normal_d = transformNormalD(T, xy, p)
         %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
         
-            persistent bcrows_d
+            persistent bcrows_d % Store for efficiency.
             if ( size(bcrows_d, 2) ~= p )
-                % Construct normal derivatives conditions along the four edges:
+                % Construct normal derivatives along the four edges:
                 I = speye(p);
                 lbc_d = kron( (-1).^(0:p-1).*(0:p-1).^2, I );
                 rbc_d = kron( ones(1,p).*(0:p-1).^2, I );
@@ -85,7 +91,7 @@ classdef ultraSEMRect < ultraSEMQuad
         end
         
         function [op, rhs] = transformPDO(dom, op, rhs)
-
+            % This is a dummy method.
         end
         
         function [R, mergeIdx] = refine(R, m)
@@ -99,7 +105,7 @@ classdef ultraSEMRect < ultraSEMQuad
                 return
             end
 
-            v = quad2rect(R.v);         % Convert quad representation to rect.
+            v = rectVertices(R);        % Get 1x4 vector of vertices.
             
             for l = 1:m                 % Refine m times.  
                 n = size(v, 1);         % Number of Rects.
@@ -115,6 +121,7 @@ classdef ultraSEMRect < ultraSEMQuad
                                               vk(1), mid(1), mid(2), vk(4) ];
                 end
                 v = vNew;
+                % Construct new merge indicies:
                 hIdx = reshape(1:4*n, 2, 2*n).';   % New horizontal merge.
                 vIdx = reshape(1:2*n, 2, n).';     % New vertical merge.
                 mergeIdx = [hIdx, vIdx, mergeIdx]; %#ok<AGROW> Append to existing.  

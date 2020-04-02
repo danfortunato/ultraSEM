@@ -17,6 +17,10 @@ function [new_PDO, rhs] = transformPDO( T, PDO, rhs )
 % DEVELOPER NOTE: Manipulating function handles is expensive, so we use strings.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+if ( nargin < 3 )
+    rhs = 0;
+end
+
 dsdx  = 'T.dinvT11( T.T1(s,t), T.T2(s,t) )';
 dsdy  = 'T.dinvT12( T.T1(s,t), T.T2(s,t) )';
 dtdx  = 'T.dinvT21( T.T1(s,t), T.T2(s,t) )';
@@ -126,7 +130,7 @@ else
     end
 
     % righthand side:
-    if ( nargin > 3 && isa(rhs, 'function_handle') )
+    if ( isa(rhs, 'function_handle') )
         rhs = @(s,t) rhs(T.T1(s,t), T.T2(s,t));
     end
 end
