@@ -1,7 +1,7 @@
 function bench()
 
 % Locate tthe test directory:
-ultraSEMDir = fileparts(which('README.md'));
+ultraSEMDir = ultraSEMroot();
 testDir = fullfile(ultraSEMDir, 'bench');
 
 % Store the current directory: (We will return here when we're done.)
