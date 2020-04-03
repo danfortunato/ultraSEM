@@ -198,13 +198,10 @@ CC = discretizeODOs(pdo, dom, p);
 
 % Remove 4p-p degrees of freedom by enforcing the boundary constraints
 [CC, BC] = eliminateBCs(CC, Bx, By, Gx, Gy, p);
-
-% Form the n^2 x n^2 linear system
-A = spalloc((p-2)^2, (p-2)^2, p*(p-2)^2 + (p-2)^2);
-for k = 1:size(CC, 1)
-    A = A + kron(CC{k,2}, CC{k,1});
-end
 BC = reshape(BC, (p-2)^2, 4*p);
+
+% Form the p^2 x p^2 linear system
+A = formSystem(CC, p);
 
 % Solve for every possible BC.
 [S22, Ainv] = mysolve(A, BC, rhs, p);
@@ -214,6 +211,14 @@ Gx(:,:,end+1) = zeros(2, p);
 Gy(:,:,end+1) = zeros(2, p);
 S = imposeBCs(S22, Px, Py, Bx, By, Gx, Gy, p);
 
+end
+
+function A = formSystem(CC, p)
+A = spalloc((p-2)^2, (p-2)^2, p*(p-2)^2 + (p-2)^2);
+for k = 1:size(CC, 1)
+    Ak = kron(CC{k,2}, CC{k,1});
+    A = A + Ak;
+end
 end
 
 function [Bx, Gx, Px, By, Gy, Py] = encodeBCs(p)
