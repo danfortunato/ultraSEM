@@ -47,8 +47,6 @@ numIntDOF = (p-2)^2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%% DEFINE REFERENCE GRID %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
-XY = [-1 -1 -1 1 ; 1 -1 1 1 ; -1 -1 1 -1 ; -1 1 1 1]; % Edges
-xy = 0*XY; % Allocate storage for transformed points.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%% CONSTANT RHS? %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,19 +92,18 @@ end
         L = cell(numPatches, 1);
         
         % Solution operator (same for each patch):
-        [S, Ainv] = buildSolOp(op, dom(1,:), rhs_eval(:,1), p);
+        [S, Ainv] = buildSolOp(op, dom(1), rhs_eval(:,1), p);
         
         % Dirichlet-to-Neumann map (same for each patch):
-        normal_d = transformNormalD(dom(1,:), p);
+        normal_d = transformNormalD(dom(1), p);
         D2N = normal_d * S;
         
         % Loop over patches. Transform grid and evaluate RHS where req'd.
         for k = 1:numPatches
             
-            % Define the boundary nodes for this patch:
+            % Define the domain edges for this patch:
             domk = dom(k);
-            vk = domk.v;
-            xy = [vk([1,2,1,4],:) vk([4,3,2,3],:)];
+            edges = [domk.v([1,2,1,4],:), domk.v([4,3,2,3],:), repmat(p,4,1)];
             
             % Evaluate non-constant RHSs:
             if ( ~isnumeric(rhs) )
@@ -115,7 +112,7 @@ end
             end
             
             % Assemble the patch:
-            L{k} = ultraSEMLeaf(domk, S, D2N, [xy, repmat(p,4,1)], Ainv);
+            L{k} = ultraSEMLeaf(domk, S, D2N, edges, Ainv);
         end
         
         % Append particular parts if necessary (i.e., non constant RHS):
@@ -148,10 +145,9 @@ end
         % Loop over each patch:
         for k = 1:numPatches
             
-            % Transform the boundary nodes for this patch:
+            % Define the domain edges for this patch:
             domk = dom(k,:);
-            vk = domk.v;
-            xy = [vk([1,2,1,4],:) vk([4,3,2,3],:)];
+            edges = [domk.v([1,2,1,4],:), domk.v([4,3,2,3],:), repmat(p,4,1)];
             
             % Transform the equation:
             [op_k, rhs_k] = transformPDO(domk, op, rhs);
@@ -171,7 +167,7 @@ end
             D2N = normal_d * S;
             
             % Assemble the patch:
-            L{k} = ultraSEMLeaf(domk, S, D2N, [xy, repmat(p,4,1)], Ainv);
+            L{k} = ultraSEMLeaf(domk, S, D2N, edges, Ainv);
             
         end
     end
