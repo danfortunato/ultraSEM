@@ -303,8 +303,8 @@ for k = 1:size(terms,1)
         end
         % Make a multiplication operator for each slice of chebfun2
         for r = 1:length(coeff)
-            Mx = util.multmat( n, D(r,r) * R(:,r), dx );
-            My = util.multmat( n,          C(:,r), dy );
+            Mx = util.multmat( n, sqrt(D(r,r)) * R(:,r), dx );
+            My = util.multmat( n, sqrt(D(r,r)) * C(:,r), dy );
             CC{k}{r,1} = Sy * My * Dy;
             CC{k}{r,2} = Sx * Mx * Dx;
         end
