@@ -20,7 +20,7 @@ classdef ultraSEMSol
 
     end
 
-    properties (Constant)
+    properties ( Constant )
 
         nplotpts = 200; % Number of plot points.
 
@@ -53,7 +53,7 @@ classdef ultraSEMSol
 
     methods ( Access = public, Static = false )
 
-        function chebpolyplot(sol)
+        function plotcoeffs(sol)
 
             holdState = ishold();
 
