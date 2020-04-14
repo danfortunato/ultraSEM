@@ -23,6 +23,8 @@ default_p = 21;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% PARSE INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+assert(isa(dom, 'ultraSEMMapping'), 'Invalid DOM');
+numPatches = size(dom, 1);
 if ( nargin < 3 )
     % Default to homogeneous RHS:
     rhs = 0;
@@ -30,11 +32,17 @@ end
 if ( nargin < 4 || isempty(p) )
     % Default value of p:
     p = default_p;
+elseif ( isvector(p) && ~isscalar(p) )
+    % Elements have varying p:
+    assert(numel(p) == numPatches, 'Number of p''s must equal number of patches.');
+    L = cell(numPatches, 1);
+    for j = 1:numel(p)
+        L(j) = ultraSEMLeaf.initialize(dom(j,:), op, rhs, p(j));
+    end
+    return
 else
     assert(isscalar(p), 'Invalid P.');
 end
-assert(isa(dom, 'ultraSEMMapping'), 'Invalid DOM');
-numPatches = size(dom, 1);
 if ( ~isa(op, 'ultraSEMPDO') )
     % PDE given as cell. Convert to PDO:
     op = ultraSEMPDO(op);
