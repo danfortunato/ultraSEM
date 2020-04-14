@@ -59,7 +59,7 @@ end
 a = chopCoeffs(a, tol);
 
 if ( isempty(a) )
-    M = sparse(n);
+    M = sparse(n,n);
 elseif ( n <= nmax && numel(a) <= nstore && lambda <= 2 )
     idx = find(abs(a) > tol);
     M = a(idx(end))*MStore{idx(end),lambda+1}(1:n,1:n);
