@@ -58,6 +58,11 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
     methods ( Access = public, Static = false )
 
+        function dof = dof(P)
+        %DOF   Total number of degrees of freedom in an ultraSEMLeaf.
+            dof = P.p^2;
+        end
+
         function [u, d] = solve(P, bc)
         %SOLVE   Solve a leaf patch.
         %   SOL = SOLVE(P, BC) returns an ultraSEMSol object representing
@@ -73,7 +78,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
             % Evaluate the solution operator for the patch:
             u = P.S * [bc ; 1]; % The 1 accounts for the particular part.
-            u = reshape(u, P.n*[1,1]);
+            u = reshape(u, P.p*[1,1]);
 
             % Return cell output for consistency with
             % ultraSEMParent/solve():
@@ -87,7 +92,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
 
         end
         
-        function out = n(P)
+        function out = p(P)
             out = size(P.D2N,1)/4;
         end
 
@@ -101,7 +106,7 @@ classdef ultraSEMLeaf < ultraSEMPatch
     methods ( Access = public, Static = true )
 
         % Initialize an array of ultraSEMLeaf objects.
-        P = initialize(dom, op, rhs, n);
+        P = initialize(dom, op, rhs, p);
 
     end
 

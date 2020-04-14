@@ -17,13 +17,13 @@ if ( isempty(Ainv) )
         'Discretised operator A was not stored. Cannot update RHS.');
     % TODO: Perhaps we can store A _OR_ the PDO. In the latter case, rebuild A.
 end
-n = P.n;
+p = P.p;
 dom = P.domain;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%% DEFINE GRID ON [-1 1] AND SET INDICIES %%%%%%%%%%%%%%%%%%%%%%%%%%%
-numIntDOF = (n-2)^2;
-[XX, YY] = util.chebpts2(n);
+numIntDOF = (p-2)^2;
+[XX, YY] = util.chebpts2(p);
 
 mydom = dom;
 if ( isRect(dom) )
@@ -53,10 +53,10 @@ elseif ( ~isnumeric(rhs) )
     % Convert to coeffs:
     coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
     % Map the RHS to the right ultraspherical space:
-    lmap = util.convertmat(n, 0, 1);
-    rmap = util.convertmat(n, 0, 1);
+    lmap = util.convertmat(p, 0, 1);
+    rmap = util.convertmat(p, 0, 1);
     coeffs = lmap * coeffs * rmap.';
-    coeffs = coeffs(1:n-2, 1:n-2);
+    coeffs = coeffs(1:p-2, 1:p-2);
     rhs = reshape(coeffs, numIntDOF, 1);
 end
 
@@ -65,26 +65,26 @@ end
 S = Ainv(rhs);
 
 % Impose zero Dirichlet BCs:
-Gx = zeros(2, n); Gy = zeros(2, n);
-Bx = [(-1).^(0:n-1); ones(1,n)];
-By = [(-1).^(0:n-1); ones(1,n)];
+Gx = zeros(2, p); Gy = zeros(2, p);
+Bx = [(-1).^(0:p-1); ones(1,p)];
+By = [(-1).^(0:p-1); ones(1,p)];
 [By, Gy, Py] = canonicalBC(By, Gy);
 [Bx, Gx, Px] = canonicalBC(Bx, Gx);
-S = imposeBCs(S, Px, Py, Bx, By, Gx, Gy, n);
+S = imposeBCs(S, Px, Py, Bx, By, Gx, Gy, p);
 
 % Amend final column of the solution operator:
 P.S(:,end) = S;
 
 % Normal derivative operator:
 if ( ~isRect(mydom) )
-    normal_d = transformNormalD(mydom, n);
+    normal_d = transformNormalD(mydom, p);
 else
     % Construct normal derivatives conditions along the four edges:
-    I = speye(n);
-    lbc_d = sclx*kron( (-1).^(0:n-1).*(0:n-1).^2, I );
-    rbc_d = sclx*kron( ones(1,n).*(0:n-1).^2, I );
-    dbc_d = scly*kron( I, (-1).^(0:n-1).*(0:n-1).^2 );
-    ubc_d = scly*kron( I, ones(1,n).*(0:n-1).^2 );
+    I = speye(p);
+    lbc_d = sclx*kron( (-1).^(0:p-1).*(0:p-1).^2, I );
+    rbc_d = sclx*kron( ones(1,p).*(0:p-1).^2, I );
+    dbc_d = scly*kron( I, (-1).^(0:p-1).*(0:p-1).^2 );
+    ubc_d = scly*kron( I, ones(1,p).*(0:p-1).^2 );
     normal_d = [ lbc_d ; rbc_d ; dbc_d ; ubc_d ];
 end
 

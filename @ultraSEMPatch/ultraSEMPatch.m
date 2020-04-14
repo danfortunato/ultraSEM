@@ -50,6 +50,8 @@ classdef ( Abstract ) ultraSEMPatch
 
         f = updateRHS(f, rhs);
 
+        dof = dof(P);
+
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

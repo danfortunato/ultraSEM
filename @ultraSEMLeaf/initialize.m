@@ -204,7 +204,7 @@ CC = discretizeODOs(pdo, dom, p);
 % Encode all possible BCs
 [Bx, Gx, Px, By, Gy, Py] = encodeBCs(p);
 
-% Remove 4p-p degrees of freedom by enforcing the boundary constraints
+% Remove 4p-4 degrees of freedom by enforcing the boundary constraints
 [CC, BC] = eliminateBCs(CC, Bx, By, Gx, Gy, p);
 BC = reshape(BC, (p-2)^2, 4*p);
 

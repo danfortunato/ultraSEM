@@ -62,6 +62,7 @@ classdef ultraSEMParent < ultraSEMPatch
     methods ( Access = public, Static = false )
 
         function dof = dof(P)
+        %DOF   Total number of degrees of freedom in an ultraSEMParent.
             dof = P.child1.dof + P.child2.dof;
         end
 

@@ -197,6 +197,14 @@ classdef ultraSEM < handle
 
         end
 
+        function dof = dof(S)
+        %DOF   Total number of degrees of freedom in an ultraSEM.
+            dof = 0;
+            for k = 1:numel(S.patches)
+                dof = dof + S.patches{k}.dof;
+            end
+        end
+
         function initialize(S, varargin)
         %INITIALIZE   Initialize an ultraSEM with a PDE and solve local subproblems.
         %   INITIALIZE(S, OP, RHS) will initialize the ultraSEM object S
