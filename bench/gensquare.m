@@ -1,6 +1,6 @@
 function t = gensquare(r, p)
 
-D = ultraSEMDomain.rectangle([-1 1 -1 1]);
+D = ultraSEM.Domain.rectangle([-1 1 -1 1]);
 D = refine(D, r);
 op1 = @(x,y) cos(x+y);
 op2 = @(x,y) 1./(1+exp(x-y));

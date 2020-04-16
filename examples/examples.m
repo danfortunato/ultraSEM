@@ -196,7 +196,7 @@ bc = 0;
 T = pentaflake(2, 0, -5);       % Construct Penrose snowflake shape
 T = rmholes(T);                 % Remove holes
 tri = triangulation(T);         % Triangulate
-dom = ultraSEM.trimesh(tri);    % Convert to ultraSEMDomain
+dom = ultraSEM.trimesh(tri);    % Convert to ultraSEM.Domain
 exampleplot(dom)
 
 tic

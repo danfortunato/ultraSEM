@@ -1,6 +1,6 @@
 function t = lapsquare(r, p)
 
-D = ultraSEMDomain.rectangle([-1 1 -1 1]);
+D = ultraSEM.Domain.rectangle([-1 1 -1 1]);
 D = refine(D, r);
 op = {{1,0,1}, {0,0}, 0};
 
