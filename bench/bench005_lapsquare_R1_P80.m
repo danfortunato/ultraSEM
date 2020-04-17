@@ -1,4 +1,4 @@
-function t = bench_lapsquare_R1_P80()
+function t = bench005_lapsquare_R1_P80()
 
 r = 1;
 p = 80;

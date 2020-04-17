@@ -1,13 +1,14 @@
 function bench()
+%BENCH   Run the benchmark suite.
 
-% Locate tthe test directory:
+% Locate the bench directory:
 ultraSEMDir = ultraSEMroot();
 testDir = fullfile(ultraSEMDir, 'bench');
 
 % Store the current directory: (We will return here when we're done.)
 currDir = pwd();
 
-% Switch to the test directory and get list of all the test files:
+% Switch to the bench directory and get list of all the test files:
 cd(testDir);
 testFiles = dir('bench*.m');
 testFiles = {testFiles.name};
@@ -20,7 +21,7 @@ numFiles  = numel(testFiles);
 durations = zeros(numFiles, 1);
 errorMessages = {'FAILED', 'CRASHED'};
 
-% Attempt to run all of the tests:
+% Attempt to run all of the benchmarks:
 try
 
     % Loop over the test files:
