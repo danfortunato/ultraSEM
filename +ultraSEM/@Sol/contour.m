@@ -46,7 +46,7 @@ for k = 1:length(sol)
     if ( ~isreal(u) )
         u = abs(u);
     end
-    [c(k), h(k)] = contour(x{k}, y{k}, u, levels, varargin{:});
+    [c{k}, h(k)] = contour(x{k}, y{k}, u, levels, varargin{:});
     hold on
 end
 view(0, 90)
