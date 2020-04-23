@@ -12,7 +12,11 @@ classdef ultraSEM < handle
 %   ULTRASEM(DOM, OP, RHS, N) uses an N x N discretization to solve on each
 %   patch of the domain DOM.
 %
-%   The full sequence for solving a problem using an ultraSEM object S is:
+%   ULTRASEM(..., PREF) uses the preferences specified in the ULTRASEM.PREF
+%   object PREF. (See ULTRASEM.PREF for details on the various preference
+%   options and their defaults.)
+%
+%   The full sequence for solving a problem using an ULTRASEM object S is:
 %
 %       S = ultraSEM(DOM, OP, RHS)
 %       build(S)
@@ -36,7 +40,7 @@ classdef ultraSEM < handle
 %   op = ultraSEM.PDO(1, 0, @(x,y) 50*y); % Construct a PDO: lap(u) + 50*y*u.
 %   rhs = -1;                             % RHS (scalar or function handle).
 %   bc = 0;                               % Boundary condition (as above).
-%   L = ultraSEM(SU, op, rhs);            % Construct the ultraSEM object.
+%   L = ultraSEM(SU, op, rhs);            % Construct the ULTRASEM object.
 %   sol = L\bc;                           % Solve.
 %   plot(sol)                             % Plot.
 %
@@ -80,7 +84,7 @@ classdef ultraSEM < handle
 
     methods
 
-        function obj = ultraSEM(dom, op, rhs, n)
+        function obj = ultraSEM(dom, op, varargin)
         %ULTRASEM   Constructor for the ULTRASEM class.
         %   Documentation at the head of ultraSEM.m file.
 
@@ -90,19 +94,34 @@ classdef ultraSEM < handle
             end
 
             % Assign the domain:
-            obj.domain = dom; % TODO: Vaidate domain,
+            obj.domain = dom; % TODO: Validate domain.
 
-            if ( nargin < 3 )
-                % Default to homogeneous problem:
-                rhs = 0;
-            end
-            if ( nargin < 4 )
-                % Set discretization size:
-                n = [];
+            % Set defaults for unspecified arguments:
+            rhs = 0; % Default to homogeneous problem.
+            n = [];
+            pref = ultraSEM.Pref();
+
+            if ( nargin == 3 )
+                if ( isa(varargin{1}, 'ultraSEM.Pref') )
+                    pref = varargin{1}; % ULTRASEM(DOM, OP, PREF)
+                else
+                    rhs = varargin{1};  % ULTRASEM(DOM, OP, RHS)
+                end
+            elseif ( nargin == 4 )
+                rhs = varargin{1};
+                if ( isa(varargin{2}, 'ultraSEM.Pref') )
+                    pref = varargin{2}; % ULTRASEM(DOM, OP, RHS, PREF)
+                else
+                    n = varargin{2};    % ULTRASEM(DOM, OP, RHS, N)
+                end
+            elseif ( nargin == 5 )
+                rhs = varargin{1};      % ULTRASEM(DOM, OP, RHS, N, PREF)
+                n = varargin{2};
+                pref = varargin{3};
             end
 
             % Initialize patches:
-            obj.initialize(op, rhs, n);
+            obj.initialize(op, rhs, n, pref);
 
         end
 
@@ -157,7 +176,12 @@ classdef ultraSEM < handle
         %TRIANGLE   Construct an ULTRASEM.DOMAIN triangle domain.
         %   ULTRASEM.TRIANGLE(V) constructs a triangle with vertices V by
         %   splitting a triangle into three quadrilaterals.
-            [varargout{1:nargout}] = ultraSEM.Domain.triangle(varargin{:});
+            pref = ultraSEM.Pref();
+            if ( pref.splitTriangles )
+                [varargout{1:nargout}] = ultraSEM.Domain.triangle(varargin{:});
+            else
+                [varargout{1:nargout}] = ultraSEM.Domain.duffy(varargin{:});
+            end
         end
 
         function varargout = duffy(varargin)

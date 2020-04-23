@@ -1,6 +1,5 @@
-function L = initialize(dom, op, rhs, p)
+function L = initialize(dom, op, varargin)
 %INITIALIZE   Initialize an array of ULTRASEM.LEAF objects.
-%
 %   L = ULTRASEM.LEAF.INITIALIZE(DOM, OP) returns a cell array L of
 %   ULTRASEM.LEAF objects which contain the solution and D2N operators for
 %   the PDO specified by OP (which may be an ULTRASEM.PDO or a cell array)
@@ -12,39 +11,64 @@ function L = initialize(dom, op, rhs, p)
 %
 %   L = ULTRASEM.LEAF.INITIALIZE(DOM, OP, RHS, P) specifies the
 %   discretization size P on each patch. When not given (or empty), P
-%   defaults to 21. P may be a scalar (in which case the same
-%   discretization size is used on each patch), or a vector of length
-%   LENGTH(DOM) (in which case a different disctization size is used on
-%   each patch.
+%   defaults to ULTRASEM.PREF.DISCSIZE. P may be a scalar (in which case
+%   the same discretization size is used on each patch), or a vector of
+%   length LENGTH(DOM) (in which case a different disctization size is used
+%   on each patch.
+%
+%   L = ULTRASEM.LEAF.INITIALIZE(..., PREF) uses the preferences specified
+%   in the ULTRASEM.PREF object PREF. (See ULTRASEM.PREF for details on the
+%   various preference options and their defaults.)
 
 % Copyright 2018 by Nick Hale and Dan Fortunato.
-
-% Default discretization size:
-default_p = 21;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% PARSE INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Set defaults for unspecified arguments:
+rhs = 0; % Default to homogeneous problem.
+p = [];
+pref = ultraSEM.Pref();
+
+if ( nargin == 3 )
+    if ( isa(varargin{1}, 'ultraSEM.Pref') )
+        pref = varargin{1}; % INITIALIZE(DOM, OP, PREF)
+    else
+        rhs = varargin{1};  % INITIALIZE(DOM, OP, RHS)
+    end
+elseif ( nargin == 4 )
+    rhs = varargin{1};
+    if ( isa(varargin{2}, 'ultraSEM.Pref') )
+        pref = varargin{2}; % INITIALIZE(DOM, OP, RHS, PREF)
+    else
+        p = varargin{2};    % INITIALIZE(DOM, OP, RHS, N)
+    end
+elseif ( nargin == 5 )
+    rhs = varargin{1};      % INITIALIZE(DOM, OP, RHS, N, PREF)
+    p = varargin{2};
+    pref = varargin{3};
+end
+
 assert(isa(dom, 'ultraSEM.Mapping'), 'Invalid DOM');
 numPatches = size(dom, 1);
-if ( nargin < 3 )
-    % Default to homogeneous RHS:
-    rhs = 0;
-end
-if ( nargin < 4 || isempty(p) )
-    % Default value of p:
-    p = default_p;
+
+% Determine p:
+if ( isempty(p) )
+    % Default discretization size:
+    p = pref.discSize;
 elseif ( isvector(p) && ~isscalar(p) )
     % Elements have varying p:
-    assert(numel(p) == numPatches, 'Number of p''s must equal number of patches.');
+    assert(numel(p) == numPatches, ...
+        'Number of p''s must equal number of patches.');
     L = cell(numPatches, 1);
     for j = 1:numel(p)
-        L(j) = ultraSEM.Leaf.initialize(dom(j,:), op, rhs, p(j));
+        L(j) = ultraSEM.Leaf.initialize(dom(j,:), op, rhs, p(j), pref);
     end
     return
 else
-    assert(isscalar(p), 'Invalid P.');
+    assert(isscalar(p), 'Invalid p.');
 end
+
 if ( ~isa(op, 'ultraSEM.PDO') )
     % PDE given as cell. Convert to PDO:
     op = ultraSEM.PDO(op);
@@ -102,7 +126,7 @@ end
         L = cell(numPatches, 1);
         
         % Solution operator (same for each patch):
-        [S, Ainv] = buildSolOp(op, dom(1), rhs_eval(:,1), p);
+        [S, Ainv] = buildSolOp(op, dom(1), rhs_eval(:,1), p, pref);
         
         % Dirichlet-to-Neumann map (same for each patch):
         normal_d = transformNormalD(dom(1), p);
@@ -171,7 +195,7 @@ end
             end
             
             % Solution operator:
-            [S, Ainv] = buildSolOp(op_k, domk, rhs_eval, p);
+            [S, Ainv] = buildSolOp(op_k, domk, rhs_eval, p, pref);
             
             % Dirichlet-to-Neumann map:
             D2N = normal_d * S;
@@ -187,7 +211,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [S, Ainv] = buildSolOp(pdo, dom, rhs, p)
+function [S, Ainv] = buildSolOp(pdo, dom, rhs, p, pref)
 %BUILDSOLOP  Build the solution operator on a patch using chebop2 ideas.
 %
 %   S = solution operator on patch
@@ -214,7 +238,7 @@ BC = reshape(BC, (p-2)^2, 4*p);
 A = formSystem(CC, p);
 
 % Solve for every possible BC.
-[S22, Ainv] = mysolve(A, BC, rhs, p);
+[S22, Ainv] = mysolve(A, BC, rhs, p, pref);
 
 % Add in the boundary data
 Gx(:,:,end+1) = zeros(2, p);
@@ -492,25 +516,32 @@ coeffs = coeffs(1:p-2, 1:p-2);
 out = reshape(coeffs, numIntDOF, 1);
 end
 
-function [S22, Ainv] = mysolve(A, BC, rhs, p)
-% This involves solving a O(p^2) x O(p^2) almost-banded-block-banded
-% system O(p) times, which we do in O(p^4) using Schur complements /
-% Woodbury.
+function [S22, Ainv] = mysolve(A, BC, rhs, p, pref)
+% This involves solving a O(p^2) x O(p^2) almost-banded-block-banded system
+% O(p) times, which we can do in O(p^4) using Schur complements / Woodbury.
 
-% Simply use backslash:
-%S22 = A \ [BC, rhs]; Ainv = @(u) A\u;
+if ( nargin < 5 )
+    pref = ultraSEM.Pref();
+end
 
-% Woodbury formula
-S22 = schurSolve(A, [BC, rhs], 3*p-3);
-Ainv = @(u) schurSolve(A, u, 3*p-3);
-
-% Do sparse LU by hand so we can store L U factors:
-%     P = symrcm(A);
-%     [~, Pinv] = sort(P);
-%     [L, U, p] = lu(A(P,P), 'vector');
-%     rowPermute = @(v,p) v(p,:);
-%     Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
-%     S22 = Ainv([BC, rhs]);
+switch pref.solver
+    case '\'
+        % Simply use backslash:
+        S22 = A \ [BC, rhs];
+        Ainv = @(u) A\u;
+    case 'woodbury'
+        % Woodbury formula:
+        S22 = schurSolve(A, [BC, rhs], 3*p-3);
+        Ainv = @(u) schurSolve(A, u, 3*p-3);
+    case 'LU'
+        % Do sparse LU by hand so we can store L U factors:
+        P = symrcm(A);
+        [~, Pinv] = sort(P);
+        [L, U, p] = lu(A(P,P), 'vector');
+        rowPermute = @(v,p) v(p,:);
+        Ainv = @(b) rowPermute((U\(L\b(P(p),:))), Pinv);
+        S22 = Ainv([BC, rhs]);
+end
 
 end
 

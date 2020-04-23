@@ -79,11 +79,14 @@ if ( isempty(i4a) )
     int1 = ones(0,1);
     int2 = ones(0,1);
 else
+    % Get the function to determine the polynomial degree on the interface.
+    pref = ultraSEM.Pref();
+
     blocks1 = cell(numel(iA),1);
     blocks2 = cell(numel(iB),1);
     for k = 1:numel(iA)
         % Set block (k,k) of int1 and int2
-        pmax = max(pA(iA(k)), pB(iB(k)));
+        pmax = pref.interfaceDegree(pA(iA(k)), pB(iB(k)));
         blocks1{k} = speye(pmax, pA(iA(k)));
         blocks2{k} = speye(pmax, pB(iB(k)));
     end

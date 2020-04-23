@@ -58,7 +58,7 @@ classdef Leaf < ultraSEM.Patch
     methods ( Static )
 
         % Initialize an array of ULTRASEM.LEAF objects.
-        P = initialize(dom, op, rhs, p);
+        P = initialize(dom, op, varargin);
 
     end
 
