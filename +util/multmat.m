@@ -9,7 +9,7 @@ if ( nargin < 3 )
     lambda = 0;
 end
 
-% Chop coefficients less than TOL
+% Chop coefficients less than relative TOL
 tol = eps;
 
 % Store NSTORE multmats of size NMAX x NMAX for C{(0:2)}_(0:NSTORE-1)(x).
@@ -61,7 +61,7 @@ a = chopCoeffs(a, tol);
 if ( isempty(a) )
     M = sparse(n,n);
 elseif ( n <= nmax && numel(a) <= nstore && lambda <= 2 )
-    idx = find(abs(a) > tol);
+    idx = find(abs(a)/max(abs(a)) > tol);
     M = a(idx(end))*MStore{idx(end),lambda+1}(1:n,1:n);
     for k = numel(idx)-1:-1:1
         M = M + a(idx(k))*MStore{idx(k),lambda+1}(1:n,1:n);
@@ -86,7 +86,7 @@ end
 end
 
 function a = chopCoeffs(a, tol)
-%CHOPCOEFFS   Chop off trailing coefficients that are less than TOL.
+%CHOPCOEFFS   Chop off trailing coefficients that are less than relative TOL.
 
     if ( nargin == 1 )
         tol = eps;
@@ -96,7 +96,7 @@ function a = chopCoeffs(a, tol)
         error('Input must be a vector of coefficients.');
     end
 
-    na = find(abs(a) > tol, 1, 'last');
+    na = find(abs(a)/max(abs(a)) > tol, 1, 'last');
 
     if ( isempty(na) )
         a = [];

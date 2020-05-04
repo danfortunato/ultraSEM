@@ -40,7 +40,9 @@ classdef Quad < ultraSEM.Mapping
             for k = 1:nobj
                 v{k} = ultraSEM.Quad.assertIsQuad(v{k});
                 obj(k).v = v{k};
-                obj(k).scl = @(r,s) obj(k).det(r,s).^3;
+                if ( ~obj.isRect() )
+                    obj(k).scl = @(r,s) obj(k).det(r,s).^3;
+                end
             end
 
         end
@@ -69,7 +71,7 @@ classdef Quad < ultraSEM.Mapping
             B = @(x,y) obj.b1*obj.c2 - obj.c1*obj.b2 + ...
                        obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*x + obj.d1*y;
             C = @(x,y) obj.a1*obj.c2 - obj.c1*obj.a2 - obj.c2*x + obj.c1*y;
-            if ( A == 0 )
+            if ( abs(A) < eps )
                 r = -C(x,y)./B(x,y);
             else
                 r = (-B(x,y) + sqrt(B(x,y).^2-4*A*C(x,y))) / (2*A);
@@ -82,7 +84,7 @@ classdef Quad < ultraSEM.Mapping
             B = @(x,y) obj.c1*obj.b2 - obj.b1*obj.c2 + ...
                        obj.a1*obj.d2 - obj.d1*obj.a2 - obj.d2*x + obj.d1*y;
             C = @(x,y) obj.a1*obj.b2 - obj.b1*obj.a2 - obj.b2*x + obj.b1*y;
-            if ( A == 0 )
+            if ( abs(A) < eps )
                 s = -C(x,y)./B(x,y);
             else
                 s = (-B(x,y) - sqrt(B(x,y).^2-4*A*C(x,y))) / (2*A);

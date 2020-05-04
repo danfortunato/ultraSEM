@@ -30,11 +30,12 @@ D2Na = a.D2N; D2Nb = b.D2N;
 % - Make sure to map local DOFs on A and B to global DOFs on the shared
 %   interface. The L2G maps are responsible for any transformations needed
 %   to achieve this (e.g. flipping, interpolation, etc.).
-S = lsqminnorm( -( l2g1*D2Na(s1,s1)*l2g1.' + l2g2*D2Nb(s2,s2)*l2g2.' ), ...
-                 [ l2g1*D2Na(s1,i1), ...
-                   l2g2*D2Nb(s2,i2), ...
-                   l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end) ]);
-%                 |----------------- rhs ---------------|
+A = -( l2g1*D2Na(s1,s1)*l2g1.' + l2g2*D2Nb(s2,s2)*l2g2.' );
+tol = min(max(size(A))*eps(norm(A)), 1e-8);
+S = lsqminnorm( A, [ l2g1*D2Na(s1,i1), ...
+                     l2g2*D2Nb(s2,i2), ...
+                     l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end) ], tol);
+%                   |----------------- rhs ---------------|
 
 % Compute new D2N maps:
 % - Again, make sure to map local DOFs to shared DOFs on the interface.
