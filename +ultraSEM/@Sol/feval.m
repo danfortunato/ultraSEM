@@ -46,7 +46,7 @@ u = 0*x(:);
 x0 = x(:);
 y0 = y(:);
 
-for k = 1:size(sol.domain, 1 )
+for k = 1:size(sol.domain, 1)
 
     map = sol.domain(k,:);
     % Convert to single to avoid mapping issues
@@ -57,8 +57,9 @@ for k = 1:size(sol.domain, 1 )
     xs = single(x);
     ys = single(y);
 
-    idx = ( isreal(xs) & isreal(ys) & xs >= dom(1) & xs <= dom(2) & ...
-                                      ys >= dom(3) & ys <= dom(4) );
+    idx = ( xs == real(xs) & ys == real(ys) & ...
+            xs >= dom(1) & xs <= dom(2)     & ...
+            ys >= dom(3) & ys <= dom(4) );
 
     if ( any(idx) )
         u(idx) = util.clenshaw2d(sol.u{k}, x(idx), y(idx));
