@@ -161,7 +161,9 @@ end
             for k = 1:numPatches
                 Spk = imposeBCs(Sp(:,k), Px, Py, Bx, By, Gx, Gy, p);
                 L{k}.S(:,end) = Spk;
-                L{k}.D2N(:,end) = L{k}.D2N(:,end) + normal_d * Spk;
+                % TODO: Which of these is correct?
+%                 L{k}.D2N(:,end) = L{k}.D2N(:,end) + normal_d * Spk;
+                L{k}.D2N(:,end) = normal_d * Spk;
             end
         end
         
@@ -185,7 +187,7 @@ end
             
             % Transform the equation:
             [op_k, rhs_k] = transformPDO(domk, op, rhs);
-            
+
             % Transform the normal derivative:
             normal_d = transformNormalD(domk, p);
             
@@ -196,6 +198,7 @@ end
             
             % Solution operator:
             [S, Ainv] = buildSolOp(op_k, domk, rhs_eval, p, pref);
+
             
             % Dirichlet-to-Neumann map:
             D2N = normal_d * S;
@@ -260,7 +263,7 @@ function [Bx, Gx, Px, By, Gy, Py] = encodeBCs(p)
 persistent storage
 
 if ( isempty(storage) || storage{1} ~= p )
-    % Note: this could be precomputed for a given n.
+    % Note: this can be precomputed for a given p.
     Bx = [(-1).^(0:p-1); ones(1,p)];
     By = [(-1).^(0:p-1); ones(1,p)];
     Gx = zeros(2, p, 4*p);

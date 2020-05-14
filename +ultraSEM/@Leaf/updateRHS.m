@@ -11,86 +11,62 @@ function P = updateRHS(P, rhs)
 
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
+% Developer note: At user levels this is typically called with 
+%  >> P.rhs = F
+
+p = P.p;
+dom = P.domain;
+numIntDOF = (p-2)^2;
+
+% TODO: This is unfortuate...
+op = ultraSEM.PDO({0,0,0}); % Entries don't matter.
+[~, rhs] = transformPDO(dom, op, rhs);
+
+% Define scalar RHSs:
+if ( isnumeric(rhs) )
+    if ( isscalar(rhs) )
+        % Constant RHS.
+        rhs = [ rhs; zeros(numIntDOF-1,1) ];
+    end
+else
+    % Evaluate non-constant RHS:
+    [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
+    rhs = evaluateRHS(rhs, X, Y, p, numIntDOF);
+end
+
 Ainv = P.Ainv;
 if ( isempty(Ainv) )
     error('ULTRASEM:leaf:updateRHS:operatorNotStored', ...
         'Discretized operator A was not stored. Cannot update RHS.');
     % TODO: Perhaps we can store A _OR_ the PDO. In the latter case, rebuild A.
 end
-p = P.p;
-dom = P.domain;
+Sp = Ainv(rhs);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%% DEFINE GRID ON [-1 1] AND SET INDICIES %%%%%%%%%%%%%%%%%%%%%%%%%%%
-numIntDOF = (p-2)^2;
-[XX, YY] = util.chebpts2(p);
-
-mydom = dom;
-if ( isRect(dom) )
-    %TODO: Fix this hack.
-    dom = util.quad2rect(dom.v);
-end
-
-% Define the scaling for this domain:
-if ( isnumeric(dom) )
-    domx = dom(1:2);
-    domy = dom(3:4);
-else
-    domx = dom.domain(1:2);
-    domy = dom.domain(3:4);
-end
-% Define the grid for this patch:
-sclx = 2/diff(domx);
-scly = 2/diff(domy);
-x = (XX+1)/sclx + domx(1);
-y = (YY+1)/scly + domy(1);
-
-% Evaluate non-constant RHSs:
-if ( isnumeric(rhs) && isscalar(rhs) )
-    rhs = [ rhs; zeros(numIntDOF-1,1) ];
-elseif ( ~isnumeric(rhs) )
-    vals = feval(rhs, x, y);
-    % Convert to coeffs:
-    coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
-    % Map the RHS to the right ultraspherical space:
-    lmap = util.convertmat(p, 0, 1);
-    rmap = util.convertmat(p, 0, 1);
-    coeffs = lmap * coeffs * rmap.';
-    coeffs = coeffs(1:p-2, 1:p-2);
-    rhs = reshape(coeffs, numIntDOF, 1);
-end
-
-% Solve with the new RHS:
-% S = schurSolve(A, rhs, 2*n-2);
-S = Ainv(rhs);
-
-% Impose zero Dirichlet BCs:
+% Encode BCs:
 Gx = zeros(2, p); Gy = zeros(2, p);
 Bx = [(-1).^(0:p-1); ones(1,p)];
 By = [(-1).^(0:p-1); ones(1,p)];
 [By, Gy, Py] = canonicalBC(By, Gy);
 [Bx, Gx, Px] = canonicalBC(Bx, Gx);
-S = imposeBCs(S, Px, Py, Bx, By, Gx, Gy, p);
+Sp = imposeBCs(Sp, Px, Py, Bx, By, Gx, Gy, p);
+P.S(:,end) = Sp;
 
-% Amend final column of the solution operator:
-P.S(:,end) = S;
+% Normal derivative:
+normal_d = transformNormalD(dom, p);
+P.D2N(:,end) = normal_d * Sp;   
 
-% Normal derivative operator:
-if ( ~isRect(mydom) )
-    normal_d = transformNormalD(mydom, p);
-else
-    % Construct normal derivatives conditions along the four edges:
-    I = speye(p);
-    lbc_d = sclx*kron( (-1).^(0:p-1).*(0:p-1).^2, I );
-    rbc_d = sclx*kron( ones(1,p).*(0:p-1).^2, I );
-    dbc_d = scly*kron( I, (-1).^(0:p-1).*(0:p-1).^2 );
-    ubc_d = scly*kron( I, ones(1,p).*(0:p-1).^2 );
-    normal_d = [ lbc_d ; rbc_d ; dbc_d ; ubc_d ];
 end
 
-% Amend final column of the D2N operator:
-P.D2N(:,end) = normal_d * S;
-
+function out = evaluateRHS(rhs, x, y, p, numIntDOF)
+vals = feval(rhs, x, y);
+% Convert to coeffs:
+coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
+% Map the RHS to the right ultraspherical space:
+lmap = util.convertmat(p, 0, 1);
+rmap = util.convertmat(p, 0, 1);
+coeffs = lmap * coeffs * rmap.';
+coeffs = coeffs(1:p-2, 1:p-2);
+out = reshape(coeffs, numIntDOF, 1);
 end
 
 function [B, G, P] = canonicalBC(B, G)
