@@ -47,4 +47,19 @@ sol2 = S2\bc;
 
 pass(4) =abs(sol1(.5,.5) - sol2(.5,.5)) < tol;
 
+%% Test passing an ultraSEM.Sol as the RHS:
+
+D = ultraSEM.rectangle();
+D = refine(D, 1);
+
+L = ultraSEM(D, {1,0,0}, -1, 5);
+u = L\0;
+
+L.rhs = u;
+v = L\0;
+
+L.rhs = @(x,y) u(x,y);
+z = L\0;
+pass(5) = normest(v-z) < tol;
+
 end

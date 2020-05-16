@@ -2,7 +2,8 @@ function S = updateRHS(S, f)
 %UPDATERHS   Update the RHS function in a ULTRASEM object.
 %   UPDATERHS(S, F) or S.RHS = F updates the RHS function F in the ULTRASEM
 %   object S. This is useful as only a small fraction of the initialization
-%   phase needs to be repeated.
+%   phase needs to be repeated. F may be a function handle, a scalar, or an
+%   ULTRASEM.SOL object with the same domain and discretisation size as S.
 %
 % Example:
 %   S = ultraSEM.alphabet('S');
@@ -20,8 +21,18 @@ function S = updateRHS(S, f)
 %
 % See also BUILD.
 
-for k = 1:numel(S.patches)
-    S.patches{k} = updateRHS(S.patches{k}, f);
+if ( isa(f, 'ultraSEM.Sol') )
+    f = f.u;
+end
+    
+if ( iscell(f) )
+    for k = 1:numel(S.patches)
+        S.patches{k} = updateRHS(S.patches{k}, f{k});
+    end
+else
+    for k = 1:numel(S.patches)
+        S.patches{k} = updateRHS(S.patches{k}, f);
+    end
 end
 
 end

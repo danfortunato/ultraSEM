@@ -21,13 +21,15 @@ numIntDOF = (p-2)^2;
 % TODO: This is unfortuate...
 op = ultraSEM.PDO({0,0,0}); % Entries don't matter.
 [~, rhs] = transformPDO(dom, op, rhs);
-
 % Define scalar RHSs:
 if ( isnumeric(rhs) )
     if ( isscalar(rhs) )
         % Constant RHS.
         rhs = [ rhs; zeros(numIntDOF-1,1) ];
-    end
+    else
+        assert(all(size(rhs) == p), 'Incorrect dimension for new RHS.');
+        rhs = evaluateRHS(rhs, [], [], p, numIntDOF);
+    end    
 else
     % Evaluate non-constant RHS:
     [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
@@ -58,9 +60,13 @@ P.D2N(:,end) = normal_d * Sp;
 end
 
 function out = evaluateRHS(rhs, x, y, p, numIntDOF)
-vals = feval(rhs, x, y);
-% Convert to coeffs:
-coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
+if ( ~isnumeric(rhs) )
+    vals = feval(rhs, x, y);
+    % Convert to coeffs:
+    coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
+else
+    coeffs = rhs;
+end
 % Map the RHS to the right ultraspherical space:
 lmap = util.convertmat(p, 0, 1);
 rmap = util.convertmat(p, 0, 1);
