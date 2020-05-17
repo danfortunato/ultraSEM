@@ -10,7 +10,7 @@ if ( nargin < 3 )
 end
 
 % Chop coefficients less than relative TOL
-tol = eps;
+tol = 1e-15;
 
 % Store NSTORE multmats of size NMAX x NMAX for C{(0:2)}_(0:NSTORE-1)(x).
 persistent MStore nmax nstore
