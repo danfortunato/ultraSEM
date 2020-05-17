@@ -1,11 +1,12 @@
 function P = updateRHS(P, rhs)
 %UPDATERHS   Update RHS of an ULTRASEM.LEAF object.
 %   P = UPDATERHS(P, F) replaces the existing RHS of an initialized
-%   ULTRASEM.LEAF object P with that given in F, which may be a constant or
-%   a function handle. Since only one subproblem needs to be solved on each
-%   patch in the update process (rather than O(n) in the original
-%   initialization) this can lead to considerable performance gains when
-%   solving for multiple RHSs.
+%   ULTRASEM.LEAF object P with that given in F, which may be a constant, a
+%   function handle, an ULTRASEM.SOL object defined on P, or a matrix (or
+%   cell array) of bivariate Chebyshev coefficients. Since only one
+%   subproblem needs to be solved on each patch in the update process
+%   (rather than O(p) in the original initialization) this can lead to
+%   considerable performance gains when solving for multiple RHSs.
 %
 % See also ULTRASEM.LEAF.INITIALIZE.
 
@@ -18,20 +19,38 @@ p = P.p;
 dom = P.domain;
 numIntDOF = (p-2)^2;
 
-% TODO: This is unfortuate...
-op = ultraSEM.PDO({0,0,0}); % Entries don't matter.
-[~, rhs] = transformPDO(dom, op, rhs);
+if ( isa(rhs, 'ultraSEM.Sol') )
+    rhs = rhs.u;
+end
 
-% Define scalar RHSs:
-if ( isnumeric(rhs) )
-    if ( isscalar(rhs) )
-        % Constant RHS.
-        rhs = [ rhs; zeros(numIntDOF-1,1) ];
-    end
+if ( iscell(rhs) )
+    rhs = rhs{1};
+end
+
+if ( isnumeric(rhs) && ~isscalar(rhs) )
+    % We have the coefficients of the RHS.
+    % Convert to values in order to scale the RHS by dom.scl:
+    vals = util.coeffs2vals( util.coeffs2vals( rhs ).' ).';
+    [X, Y] = util.chebpts2(p);
+    vals = dom.scl(X,Y) .* vals;
+    rhs = prepareRHS(vals, p, numIntDOF);
 else
-    % Evaluate non-constant RHS:
-    [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
-    rhs = evaluateRHS(rhs, X, Y, p, numIntDOF);
+    % TODO: This is unfortunate...
+    op = ultraSEM.PDO({0,0,0}); % Entries don't matter.
+    [~, rhs] = transformPDO(dom, op, rhs);
+
+    % Define scalar RHSs:
+    if ( isnumeric(rhs) )
+        if ( isscalar(rhs) )
+            % Constant RHS.
+            rhs = [ rhs; zeros(numIntDOF-1,1) ];
+        end
+    else
+        % Evaluate non-constant RHS:
+        [X, Y] = util.chebpts2(p); % Chebyshev points and grid.
+        vals = feval(rhs, X, Y);
+        rhs = prepareRHS(vals, p, numIntDOF);
+    end
 end
 
 Ainv = P.Ainv;
@@ -57,10 +76,9 @@ P.D2N(:,end) = normal_d * Sp;
 
 end
 
-function out = evaluateRHS(rhs, x, y, p, numIntDOF)
-vals = feval(rhs, x, y);
+function out = prepareRHS(vals, p, numIntDOF)
 % Convert to coeffs:
-coeffs = util.vals2coeffs(util.vals2coeffs(vals).').';
+coeffs = util.vals2coeffs( util.vals2coeffs( vals ).' ).';
 % Map the RHS to the right ultraspherical space:
 lmap = util.convertmat(p, 0, 1);
 rmap = util.convertmat(p, 0, 1);

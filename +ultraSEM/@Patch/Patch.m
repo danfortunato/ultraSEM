@@ -31,6 +31,9 @@ classdef ( Abstract ) Patch
         % Number of degrees of freedom in a patch.
         N = numel(P);
 
+        % Number of patches in a patch.
+        N = length(P);
+
     end
 
 end

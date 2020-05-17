@@ -1,12 +1,27 @@
 function P = updateRHS(P, rhs)
-%UPDATERHS   Update RHS of a parent.
+%UPDATERHS   Update RHS of an ULTRASEM.PARENT object.
 %   P = UPDATERHS(P, RHS) replaces the existing RHS of an initialized
 %   ULTRASEM.PARENT object P with that given in RHS, which may be a
-%   constant or a function handle.
+%   constant, a function handle, an ULTRASEM.SOL object defined on P, or a
+%   cell array containing bivariate Chebyshev coefficients for each patch.
 
-% Update RHS of children:
-a = updateRHS(P.child1, rhs);
-b = updateRHS(P.child2, rhs);
+if ( isa(rhs, 'ultraSEM.Sol') )
+    rhs = rhs.u;
+end
+
+if ( iscell(rhs) )
+    % We are updating the RHS from a cell array of coefficients.
+    % Get the number of patches in each child:
+    n1 = length(P.child1);
+    n2 = length(P.child2);
+    % Update RHS of children:
+    a = updateRHS(P.child1, rhs(1:n1));
+    b = updateRHS(P.child2, rhs(n1+1:n1+n2));
+else
+    % Update RHS of children:
+    a = updateRHS(P.child1, rhs);
+    b = updateRHS(P.child2, rhs);
+end
 
 i1 = P.idx1{1};
 s1 = P.idx1{2};
