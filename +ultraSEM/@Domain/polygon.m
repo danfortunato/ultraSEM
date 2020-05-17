@@ -5,8 +5,18 @@ function T = polygon(v)
 %   vertices V should be given in anticlockwise order. If they are not,
 %   they will be modified to be as such.
 %
+%   T = ULTRASEM.POLYGON(N) returns an ULTRASEM.DOMAIN T that is an N-sided
+%   regular polygon.
+%
 %   It is important to note that each side of the polygon will be formed
 %   from two adjacent grids.
+
+    if ( isscalar(v) )
+        % Construct a v-sided regular polygon.
+        poly = nsidedpoly(v);
+        T = ultraSEM.Domain.polygon(poly.Vertices);
+        return
+    end
 
     % Number of sides of the polygon
     n = size(v,1);
