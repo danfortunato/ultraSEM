@@ -10,7 +10,7 @@ op = ultraSEM( D, {{1,1,1}, 0, 0}, 0, 51 );
 sol = op \ 1;
 % plot(sol)
 
-err = normest(sol-1);
+err = norm(sol-1, inf);
 pass = err < tol;
 
 end

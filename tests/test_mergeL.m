@@ -14,7 +14,7 @@ S = ultraSEM.rectangle([-1 1 -1 1], 2);
 op = ultraSEM(S, {1, 0, 1}, -1, 21);
 sol2 = op\0;
 
-err = normest(sol - sol2);
+err = norm(sol - sol2, inf);
 pass(1) = err < tol;
 
 end
