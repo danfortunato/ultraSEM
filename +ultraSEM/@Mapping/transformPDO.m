@@ -38,7 +38,7 @@ b_xy = op_xy.b;
 
 % d/dxx term
 if ( isa( dxx, 'function_handle') )
-    dxx = 'dxx(dom.x(r,s), dom.y(r,s))';
+    dxx = 'op_xy.dxx(dom.x(r,s), dom.y(r,s))';
 else
     dxx = num2str(dxx);
 end
@@ -50,7 +50,7 @@ ds  = ['@(r,s) ' dxx '.*' dsdxx ''];
 
 % d/dxy term
 if ( isa( dxy, 'function_handle') )
-    dxy = 'dxy(dom.x(r,s), dom.y(r,s))';
+    dxy = 'op_xy.dxy(dom.x(r,s), dom.y(r,s))';
 else
     dxy = num2str(dxy);
 end
@@ -62,7 +62,7 @@ ds  = [ds  ' + ' dxy ' .*' dsdxy ''];
 
 % d/dyy term
 if ( isa( dyy, 'function_handle') )
-    dyy = 'dyy(dom.x(r,s), dom.y(r,s))';
+    dyy = 'op_xy.dyy(dom.x(r,s), dom.y(r,s))';
 else
     dyy = num2str(dyy);
 end
@@ -74,7 +74,7 @@ ds  = [ds  ' + ' dyy '.*' dsdyy ''];
 
 % d/dx term
 if ( isa( dx, 'function_handle') )
-    dx = 'dx(dom.x(r,s), dom.y(r,s))';
+    dx = 'op_xy.dx(dom.x(r,s), dom.y(r,s))';
 else
     dx = num2str(dx);
 end
@@ -83,7 +83,7 @@ ds = [ds ' + ' dx '.*' det '.^2.*' dsdx ''];
 
 % d/dy term
 if ( isa( dy, 'function_handle') )
-    dy = 'dy(dom.x(r,s), dom.y(r,s))';
+    dy = 'op_xy.dy(dom.x(r,s), dom.y(r,s))';
 else
     dy = num2str(dy);
 end
