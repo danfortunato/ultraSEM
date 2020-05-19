@@ -322,26 +322,14 @@ for k = 1:size(terms,1)
         CC{k}{1,2} =          Sx * Dx;
     else
         % Variable coefficient
-        if ( isa(coeff, 'function_handle') )
-            x = util.chebpts(n, dom(1:2));
-            y = util.chebpts(n, dom(3:4));
-            [xx,yy] = meshgrid(x,y);
-            [C, D, R] = svd(coeff(xx,yy));
-            r = rank(D);
-            C = util.vals2coeffs(C(:,1:r));
-            D = D(1:r,1:r);
-            R = util.vals2coeffs(R(:,1:r));
-            coeff = 1:r;
-            CC{k} = cell(length(coeff), 2);
-        else % Chebfun2 - TODO: Is this ever the case? Why?
-            [C, D, R] = cdr(coeff);
-            C = chebcoeffs(C, n);
-            R = chebcoeffs(R, n);
-        end
-        % Make a multiplication operator for each slice of chebfun2
-        for r = 1:length(coeff)
-            Mx = util.multmat( n, sqrt(D(r,r)) * R(:,r), dx );
-            My = util.multmat( n, sqrt(D(r,r)) * C(:,r), dy );
+        % Compute a CDR decomposition:
+        [C, D, R] = cdr(coeff, n, dom);
+        % Make a multiplication operator for each slice
+        rk = size(D, 1);
+        CC{k} = cell(rk, 2);
+        for r = 1:rk
+            Mx = util.multmat( n, sign(D(r,r)) * sqrt(abs(D(r,r))) * R(:,r), dx );
+            My = util.multmat( n,                sqrt(abs(D(r,r))) * C(:,r), dy );
             CC{k}{r,1} = Sy * My * Dy;
             CC{k}{r,2} = Sx * Mx * Dx;
         end
@@ -350,6 +338,52 @@ end
 
 % Flatten into a rank x 2 cell array
 CC = cat(1, CC{:});
+
+end
+
+function [C, D, R] = cdr(f, n, dom)
+%CDR   Compute a low rank decomposition of a bivariate function.
+%   [C, D, R] = cdr(F, N, DOM) produces a K x K diagonal matrix D and N x K
+%   matrices C and R of size such that F(x,y) = C(y,:) * D * R(x,:)'. Here,
+%   K is the computed rank of the function F over the domain DOM, and each
+%   column of C and R contains the Chebyshev coefficients of a univariate
+%   function.
+
+if ( isa(f, 'chebfun2') )
+    [C, D, R] = cdr(f);
+    C = chebcoeffs(C, n);
+    R = chebcoeffs(R, n);
+else
+    [xx, yy] = util.chebpts2(n, n, dom);
+    A = f(xx,yy);
+
+    % Old way based on SVD: (This gives bad roundoff errors.)
+    %   [C, D, R] = svd(A);
+    %   r = rank(D);
+
+    % GE with complete pivoting: (This is more accurate.)
+    scl = max( abs( A(:) ) );
+    C = []; D = []; R = [];
+    for r = 1:n
+        [mx, idx] = max( abs( A(:) ) ); % Complete pivoting
+        if ( mx/scl < 100*eps )
+            r = r - 1;
+            break
+        end
+        [j, k] = ind2sub( size(A), idx );
+        C = [C A(:,k)];
+        D(r,r) = 1/A(j,k);
+        R = [R A(j,:).'];
+        A = A - A(:,k)*A(j,:)/A(j,k);
+    end
+
+    D = D(1:r,1:r);
+    C = util.vals2coeffs(C(:,1:r));
+    R = util.vals2coeffs(R(:,1:r));
+
+    C(abs(C) < eps) = 0;
+    R(abs(R) < eps) = 0;
+end
 
 end
 
@@ -534,8 +568,10 @@ switch pref.solver
         Ainv = @(u) A\u;
     case 'woodbury'
         % Woodbury formula:
-        S22 = schurSolve(A, [BC, rhs], 3*p-3);
-        Ainv = @(u) schurSolve(A, u, 3*p-3);
+        % The number of dense rows scales with the bandwidth of A
+        m = find(A(:,1), 1, 'last');
+        S22 = schurSolve(A, [BC, rhs], m);
+        Ainv = @(u) schurSolve(A, u, m);
     case 'LU'
         % Do sparse LU by hand so we can store L U factors:
         P = symrcm(A);
@@ -566,8 +602,8 @@ i2 = m+1:na;
 i3 = nb+(1:m);
 
 AA = A(i2,i2);
-bb = [b(i2,:), A(i2,i1)];
-if ( nnz(AA)/numel(AA) > .2 )
+bb = [b(i2,:), full(A(i2,i1))];
+if ( nnz(AA)/numel(AA) > .7 )
     % A is dense. Bail and do full direct solve.
     x = full(A)\b;
     return
@@ -586,7 +622,7 @@ spparms('bandden', 0);
 c = AA\bb;
 spparms(parms);
 
-x = (A(i1,i1) - A(i1,i2)*c(:,i3)) \ (b(i1,:) - A(i1,i2)*c(:,1:nb));
+x = (full(A(i1,i1)) - full(A(i1,i2))*c(:,i3)) \ (b(i1,:) - full(A(i1,i2))*c(:,1:nb));
 y = c(:,1:nb) - c(:,i3)*x;
 x = [x ; y];
 
