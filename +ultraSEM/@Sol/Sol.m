@@ -37,7 +37,16 @@ classdef Sol
             end
 
             obj.domain = d;
-            obj.u = u;
+            if ( isnumeric(u) && isscalar(u) )
+                % Make an N x N discretization of zeros on each patch
+                n = u;
+                obj.u = cell(length(d), 1);
+                for k = 1:length(d)
+                    obj.u{k} = zeros(n);
+                end
+            else
+                obj.u = u;
+            end
 
         end
 
