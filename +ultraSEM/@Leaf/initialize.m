@@ -569,7 +569,7 @@ switch pref.solver
     case 'woodbury'
         % Woodbury formula:
         % The number of dense rows scales with the bandwidth of A
-        m = find(A(:,1), 1, 'last');
+        m = bandwidth(A, 'lower');
         S22 = schurSolve(A, [BC, rhs], m);
         Ainv = @(u) schurSolve(A, u, m);
     case 'LU'
