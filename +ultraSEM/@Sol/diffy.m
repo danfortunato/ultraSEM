@@ -3,8 +3,16 @@ function f = diffy(f)
 %   DIFFX(F) returns an ULTRASEM.SOL representing the derivative of the
 %   ULTRASEM.SOL F in its second argument.
 %
-% See also DIFFX.
+%   DIFFX(F, N) returns an ULTRASEM.SOL representing the N-th derivative of
+%   the ULTRASEM.SOL F in its second argument.
+%
+% See also DIFFX, DIFF.
 
-f = diff(f, 1);
+% Default to first derivative:
+if ( nargin == 1 )
+    n = 1;
+end
+
+f = diff(f, n, 1);
 
 end
