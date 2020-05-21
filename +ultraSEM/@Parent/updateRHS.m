@@ -36,9 +36,8 @@ D2Na = a.D2N; D2Nb = b.D2N;
 % a.D2N = []; b.D2N = [];
 
 % Compute new solution operator:
-S = lsqminnorm( -( l2g1*D2Na(s1,s1)*l2g1.' + l2g2*D2Nb(s2,s2)*l2g2.' ), ...
-                   l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end) );
-%                 |------------------ rhs --------------|
+S = solve(P.dA, l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end), false);
+%              |------------------ rhs --------------|
 
 % Compute new D2N maps:
 %      |--- rhs ----|

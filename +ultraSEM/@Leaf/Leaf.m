@@ -13,16 +13,16 @@ classdef Leaf < ultraSEM.Patch
 %   "up".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %#ok<*PROP>
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     properties ( Access = public )
 
-        Ainv  % Local (homogeneous BC) solution operator operator.
-              % (Stored so the RHS can be efficiently updated)
+        Ainv     % Local (homogeneous BC) solution operator.
+        normal_d % Normal derivative operator.
+                 % (These are stored so the RHS can be efficiently updated)
+
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,7 +31,7 @@ classdef Leaf < ultraSEM.Patch
 
     methods
 
-        function P = Leaf(dom, S, D2N, edges, Ainv)
+        function P = Leaf(dom, S, D2N, edges, Ainv, normal_d)
 
             % Construct empty patch:
             if ( nargin == 0 )
@@ -39,12 +39,15 @@ classdef Leaf < ultraSEM.Patch
             end
 
             % Assign domain and operators:
-            P.domain = dom;       % Domain.
-            P.S = S;              % Solution operator.
-            P.D2N = D2N;          % Dirichlet-to-Neumann map.
-            P.edges = edges;      % Edges.
+            P.domain = dom;            % Domain.
+            P.S = S;                   % Solution operator.
+            P.D2N = D2N;               % Dirichlet-to-Neumann map.
+            P.edges = edges;           % Edges.
             if ( nargin > 4 )
-                P.Ainv = Ainv;    % Local solution operator.
+                P.Ainv = Ainv;         % Local solution operator.
+            end
+            if ( nargin > 5 )
+                P.normal_d = normal_d; % Normal derivative operator.
             end
 
         end

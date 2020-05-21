@@ -71,8 +71,7 @@ Sp = imposeBCs(Sp, Px, Py, Bx, By, Gx, Gy, p);
 P.S(:,end) = Sp;
 
 % Normal derivative:
-normal_d = transformNormalD(dom, p);
-P.D2N(:,end) = normal_d * Sp;   
+P.D2N(:,end) = P.normal_d * Sp;
 
 end
 

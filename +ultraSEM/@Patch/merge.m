@@ -31,11 +31,12 @@ D2Na = a.D2N; D2Nb = b.D2N;
 %   interface. The L2G maps are responsible for any transformations needed
 %   to achieve this (e.g. flipping, interpolation, etc.).
 A = -( l2g1*D2Na(s1,s1)*l2g1.' + l2g2*D2Nb(s2,s2)*l2g2.' );
+z = [ l2g1*D2Na(s1,i1), l2g2*D2Nb(s2,i2), l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end) ];
+%                                        |----------------- rhs ---------------|
+% Store the decomposition from lsqminnorm() for reuse in updateRHS().
 tol = min(max(size(A))*eps(norm(A)), 1e-8);
-S = lsqminnorm( A, [ l2g1*D2Na(s1,i1), ...
-                     l2g2*D2Nb(s2,i2), ...
-                     l2g1*D2Na(s1,end) + l2g2*D2Nb(s2,end) ], tol);
-%                   |----------------- rhs ---------------|
+dA = matlab.internal.decomposition.DenseCOD(A, tol);
+S = solve(dA, z, false);
 
 % Compute new D2N maps:
 % - Again, make sure to map local DOFs to shared DOFs on the interface.
@@ -46,5 +47,6 @@ D2N = [ D2Na(i1,i1),  Z12,         D2Na(i1,end) ;
     + [ D2Na(i1,s1)*l2g1.' ; D2Nb(i2,s2)*l2g2.' ] * S;
 
 % Construct the new patch:
-c = ultraSEM.Parent(dom, S, D2N, edges, a, b, {i1, s1}, {i2, s2}, l2g1, l2g2);
+c = ultraSEM.Parent(dom, S, D2N, dA, edges, a, b, {i1, s1}, {i2, s2}, l2g1, l2g2);
+
 end

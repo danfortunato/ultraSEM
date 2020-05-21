@@ -146,7 +146,7 @@ end
             end
             
             % Assemble the patch:
-            L{k} = ultraSEM.Leaf(domk, S, D2N, edges, Ainv);
+            L{k} = ultraSEM.Leaf(domk, S, D2N, edges, Ainv, normal_d);
         end
         
         % Append particular parts if necessary (i.e., non constant RHS):
@@ -204,7 +204,7 @@ end
             D2N = normal_d * S;
             
             % Assemble the patch:
-            L{k} = ultraSEM.Leaf(domk, S, D2N, edges, Ainv);
+            L{k} = ultraSEM.Leaf(domk, S, D2N, edges, Ainv, normal_d);
             
         end
     end
