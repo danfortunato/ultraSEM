@@ -14,7 +14,8 @@ if ( isa(S.patches, 'ultraSEM') )
         build(S.patches(k));
     end
     % Concatenate (since S already contains domain info.)
-    S.patches = vertcat(S.patches.patches);
+    S_sub = S.patches;
+    S.patches = vertcat(S_sub.patches);
 end
 
 assert(isInitialized(S), '%s has not yet been initialized.', inputname(1));
