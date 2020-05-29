@@ -2,6 +2,11 @@ function pass = test_orientation()
 
 tol = 1e-10;
 
+if ( isempty(which('chebfun')) )
+    pass = 1;
+    return
+end
+
 sol = chebfun2(@(x,y) (1-x.^2).*(1-y.^2).*(x.^4.*y + y), [-1 1 -1 1]);
 rhs = lap(sol);
 bc = 0;

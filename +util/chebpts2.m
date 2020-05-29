@@ -17,6 +17,7 @@ if ( nargin == 1 )
     ny = nx;
 end
 
+% Default domain:
 map = [];
 if ( nargin < 3 )
     dom = [-1 1 -1 1];
@@ -25,12 +26,14 @@ elseif ( isa(dom, 'ultraSEM.Mapping') )
     dom = [-1 1 -1 1];
 end
 
+% Chebyshev points in x and y
 x = util.chebpts(nx, dom(1:2));
 y = util.chebpts(ny, dom(3:4));
 
 % Tensor product
 [xx, yy] = meshgrid(x, y);
 
+% Transform grid:
 if ( ~isempty(map) )
     [xx, yy] = transformGrid(map, xx, yy);
 end

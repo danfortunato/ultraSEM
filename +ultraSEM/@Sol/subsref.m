@@ -1,10 +1,10 @@
 function varargout = subsref(sol, index)
 %SUBSREF   Subscripted reference for an ULTRASEM.SOL.
-%   SOL(X, Y) returns the values of SOL evaluated at (X, Y).  See
-%   CHEBFUN/FEVAL for further details.
+%   SOL(X, Y) returns the values of SOL evaluated at (X, Y). See FEVAL for
+%   further details.
 %
-%   SOL.PROP returns the property PROP of SOL as defined by
-%   GET(SOL, 'PROP').
+%   SOL.PROP returns the property PROP of SOL as defined by GET(SOL,
+%   'PROP').
 %
 % See also FEVAL, GET.
 
