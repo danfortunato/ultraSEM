@@ -56,13 +56,22 @@ numPatches = size(dom, 1);
 if ( isempty(p) )
     % Default discretization size:
     p = pref.discSize;
-elseif ( isvector(p) && ~isscalar(p) )
+elseif ( (isvector(p) && ~isscalar(p)) || isa(p, 'function_handle') )
     % Elements have varying p:
-    assert(numel(p) == numPatches, ...
-        'Number of p''s must equal number of patches.');
     L = cell(numPatches, 1);
-    for j = 1:numel(p)
-        L(j) = ultraSEM.Leaf.initialize(dom(j,:), op, rhs, p(j), pref);
+    if ( isa(p, 'function_handle') )
+        for j = 1:numPatches
+            c = centroid(dom(j,:));
+            pj = p(c(1),c(2));
+            pj = max(floor(pj), 3);
+            L(j) = ultraSEM.Leaf.initialize(dom(j,:), op, rhs, pj, pref);
+        end
+    else
+        assert(numel(p) == numPatches, ...
+            'Number of p''s must equal number of patches.');
+        for j = 1:numPatches
+            L(j) = ultraSEM.Leaf.initialize(dom(j,:), op, rhs, p(j), pref);
+        end
     end
     return
 else
@@ -381,8 +390,8 @@ else
     C = util.vals2coeffs(C(:,1:r));
     R = util.vals2coeffs(R(:,1:r));
 
-    C(abs(C) < eps) = 0;
-    R(abs(R) < eps) = 0;
+    C(abs(C*sqrt(D)) < eps * max(abs(C*sqrt(D)))) = 0;
+    R(abs(R*sqrt(D)) < eps * max(abs(R*sqrt(D)))) = 0;
 end
 
 end
