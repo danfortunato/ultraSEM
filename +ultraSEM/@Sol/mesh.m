@@ -7,7 +7,7 @@ function varargout = mesh(sol, varargin)
 
 holdState = ishold();
 
-vals = coeffs2vals(sol.u);
+vals = coeffs2vals(sol.coeffs);
 [x,y] = getGrid(sol);
 for k = 1:length(sol)
     u = vals{k};

@@ -15,16 +15,16 @@ function initialize(S, varargin)
 %   The full sequence for solving a problem using an ULTRASEM object S is:
 %
 %      initialize(S, OP, RHS)
-%      build(S)
+%      build(S)   % (optional)
 %      sol = S\bc % or sol = solve(S, bc)
 %
 % See also BUILD, SOLVE.
 
 % Initialize all leaf patches:
-
 D = S.domain;
 numD = size(D.domain, 1);
 if ( isa(D.domain, 'ultraSEM.Domain') && numD > 1)
+    % Deal with recursively defined Domain:
     S_sub(numD,1) = ultraSEM;
     for k = 1:numD
         S_sub(k).domain = D.domain(k);

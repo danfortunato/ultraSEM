@@ -20,7 +20,7 @@ dom = P.domain;
 numIntDOF = (p-2)^2;
 
 if ( isa(rhs, 'ultraSEM.Sol') )
-    rhs = rhs.u;
+    rhs = rhs.coeffs;
 end
 
 if ( iscell(rhs) )

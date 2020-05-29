@@ -6,6 +6,6 @@ function f = uminus(f)
 %
 % See also UPLUS.
 
-f.u = cellfun(@uminus, f.u, 'UniformOutput', false);
+f.coeffs = cellfun(@uminus, f.coeffs, 'UniformOutput', false);
 
 end

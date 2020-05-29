@@ -42,12 +42,12 @@ switch ( p )
         reduceFun = @sum;
 
     case {inf, 'inf', 'max'}
-        normSol = cellfun(@(u) max(abs(u(:))), coeffs2vals(sol.u));
+        normSol = cellfun(@(u) max(abs(u(:))), coeffs2vals(sol.coeffs));
         normSol = num2cell(normSol);
         reduceFun = @max;
 
     case {-inf, '-inf', 'min'}
-        normSol = cellfun(@(u) min(abs(u(:))), coeffs2vals(sol.u));
+        normSol = cellfun(@(u) min(abs(u(:))), coeffs2vals(sol.coeffs));
         normSol = num2cell(normSol);
         reduceFun = @min;
 
@@ -83,10 +83,10 @@ p = round(p);
 % that patch using N*P points.
 int = cell(length(sol),1);
 for k = 1:length(sol)
-    [ny,nx] = size(sol.u{k});
+    [ny,nx] = size(sol.coeffs{k});
     qx = nx*p; qy = ny*p;
     U = zeros(qy,qx);
-    U(1:ny,1:nx) = sol.u{k};
+    U(1:ny,1:nx) = sol.coeffs{k};
     V = util.coeffs2vals( util.coeffs2vals(U).' ).';
     wx = util.quadwts(qx); wx = wx(:);
     wy = util.quadwts(qy); wy = wy(:);

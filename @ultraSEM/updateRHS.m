@@ -22,13 +22,11 @@ function S = updateRHS(S, f)
 %
 % See also BUILD.
 
-if ( ~isInitialized(S) )
-    error('ULTRASEM:ULTRASEM:updateRHS:notInitialized', ...
-        'The ultraSEM object `%s` has not been initialized.', inputname(1))
-end
+assert(isInitialized(S), 'ultraSEM object `%s` has not been initialized.', ...
+    inputname(1))
 
 if ( isa(f, 'ultraSEM.Sol') )
-    f = f.u;
+    f = f.coeffs;
 end
 
 if ( iscell(f) )

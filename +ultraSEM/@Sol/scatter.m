@@ -10,7 +10,7 @@ function varargout = scatter(sol, varargin)
 numPatches = size(sol.domain, 1);
 holdState = ishold();
 
-vals = coeffs2vals(sol.u);
+vals = coeffs2vals(sol.coeffs);
 [x,y] = getGrid(sol);
 for k = 1:numPatches
     h(k) = scatter(x{k}, y{k}, vals{k}, 'EdgeAlpha', 0, varargin{:});

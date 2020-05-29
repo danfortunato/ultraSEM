@@ -6,10 +6,10 @@ function [x, y] = plotpts(sol, kk)
 %   [X, Y] = PLOTPTS(SOL, KK) returns plot points for the KK-th patches.
 
 d = sol.domain;
-u = sol.u;
+coeffs = sol.coeffs;
 
-x = cell(size(u));
-y = cell(size(u));
+x = cell(size(coeffs));
+y = cell(size(coeffs));
 
 if ( nargin < 2 )
     kk = 1:size(d, 1);

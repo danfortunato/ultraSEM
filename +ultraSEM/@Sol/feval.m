@@ -1,9 +1,9 @@
-function u = feval(sol, x, y)
+function coeffs = feval(sol, x, y)
 %FEVAL   Evaluate an ULTRASEM.SOL at one or more points.
 %   FEVAL(SOL, X, Y) evaluates SOL at the point(s) (X, Y).
 
 if ( ~isnumeric(sol.domain) )
-    u = fevalMapped(sol, x, y);
+    coeffs = fevalMapped(sol, x, y);
     return
 end
 
@@ -11,7 +11,7 @@ minx = min(sol.domain(:,1));
 miny = min(sol.domain(:,3));
 
 sx = size(x);
-u = 0*x(:);
+coeffs = 0*x(:);
 x = x(:);
 y = y(:);
 
@@ -27,12 +27,12 @@ for k = 1:length(sol)
         scly = 2/diff(dom(3:4));
         xm = sclx*(x(idx)-dom(1))-1;
         ym = scly*(y(idx)-dom(3))-1;
-        u(idx) = util.clenshaw2d(sol.u{k}, xm, ym);
+        coeffs(idx) = util.clenshaw2d(sol.coeffs{k}, xm, ym);
     end
 
 end
 
-u = reshape(u, sx);
+coeffs = reshape(coeffs, sx);
 
 end
 
@@ -62,7 +62,7 @@ for k = 1:size(sol.domain, 1)
             ys >= dom(3) & ys <= dom(4) );
 
     if ( any(idx) )
-        u(idx) = util.clenshaw2d(sol.u{k}, x(idx), y(idx));
+        u(idx) = util.clenshaw2d(sol.coeffs{k}, x(idx), y(idx));
     end
 
 end

@@ -28,7 +28,7 @@ sol = S\0;
 % Check the error:
 err = [0 0 0];
 [x,y] = getGrid(sol);
-for k = 1:numel(sol.u)
+for k = 1:numel(sol.coeffs)
     e = abs(u(x{k},y{k}) - feval(sol,x{k},y{k}));
     err(k) = norm(e, inf);
 end

@@ -8,15 +8,15 @@ function f = compose(op, f, g)
 %   OP is a function handle and F and G are ULTRASEM.SOLs. The function
 %   handle OP is applied to F and G in value space.
 
-ff = coeffs2vals(f.u);
+ff = coeffs2vals(f.coeffs);
 
 if ( nargin == 2 )
     ff = cellfun(op, ff, 'UniformOutput', false);
 else
-    gg = coeffs2vals(g.u);
+    gg = coeffs2vals(g.coeffs);
     ff = cellfun(op, ff, gg, 'UniformOutput', false);
 end
 
-f.u = vals2coeffs(ff);
+f.coeffs = vals2coeffs(ff);
 
 end

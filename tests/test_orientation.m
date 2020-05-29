@@ -22,7 +22,7 @@ for k = 1:size(p,1)
     sol1 = op \ bc;
     pass(k) = 1;
     [x, y] = getGrid(sol1);
-    for j = 1:numel(sol1.u)
+    for j = 1:numel(sol1.coeffs)
         err = abs(feval(sol1, x{j}, y{j}) - feval(sol, x{j}, y{j}));
         pass(k) = pass(k) & max(max(err)) < tol;
     end

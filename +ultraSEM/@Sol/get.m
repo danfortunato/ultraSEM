@@ -14,8 +14,8 @@ function val = get(sol, prop)
 switch ( prop )
     case 'domain'
         val = sol.domain;
-    case 'u'
-        val = sol.u;
+    case 'coeffs'
+        val = sol.coeffs;
     case 'nplotpts'
         val = sol.nplotpts;
     otherwise

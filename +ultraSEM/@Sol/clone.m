@@ -18,12 +18,12 @@ if ( isa(f, 'function_handle') || isa(f, 'ultraSEM.Sol') )
     for k = 1:length(sol)
         [xx, yy] = getGrid(sol, k);
         vals = feval(f, xx, yy);
-        solf.u{k} = util.vals2coeffs( util.vals2coeffs( vals ).' ).';
+        solf.coeffs{k} = util.vals2coeffs( util.vals2coeffs( vals ).' ).';
     end
 else
     for k = 1:length(sol)
-        solf.u{k} = 0*sol.u{k};
-        solf.u{k}(1,1) = f;
+        solf.coeffs{k} = 0*sol.coeffs{k};
+        solf.coeffs{k}(1,1) = f;
     end
 end
 

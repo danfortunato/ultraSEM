@@ -18,9 +18,14 @@ classdef ultraSEM < handle
 %   object PREF. (See ULTRASEM.PREF for details on the various preference
 %   options and their defaults.)
 %
+%   ULTRASEM() constructs an empty ULTRASEM object. ULTRASEM(DOM)
+%   constructs an empty ULTRASEM object with domain DOM, which can later be
+%   initialized using the ULTRASEM.INITIALIZE method.
+%
 %   The full sequence for solving a problem using an ULTRASEM object S is:
 %
-%       S = ultraSEM(DOM, OP, RHS)
+%       S = ultraSEM(DOM);
+%       initialize(S, OP, RHS)
 %       build(S)
 %       sol = S\bc % or sol = solve(S, bc)
 %

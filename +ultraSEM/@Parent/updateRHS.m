@@ -6,7 +6,7 @@ function P = updateRHS(P, rhs)
 %   cell array containing bivariate Chebyshev coefficients for each patch.
 
 if ( isa(rhs, 'ultraSEM.Sol') )
-    rhs = rhs.u;
+    rhs = rhs.coeffs;
 end
 
 if ( iscell(rhs) )

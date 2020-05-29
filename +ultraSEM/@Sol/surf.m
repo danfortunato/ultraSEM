@@ -20,7 +20,7 @@ if ( ~iscell(x) )
 end
 
 for k = 1:length(sol)
-    u = coeffs2plotvals(sol.u{k});
+    u = coeffs2plotvals(sol.coeffs{k});
     if ( ~isreal(u) )
         u = abs(u);
     end
