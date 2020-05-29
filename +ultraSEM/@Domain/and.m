@@ -5,6 +5,14 @@ function C = and(A, B)
 %
 % See also MERGE().
 
+if ( isempty(A) )
+    C = B;
+    return
+elseif ( isempty(B) )
+    C = A;
+    return
+end
+
 C = merge(A, B); % This method is simply a wrapper for MERGE().
 
 end
