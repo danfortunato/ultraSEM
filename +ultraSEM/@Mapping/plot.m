@@ -13,25 +13,33 @@ else
     col = rand(1, 3);
 end
 
+alpha = 0.25;
+if ( size(col,2) == 4 )
+    alpha = col(4);
+    col = col(1:3);
+end
 plotPts = false;
 n = 21;
 holdState = ishold();
 
 if ( nargin > 1 && ~isempty(varargin) && ...
-        ~isempty(regexp( varargin{1}, '[.ox+*sdv^<>ph]', 'match')) )
+        ~isempty(regexp(varargin{1}, '[.ox+*sdv^<>ph]', 'match')) && ...
+        ~any(strcmpi(varargin{1}, {'LineStyle', 'LineWidth'})) )
     plotPts = true;
+    marker = varargin{1};
+    varargin(1) = [];
 end
 
 for k = 1:numel(T)
     % Plot domain:
     vertices = T(k).v;
     h(k,1) = fill(vertices([1:end, 1],1), vertices([1:end, 1],2), col, ...
-        'FaceAlpha', .25, varargin{2:end}); hold on %#ok<AGROW>
+        'FaceAlpha', alpha, varargin{:}); hold on %#ok<AGROW>
 
     if ( plotPts )
         % Plot the grid:
         [xx, yy] = util.chebpts2( n, n, T(k) );
-        plot(xx, yy, varargin{:})
+        plot(xx, yy, marker, varargin{:})
     end
 
     % Add text to center of patch:

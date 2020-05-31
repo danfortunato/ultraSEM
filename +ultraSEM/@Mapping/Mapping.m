@@ -42,6 +42,9 @@ classdef Mapping < matlab.mixin.Heterogeneous
         % Plot the mapped domain and grid.
         varargout = plot(T, varargin);
 
+        % Plot an ULTRASEM.MAPPING as a mesh.
+        varargout = mesh(T, varargin);
+
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
