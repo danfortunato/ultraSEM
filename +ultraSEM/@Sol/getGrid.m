@@ -9,21 +9,23 @@ function [x, y] = getGrid(sol, kk)
 d = sol.domain;
 u = sol.u;
 
-x = cell(size(u));
-y = cell(size(u));
-
 if ( nargin == 1 )
     kk = 1:size(d, 1);
 end
 
+x = cell(numel(kk),1);
+y = cell(numel(kk),1);
+
+i = 1;
 for k = kk
     nk = size(u{k}, 1);
     if ( isnumeric(d(k,:)) )
-        [x{k,1}, y{k,1}] = util.chebpts2(nk, nk, d(k,:));
+        [x{i,1}, y{i,1}] = util.chebpts2(nk, nk, d(k,:));
     else
         [xk, yk] = chebpts2(nk);
-        [x{k,1}, y{k,1}] = transformGrid(d(k,:), xk, yk);
+        [x{i,1}, y{i,1}] = transformGrid(d(k,:), xk, yk);
     end
+    i = i+1;
 end
 
 if ( nargin > 1 && numel(kk) == 1 )

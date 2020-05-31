@@ -1,13 +1,13 @@
-function solf = clone(sol, f)
+function solf = clone(f, sol)
 %CLONE   Clone an ULTRASEM.SOL.
-%   SOLF = CLONE(SOL, F) returns an ULTRASEM.SOL with the same domain and
+%   CLONE(F, SOL) returns an ULTRASEM.SOL with the same domain and
 %   discretization size as the ULTRASEM.SOL SOL, but with coefficients that
 %   represent the function F, which may be a constant, a function handle,
 %   or another ULTRASEM.SOL.
 
 if ( ~isa(sol, 'ultraSEM.Sol') )
     error('ULTRASEM:SOL:clone:invalid', ...
-        'First argument must be an ULTRASEM.SOL.');
+        'Second argument must be an ULTRASEM.SOL.');
 end
 
 % Copy the object.

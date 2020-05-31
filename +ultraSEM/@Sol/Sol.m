@@ -36,6 +36,9 @@ classdef Sol
                 return
             end
 
+            if ( isa(d, 'ultraSEM.Domain') )
+                d = d.domain;
+            end
             obj.domain = d;
             if ( isnumeric(u) && isscalar(u) )
                 % Make an N x N discretization of zeros on each patch
