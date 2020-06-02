@@ -50,6 +50,23 @@ classdef Leaf < ultraSEM.Patch
                 P.normal_d = normal_d; % Normal derivative operator.
             end
 
+            % The D2N map needs to be scaled on each side (e.g. when being
+            % merged) to account for the Jacobian scaling which has been
+            % factored out of the coordinate derivative maps. This scaling
+            % is not known until the merge stage, as it depends on the
+            % scaling of the neighboring patch.
+            if ( isa(dom, 'ultraSEM.Rect') )
+                % Normal derivatives are compute differently for Rect.
+                % Don't scale.
+                P.D2N_scl = {1, 1, 1, 1}.';
+            else
+                P.D2N_scl = cell(4,1);
+                P.D2N_scl{1} = @(y) dom.det(-1, y); % Left
+                P.D2N_scl{2} = @(y) dom.det(1, y);  % Right
+                P.D2N_scl{3} = @(x) dom.det(x, -1); % Down
+                P.D2N_scl{4} = @(x) dom.det(x, 1);  % Up
+            end
+
         end
 
     end
