@@ -34,7 +34,7 @@ D2Na = a.D2N; D2Nb = b.D2N;
 %   Therefore, we need to multiply the continuity conditions by the
 %   multiplication matrices SCL1 and SCL2. The coordinate maps are such
 %   that multiplying D2NA/B by SCL1/2 cancels out, so D2NA/B should only be
-%   multiplied by SCL1/2, respectively.
+%   multiplied by SCL2/1, respectively.
 A = -( scl2*l2g1*D2Na(s1,s1)*l2g1.' + scl1*l2g2*D2Nb(s2,s2)*l2g2.' );
 z = [ scl2*l2g1*D2Na(s1,i1), ...
       scl1*l2g2*D2Nb(s2,i2), ...
