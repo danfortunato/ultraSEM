@@ -56,7 +56,7 @@ classdef Leaf < ultraSEM.Patch
             % is not known until the merge stage, as it depends on the
             % scaling of the neighboring patch.
             if ( isa(dom, 'ultraSEM.Rect') )
-                % Normal derivatives are compute differently for Rect.
+                % Normal derivatives are computed differently for Rect.
                 % Don't scale.
                 P.D2N_scl = {1, 1, 1, 1}.';
             else
