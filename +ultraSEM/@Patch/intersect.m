@@ -1,8 +1,9 @@
-function [i1, i2, i4a, i4b, l2g1, l2g2, dom, edgesAB] = intersect(a, b)
+function [i1, i2, i4a, i4b, l2g1, l2g2, scl1, scl2, sclAB, dom, edgesAB] = intersect(a, b)
 %INTERSECT   Compute the indices of the glue between two patches.
-%   [I1, I2, I4A, I4B, L2G1, L2G2] = INTERSECT(A, B) returns the indices
-%   of the glue w.r.t. A.edges and B.edges of two patches A and B. For
-%   consistency with the paper by Martinsson:
+%   [I1, I2, I4A, I4B, L2G1, L2G2, SCL1, SCL2, SCLAB] = INTERSECT(A, B)
+%   returns the indices of the glue w.r.t. A.edges and B.edges of two
+%   patches A and B. For consistency with the paper by Martinsson:
+%
 %       I1 : Indices of DOFs on A.edges which are not on B.edges
 %       I2 : Indices of DOFs on B.edges which are not on A.edges
 %       I4A: Indices of DOFs on A.edges which are in the intersection
@@ -13,10 +14,14 @@ function [i1, i2, i4a, i4b, l2g1, l2g2, dom, edgesAB] = intersect(a, b)
 %   polynomial degrees on either side of an interface (so that DOFs must be
 %   interpolated or restricted to the same space), then L2G1 and L2G2
 %   encode how to map from local DOFs in A and B to global DOFs along
-%   the shared interface.
+%   the shared interface. The matrices SCL1 and SCL2 are multiplication
+%   matrices for the algebraic expressions (e.g., Jacobians) that have been
+%   factored out of the Dirichlet-to-Neumann maps for patches A and B.
+%   SCLAB is a cell array of scalars and/or function handles defining those
+%   algebraic expressions for the parent's edges.
 %
-%   [I1, I2, I4A, I4B, L2G1, L2G2, DOM, EDGESAB] = INTERSECT(A, B) returns
-%   also the domain and the edges of the intersection.
+%   [I1, I2, I4A, I4B, L2G1, L2G2, SCL1, SCL2, SCLAB, DOM, EDGESAB] = INTERSECT(A, B)
+%   returns also the domain and the edges of the intersection.
 
 % Copyright 2018 by Nick Hale and Dan Fortunato.
 
@@ -25,6 +30,8 @@ function [i1, i2, i4a, i4b, l2g1, l2g2, dom, edgesAB] = intersect(a, b)
 % * We currently assume that a mesh has no hanging nodes, so that
 %   intersections always occur between entire boundaries.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+pref = ultraSEM.Pref();
 
 % The new domain will be NaN except in the special case when we are
 % merging two rectangluar patches horizontally or vertically.
@@ -73,26 +80,58 @@ if ( isempty(flip1) )
     flip2 = ones(0,1);
 end
 
-% Build interpolation/truncation operators for p-adaptivity.
-if ( isempty(i4a) )
-    % Force 0x1 rather than empty. (Not sure why this is required.)
-    int1 = ones(0,1);
-    int2 = ones(0,1);
-else
-    % Get the function to determine the polynomial degree on the interface.
-    pref = ultraSEM.Pref();
+%% Construct operators for p-adaptivity and Jacobian scaling.
 
-    blocks1 = cell(numel(iA),1);
-    blocks2 = cell(numel(iB),1);
-    for k = 1:numel(iA)
-        % Set block (k,k) of int1 and int2
-        pmax = pref.interfaceDegree(pA(iA(k)), pB(iB(k)));
-        blocks1{k} = speye(pmax, pA(iA(k)));
-        blocks2{k} = speye(pmax, pB(iB(k)));
+sclA = a.D2N_scl;
+sclB = b.D2N_scl;
+
+intBlocks1 = cell(numel(iA),1); intBlocks2 = cell(numel(iB),1);
+sclBlocks1 = cell(numel(iA),1); sclBlocks2 = cell(numel(iB),1);
+
+for k = 1:numel(iA)
+    % Determine the polynomial degree on the interface.
+    n = pref.interfaceDegree(pA(iA(k)), pB(iB(k)));
+
+    %% Build interpolation/truncation operators for p-adaptivity.
+    % Block (k,k) interpolates from patch A/B to interface iA(k)/iB(k).
+    intBlocks1{k} = speye(n, pA(iA(k)));
+    intBlocks2{k} = speye(n, pB(iB(k)));
+
+    %% Compute the Jacobian scaling for patch A at interface iA(k).
+    s = sclA{iA(k)};
+    if ( isnumeric(s) && isscalar(s) )
+        sclBlocks1{k} = s * speye(n);
+    else
+        % We need to build a multiplication matrix for the scaling, so
+        % evaluate at Chebyshev points to convert to coefficients.
+        x = util.chebpts(n);
+        cfsA = util.vals2coeffs(s(x));
+        sclBlocks1{k} = util.multmat(n, cfsA);
     end
-    int1 = blkdiag(blocks1{:});
-    int2 = blkdiag(blocks2{:});
+
+    %% Compute the Jacobian scaling for patch B at interface iB(k).
+    s = sclB{iB(k)};
+    if ( isnumeric(s) && isscalar(s) )
+        sclBlocks2{k} = s * speye(n);
+    else
+        % We need to build a multiplication matrix for the scaling, so
+        % evaluate at Chebyshev points to convert to coefficients.
+        x = util.chebpts(n);
+        cfsB = util.vals2coeffs(s(x));
+        sclBlocks2{k} = util.multmat(n, cfsB);
+    end
 end
+
+% Assemble the operators as block-diagonal matrices.
+int1 = blkdiag(intBlocks1{:}); int2 = blkdiag(intBlocks2{:});
+scl1 = blkdiag(sclBlocks1{:}); scl2 = blkdiag(sclBlocks2{:});
+
+% Concatenate the scaling functions for the parent's edges.
+if ( ~isempty(iA) )
+    sclA(iA) = [];
+    sclB(iB) = [];
+end
+sclAB = [sclA ; sclB];
 
 % Local-to-global maps encode interpolation and flipping.
 l2g1 = int1 .* flip1.';

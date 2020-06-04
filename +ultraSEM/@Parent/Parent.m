@@ -18,6 +18,8 @@ classdef Parent < ultraSEM.Patch
         idx2        % How p.xy relates to p.child2.xy
         l2g1        % Local-to-global map from child1 to interface
         l2g2        % Local-to-global map from child2 to interface
+        scl1
+        scl2
         dA          % Decomposition of interface linear system
 
     end
@@ -28,7 +30,7 @@ classdef Parent < ultraSEM.Patch
 
     methods
 
-        function P = Parent(domain, S, D2N, dA, edges, child1, child2, idx1, idx2, l2g1, l2g2)
+        function P = Parent(domain, S, D2N, dA, edges, scl, child1, child2, idx1, idx2, l2g1, l2g2, scl1, scl2)
 
             % Construct empty patch:
             if ( nargin == 0 )
@@ -41,6 +43,7 @@ classdef Parent < ultraSEM.Patch
             P.D2N = D2N;
             P.dA = dA;
             P.edges = edges;
+            P.D2N_scl = scl;
 
             % Assign children:
             P.child1 = child1;
@@ -49,6 +52,8 @@ classdef Parent < ultraSEM.Patch
             P.idx2 = idx2;
             P.l2g1 = l2g1;
             P.l2g2 = l2g2;
+            P.scl1 = scl1;
+            P.scl2 = scl2;
 
         end
 

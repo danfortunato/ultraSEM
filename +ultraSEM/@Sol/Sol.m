@@ -36,6 +36,9 @@ classdef Sol
                 return
             end
 
+            if ( isa(d, 'ultraSEM.Domain') )
+                d = d.domain;
+            end
             assert(isa(dom, 'ultraSEM.Mapping'))
             obj.domain = dom;
             if ( isnumeric(coeffs) && isscalar(coeffs) )

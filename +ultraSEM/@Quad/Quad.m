@@ -16,7 +16,7 @@ classdef Quad < ultraSEM.Mapping
         b2
         c2
         d2
-        scl % Scale factor for RHS
+        scl = @(r,s) 1+0*r; % Default scale factor for RHS
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
