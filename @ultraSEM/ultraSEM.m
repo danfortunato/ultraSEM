@@ -5,7 +5,7 @@ classdef ultraSEM < handle
 %   Here OP may be either an ULTRASEM.PDO object or a cell array containing
 %   the information which would otherwise be passed to the ULTRASEM.PDO
 %   constructor. (See the documentation of the ULTRASEM.PDO class for
-%   details.) 
+%   details.)
 %
 %   ULTRASEM(DOM, OP) assumes the problem is homogeneous (i.e., RHS = 0).
 %
@@ -212,8 +212,7 @@ function [rhs, n, pref] = parseInputs(varargin)
 %PARSEINPUTS   Parse the optional inputs to ULTRASEM constructor.
 
     % Check number of inputs:
-    assert(nargin < 4, ...
-        'Too many input arguments too ULTRASEM constructor.')
+    assert(nargin < 4, 'Too many input arguments to ULTRASEM constructor.')
 
     % Set defaults for unspecified arguments:
     rhs = 0; % Default to homogeneous problem.
