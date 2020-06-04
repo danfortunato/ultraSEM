@@ -36,8 +36,8 @@ classdef Sol
                 return
             end
 
-            if ( isa(d, 'ultraSEM.Domain') )
-                d = d.domain;
+            if ( isa(dom, 'ultraSEM.Domain') )
+                dom = d.domain;
             end
             assert(isa(dom, 'ultraSEM.Mapping'))
             obj.domain = dom;
