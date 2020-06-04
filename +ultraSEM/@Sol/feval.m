@@ -1,9 +1,9 @@
-function coeffs = feval(sol, x, y)
+function vals = feval(sol, x, y)
 %FEVAL   Evaluate an ULTRASEM.SOL at one or more points.
 %   FEVAL(SOL, X, Y) evaluates SOL at the point(s) (X, Y).
 
 if ( ~isnumeric(sol.domain) )
-    coeffs = fevalMapped(sol, x, y);
+    vals = fevalMapped(sol, x, y);
     return
 end
 
@@ -11,7 +11,7 @@ minx = min(sol.domain(:,1));
 miny = min(sol.domain(:,3));
 
 sx = size(x);
-coeffs = 0*x(:);
+vals = 0*x(:);
 x = x(:);
 y = y(:);
 
@@ -27,22 +27,22 @@ for k = 1:length(sol)
         scly = 2/diff(dom(3:4));
         xm = sclx*(x(idx)-dom(1))-1;
         ym = scly*(y(idx)-dom(3))-1;
-        coeffs(idx) = util.clenshaw2d(sol.coeffs{k}, xm, ym);
+        vals(idx) = util.clenshaw2d(sol.coeffs{k}, xm, ym);
     end
 
 end
 
-coeffs = reshape(coeffs, sx);
+vals = reshape(vals, sx);
 
 end
 
-function u = fevalMapped(sol, x, y)
+function vals = fevalMapped(sol, x, y)
 %FEVALMAPPED   Evaluate an ULTRASEM.SOL at one or more points.
 %   FEVALMAPPED(SOL, X, Y) evaluates SOL at the point(s) (X, Y), where the
 %   domain of SOL consists of a generic ULTRASEM.MAPPING.
 
 sx = size(x);
-u = 0*x(:);
+vals = 0*x(:);
 x0 = x(:);
 y0 = y(:);
 
@@ -62,11 +62,11 @@ for k = 1:size(sol.domain, 1)
             ys >= dom(3) & ys <= dom(4) );
 
     if ( any(idx) )
-        u(idx) = util.clenshaw2d(sol.coeffs{k}, x(idx), y(idx));
+        vals(idx) = util.clenshaw2d(sol.coeffs{k}, x(idx), y(idx));
     end
 
 end
 
-u = reshape(u, sx);
+vals = reshape(vals, sx);
 
 end
