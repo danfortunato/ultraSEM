@@ -13,7 +13,7 @@ classdef Sol
     properties ( Access = public )
 
         domain % Domain of the patch.
-        u      % Coefficients of solution.
+        coeffs % Coefficients of solution.
 
     end
 
@@ -29,26 +29,27 @@ classdef Sol
 
     methods
 
-        function obj = Sol(u, d)
+        function obj = Sol(coeffs, dom)
 
             % Construct empty patch:
             if ( nargin == 0 )
                 return
             end
 
-            if ( isa(d, 'ultraSEM.Domain') )
-                d = d.domain;
+            if ( isa(dom, 'ultraSEM.Domain') )
+                dom = d.domain;
             end
-            obj.domain = d;
-            if ( isnumeric(u) && isscalar(u) )
+            assert(isa(dom, 'ultraSEM.Mapping'))
+            obj.domain = dom;
+            if ( isnumeric(coeffs) && isscalar(coeffs) )
                 % Make an N x N discretization of zeros on each patch
-                n = u;
-                obj.u = cell(length(d), 1);
-                for k = 1:length(d)
-                    obj.u{k} = zeros(n);
+                n = coeffs;
+                obj.coeffs = cell(length(dom), 1);
+                for k = 1:length(dom)
+                    obj.coeffs{k} = zeros(n);
                 end
             else
-                obj.u = u;
+                obj.coeffs = coeffs;
             end
 
         end

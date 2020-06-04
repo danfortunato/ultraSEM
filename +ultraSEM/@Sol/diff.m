@@ -43,11 +43,11 @@ nx = n(1);
 ny = n(2);
 
 for k = 1:length(f)
-    u = f.u{k};
+    coeffs = f.coeffs{k};
     dom = f.domain(k);
-    for m = 1:ny, u = mappedDiff(u, dom, 1); end
-    for m = 1:nx, u = mappedDiff(u, dom, 2); end
-    f.u{k} = u;
+    for m = 1:ny, coeffs = mappedDiff(coeffs, dom, 1); end
+    for m = 1:nx, coeffs = mappedDiff(coeffs, dom, 2); end
+    f.coeffs{k} = coeffs;
 end
 
 end

@@ -20,6 +20,6 @@ elseif ( ~isscalar(c) )
 end
 
 % Scale the solution:
-T.u = cellfun(@(u) c*u, T.u, 'UniformOutput', false);
+T.coeffs = cellfun(@(coeffs) c*coeffs, T.coeffs, 'UniformOutput', false);
 
 end

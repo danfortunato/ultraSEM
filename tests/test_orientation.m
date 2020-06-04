@@ -2,6 +2,11 @@ function pass = test_orientation()
 
 tol = 1e-10;
 
+if ( isempty(which('chebfun')) )
+    pass = 1;
+    return
+end
+
 sol = chebfun2(@(x,y) (1-x.^2).*(1-y.^2).*(x.^4.*y + y), [-1 1 -1 1]);
 rhs = lap(sol);
 bc = 0;
@@ -22,7 +27,7 @@ for k = 1:size(p,1)
     sol1 = op \ bc;
     pass(k) = 1;
     [x, y] = getGrid(sol1);
-    for j = 1:numel(sol1.u)
+    for j = 1:numel(sol1.coeffs)
         err = abs(feval(sol1, x{j}, y{j}) - feval(sol, x{j}, y{j}));
         pass(k) = pass(k) & max(max(err)) < tol;
     end

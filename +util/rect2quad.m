@@ -1,14 +1,17 @@
 function out = rect2quad(v)
+%RECT2QUAD   Convert from a 1x4 to 4x2 representation of a rectangle.
 
 if ( isempty(v) )
     out = [];
     return
 end
 
+% Deal with cell input:
 if ( size(v, 2) ~= 4 )
     v = v.';
 end
 
+% v may be a nx4 matrix of rectangles:
 out = {};
 for k = 1:size(v, 1)
     vk = v(k,:);

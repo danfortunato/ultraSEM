@@ -7,10 +7,10 @@ function [x, y] = getGrid(sol, kk)
 %   for the KK-th patches of SOL.
 
 d = sol.domain;
-u = sol.u;
+coeffs = sol.coeffs;
 
 if ( nargin == 1 )
-    kk = 1:size(d, 1);
+    kk = 1:length(sol);
 end
 
 x = cell(numel(kk),1);
@@ -18,7 +18,7 @@ y = cell(numel(kk),1);
 
 i = 1;
 for k = kk
-    nk = size(u{k}, 1);
+    nk = size(coeffs{k}, 1);
     if ( isnumeric(d(k,:)) )
         [x{i,1}, y{i,1}] = util.chebpts2(nk, nk, d(k,:));
     else

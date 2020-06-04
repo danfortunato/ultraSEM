@@ -5,7 +5,7 @@ function N = numel(sol)
 
 N = 0;
 for k = 1:length(sol)
-    N = N + numel(sol.u{k});
+    N = N + numel(sol.coeffs{k});
 end
 
 end

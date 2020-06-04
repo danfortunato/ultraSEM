@@ -9,7 +9,7 @@ holdState = ishold();
 % Loop over the patches:
 [x,y] = getGrid(sol);
 for k = 1:length(sol)
-    stem3(x{k}, y{k}, abs(sol.u{k}), 'ok', 'MarkerFaceColor', 'k');
+    stem3(x{k}, y{k}, abs(sol.coeffs{k}), 'ok', 'MarkerFaceColor', 'k');
     hold on
 end
 set(gca, 'ZScale', 'log')

@@ -5,12 +5,12 @@ function chebpolyfill(sol)
 %   scale using filled polygons.
 
 holdState = ishold();
-n = size(sol.u{1}, 1);
+n = size(sol.coeffs{1}, 1);
 
 % Loop over the patches:
 data = {};
 for k = 1:length(sol)
-    u = abs(sol.u{k});
+    u = abs(sol.coeffs{k});
     tail = [u(end-floor(.1*n):end,:) ; u(:,end-floor(.1*n):end)'];
     err(k) = norm(tail(:),inf)./max(u(:));
     err(k) = log10(err(k));

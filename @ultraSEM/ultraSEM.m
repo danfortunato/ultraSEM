@@ -10,15 +10,22 @@ classdef ultraSEM < handle
 %   ULTRASEM(DOM, OP) assumes the problem is homogeneous (i.e., RHS = 0).
 %
 %   ULTRASEM(DOM, OP, RHS, N) uses an N x N discretization to solve on each
-%   patch of the domain DOM.
+%   patch of the domain DOM. If not specified, N defaults to the value
+%   specified in the global default ULTRASEM.PREF options, unless a PREF
+%   object is also passed to the ULTRASEM constructor (see below).
 %
 %   ULTRASEM(..., PREF) uses the preferences specified in the ULTRASEM.PREF
 %   object PREF. (See ULTRASEM.PREF for details on the various preference
 %   options and their defaults.)
 %
+%   ULTRASEM() constructs an empty ULTRASEM object. ULTRASEM(DOM)
+%   constructs an empty ULTRASEM object with domain DOM, which can later be
+%   initialized using the ULTRASEM.INITIALIZE method.
+%
 %   The full sequence for solving a problem using an ULTRASEM object S is:
 %
-%       S = ultraSEM(DOM, OP, RHS)
+%       S = ultraSEM(DOM);
+%       initialize(S, OP, RHS)
 %       build(S)
 %       sol = S\bc % or sol = solve(S, bc)
 %
@@ -26,10 +33,6 @@ classdef ultraSEM < handle
 %
 %       S = ultraSEM(DOM, OP, RHS)
 %       sol = S\bc % or sol = solve(S, bc)
-%
-%   The advantage of the former is that the initialization and build phases
-%   (in which most of the computation work is performed) can be reused for
-%   different boundary conditions.
 %
 % Example:
 %
@@ -92,39 +95,20 @@ classdef ultraSEM < handle
                 % Construct empty object:
                 return
             end
-
+ 
             % Assign the domain:
-            obj.domain = dom; % TODO: Validate domain.
+            assert(isa(dom, 'ultraSEM.Domain'), ['First argument to ', ...
+                'ULTRASEM must be an ULTRASEM.DOMAIN object.']);
+            obj.domain = dom;
 
-            % Set defaults for unspecified arguments:
-            rhs = 0; % Default to homogeneous problem.
-            n = [];
-            pref = ultraSEM.Pref();
-
-            if ( nargin == 3 )
-                if ( isa(varargin{1}, 'ultraSEM.Pref') )
-                    pref = varargin{1}; % ULTRASEM(DOM, OP, PREF)
-                else
-                    rhs = varargin{1};  % ULTRASEM(DOM, OP, RHS)
-                end
-            elseif ( nargin == 4 )
-                rhs = varargin{1};
-                if ( isa(varargin{2}, 'ultraSEM.Pref') )
-                    pref = varargin{2}; % ULTRASEM(DOM, OP, RHS, PREF)
-                else
-                    n = varargin{2};    % ULTRASEM(DOM, OP, RHS, N)
-                end
-            elseif ( nargin == 5 )
-                rhs = varargin{1};      % ULTRASEM(DOM, OP, RHS, N, PREF)
-                n = varargin{2};
-                pref = varargin{3};
-            end
-
+            % Parse inputs:
+            [rhs, n, pref] = parseInputs(varargin{:});
+            
             % Initialize patches:
             obj.initialize(op, rhs, n, pref);
 
         end
-
+        
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,6 +200,40 @@ classdef ultraSEM < handle
         % Run the GUI.
         varargout = gui();
 
+    end
+    
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% METHODS IMPLEMENTED IN THIS FILE:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [rhs, n, pref] = parseInputs(varargin)
+%PARSEINPUTS   Parse the optional inputs to ULTRASEM constructor.
+
+    % Check number of inputs:
+    assert(nargin < 4, 'Too many input arguments to ULTRASEM constructor.')
+
+    % Set defaults for unspecified arguments:
+    rhs = 0; % Default to homogeneous problem.
+    n = [];
+    pref = ultraSEM.Pref();
+
+    if ( nargin == 1 )
+        if ( isa(varargin{1}, 'ultraSEM.Pref') )
+            pref = varargin{1}; % ULTRASEM(DOM, OP, PREF)
+        else
+            rhs = varargin{1};  % ULTRASEM(DOM, OP, RHS)
+        end
+    elseif ( nargin == 2 )
+        rhs = varargin{1};
+        if ( isa(varargin{2}, 'ultraSEM.Pref') )
+            pref = varargin{2}; % ULTRASEM(DOM, OP, RHS, PREF)
+        else
+            n = varargin{2};    % ULTRASEM(DOM, OP, RHS, N)
+        end
+    elseif ( nargin == 3 )      % ULTRASEM(DOM, OP, RHS, N, PREF)
+        [rhs, n, pref] = deal(varargin{:});
     end
 
 end

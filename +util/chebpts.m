@@ -6,15 +6,18 @@ function x = chebpts(n, dom)
 %
 % See also CHEBPTS2.
 
+% Default domain:
 if ( nargin == 1 )
     dom = [-1 1];
 end
 
+% Deal with trivial cases:
 if ( n == 0 )
     x = [];
 elseif ( n == 1 )
     x = 0;
 else
+    % Enforce symmetry:
     m = n-1;
     x = sin(pi*(-m:2:m)/(2*m)).';
 end

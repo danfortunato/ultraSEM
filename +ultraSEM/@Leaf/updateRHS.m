@@ -20,7 +20,7 @@ dom = P.domain;
 numIntDOF = (p-2)^2;
 
 if ( isa(rhs, 'ultraSEM.Sol') )
-    rhs = rhs.u;
+    rhs = rhs.coeffs;
 end
 
 if ( iscell(rhs) )
@@ -123,8 +123,7 @@ k = 1;
 while ( rank(B(:,k:m+k-1)) < m )
     k = k+1;
     if ( m+k > size(B, 2) )
-        error('CHEBFUN:CHEBOP2:discretize:nonsingularPermute:BCs', ...
-            'Boundary conditions are linearly dependent.');
+        error('Boundary conditions are linearly dependent.');
     end
 end
 

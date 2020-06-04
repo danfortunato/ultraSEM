@@ -22,27 +22,19 @@ function S = updateRHS(S, f)
 %
 % See also BUILD.
 
-if ( ~isInitialized(S) )
-    error('ULTRASEM:ULTRASEM:updateRHS:notInitialized', ...
-        'The ultraSEM object `%s` has not been initialized.', inputname(1))
-end
+assert(isInitialized(S), 'ultraSEM object has not been initialized.')
 
+% Extract coeffs if f is a ultraSEM.Sol:
 if ( isa(f, 'ultraSEM.Sol') )
-    f = f.u;
+    f = f.coeffs;
 end
-
-if ( iscell(f) )
-    if ( isBuilt(S) )
-        S.patches{1} = updateRHS(S.patches{1}, f);
-    else
-        for k = 1:numel(S.patches)
-            S.patches{k} = updateRHS(S.patches{k}, f(k));
-        end
-    end
-else
-    for k = 1:numel(S.patches)
-        S.patches{k} = updateRHS(S.patches{k}, f);
-    end
+% Duplicate f if it is a scalar or function handle:
+if ( ~iscell(f) )
+    f = repmat({f}, numel(S.patches), 1);
+end
+% Update RHS of each patch:
+for k = 1:numel(S.patches)
+    S.patches{k} = updateRHS(S.patches{k}, f{k});
 end
 
 end

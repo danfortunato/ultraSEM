@@ -10,13 +10,13 @@ if ( isnumeric( f ) )
     return
 elseif ( isnumeric( g ) )
     h = f;
-    for k = 1:size(h.u,1)
-        h.u{k}(1,1) = h.u{k}(1,1) + g;
+    for k = 1:size(h.coeffs,1)
+        h.coeffs{k}(1,1) = h.coeffs{k}(1,1) + g;
     end
 elseif ( isa(f, 'ultraSEM.Sol') && isa(g, 'ultraSEM.Sol') )
     h = f;
     % TODO: Assume on the same grid for now.
-    h.u = cellfun(@plus, f.u , g.u, 'UniformOutput', false);
+    h.coeffs = cellfun(@plus, f.coeffs , g.coeffs, 'UniformOutput', false);
 end
 
 end

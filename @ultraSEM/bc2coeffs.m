@@ -1,11 +1,9 @@
 function coeffs = bc2coeffs(S, bc)
 %BC2COEFFS   Convert boundary conditions to Chebyshev coefficients.
 
-if ( numel(S.patches) ~= 1 )
-    error('ULTRASEM:ULTRASEM:bc2coeffs:notBuilt', ...
-        'The ultraSEM object %s must be built before creating BCs.', ...
-        inputname(1));
-end
+% TODO - Document.
+
+assert(isBuilt(S), 'ultraSEM object must be built before creating BCs.');
 
 % Get boundary points:
 edges = S.patches{1}.edges; % TODO: Breaks encapsulation

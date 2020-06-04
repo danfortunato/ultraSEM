@@ -14,13 +14,11 @@ if ( isa(S.patches, 'ultraSEM') )
         build(S.patches(k));
     end
     % Concatenate (since S already contains domain info.)
-    S.patches = vertcat(S.patches.patches); % TODO: breaks encapsulation
+    S_sub = S.patches;
+    S.patches = vertcat(S_sub.patches);
 end
 
-if ( ~isInitialized(S) )
-    error('ULTRASEM:ULTRASEM:build:notInitialized', ...
-        '%f has not yet been initialized.', inputname(1))
-end
+assert(isInitialized(S), '%s has not yet been initialized.', inputname(1));
 
 % Build the patches:
 S.patches = build(S.domain, S.patches);
