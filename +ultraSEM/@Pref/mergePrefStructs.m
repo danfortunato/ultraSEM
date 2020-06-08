@@ -5,6 +5,8 @@ function pref = mergePrefStructs(pref1, pref2)
 %   of identically-named fields in Q. If Q has a field whose name does not
 %   match any of those in P, it is added to P.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 pref = pref1;
 for field = fieldnames(pref2).'
     pref.(field{1}) = pref2.(field{1});

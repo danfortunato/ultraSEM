@@ -4,7 +4,9 @@ function T = rot90(T, k)
 %
 %   T = ROT90(T, K) rotates by K*90 degrees.
 %
-% See also TRANSPOSE.
+%   See also TRANSPOSE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin == 1 )
     k = 1;

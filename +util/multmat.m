@@ -2,8 +2,8 @@ function M = multmat(n, a, lambda)
 %MULTMAT   Compute the 1D N x N multiplication matrix for the function
 %
 %   f(x) = sum_j  a(j) C^{(lambda)}_j(x)
-%
-%  Alex Townsend, June 2019.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin < 3 )
     lambda = 0;

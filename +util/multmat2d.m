@@ -2,8 +2,8 @@ function M = multmat2d(n, A, lambda_x, lambda_y)
 %MULTMAT2D   Compute the 2D N^2 x N^2 multiplication matrix for the function
 %
 %   f(x,y) = sum_j sum_k  A(j,k) C^{(lambda_y)}_j(y)C^{(lambda_x)}_k(x)
-%
-%  Alex Townsend, June 2019.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin < 3 ), lambda_x = 0;        end
 if ( nargin < 4 ), lambda_y = lambda_x; end

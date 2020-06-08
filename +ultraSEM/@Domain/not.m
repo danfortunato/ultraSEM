@@ -8,6 +8,8 @@ function E = not(T, pad)
 %   side of T. If P is a 4x1 vector then it is interpreted as
 %   P = [P_left, P_right, P_bottom, P_top].
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Determine padding size:
 if ( nargin == 1 )
     pad = [1 1 1 1];

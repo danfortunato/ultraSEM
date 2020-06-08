@@ -3,9 +3,9 @@ function [op, isConstant] = feval(op, x, y)
 %   FEVAL(OP, X, Y) evaluates the non-constant coefficients of the PDO
 %   defined by the ULTRASEM.PDO OP.
 %
-% See also INITIALIZE.
+%   See also INITIALIZE.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 isConstant = true;
 

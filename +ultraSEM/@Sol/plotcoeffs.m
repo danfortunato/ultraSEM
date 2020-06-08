@@ -4,6 +4,8 @@ function plotcoeffs(sol)
 %   underlying the representation of the ULTRASEM.SOL SOL on a semilog
 %   scale.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 holdState = ishold();
 
 % Loop over the patches:

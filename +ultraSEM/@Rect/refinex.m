@@ -7,7 +7,9 @@ function T = refinex(T, m)
 %
 %   REFINEX(T, M) will refine M times.
 %
-% See also REFINE, REFINEY.
+%   See also REFINE, REFINEY.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isempty(T.domain) )
     return

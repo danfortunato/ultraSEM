@@ -4,6 +4,8 @@ function T = alphabet( letter )
 %   the letter in LETTER. Currently, we only support the 26 letters in the
 %   Latin alphabet and the numbers 0-9.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 switch letter
 
     case '-'

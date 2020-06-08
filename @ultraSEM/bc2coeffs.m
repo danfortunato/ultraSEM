@@ -1,6 +1,8 @@
 function coeffs = bc2coeffs(S, bc)
 %BC2COEFFS   Convert boundary conditions to Chebyshev coefficients.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % TODO - Document.
 
 assert(isBuilt(S), 'ultraSEM object must be built before creating BCs.');

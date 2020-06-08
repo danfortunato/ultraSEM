@@ -4,7 +4,9 @@ function x = chebpts(n, dom)
 %
 %   X = CHEBPTS(N, DOM) returns N Chebyshev points on the interval DOM.
 %
-% See also CHEBPTS2.
+%   See also CHEBPTS2.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Default domain:
 if ( nargin == 1 )

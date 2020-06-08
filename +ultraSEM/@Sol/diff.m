@@ -8,7 +8,9 @@ function f = diff(f, n, dim)
 %   DIFF(F, [NX NY]) takes the NX-th derivative of F in the x direction
 %   and the NY-th derivative of F in the y direction.
 %
-% See also DIFFX, DIFFY.
+%   See also DIFFX, DIFFY.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Empty check:
 if ( isempty(f) )

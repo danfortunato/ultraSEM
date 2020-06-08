@@ -2,6 +2,8 @@ function T = mtimes(T, c)
 %*   Scale an ULTRASEM.DOMAIN.
 %   C*T will scale the ULTRASEM.DOMAIN by C. C must be a scalar.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( ~isa(T, 'ultraSEM.Domain') )
     % Ensure T is the domain:
     T = mtimes(c, T);

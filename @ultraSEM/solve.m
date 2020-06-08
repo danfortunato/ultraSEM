@@ -12,7 +12,9 @@ function sol = solve(S, bc)
 %      build(S)
 %      sol = S\bc % or sol = solve(S, bc)
 %
-% See also BUILD, INITIALIZE.
+%   See also BUILD, INITIALIZE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Build the ULTRASEM if required:
 if ( numel(S.patches) > 1 ), build(S); end

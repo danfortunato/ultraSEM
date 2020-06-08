@@ -8,6 +8,8 @@ function f = compose(op, f, g)
 %   OP is a function handle and F and G are ULTRASEM.SOLs. The function
 %   handle OP is applied to F and G in value space.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 ff = coeffs2vals(f.coeffs);
 
 if ( nargin == 2 )

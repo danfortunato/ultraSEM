@@ -1,6 +1,10 @@
 function T = mtimes(T, c)
 %*   Scale an ULTRASEM.SOL.
 %   C*T will scale the ULTRASEM.SOL by C. C must be a scalar.
+%
+%   See also TIMES.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( ~isa(T, 'ultraSEM.Sol') )
     % Ensure T is the ULTRASEM.SOL:

@@ -6,7 +6,9 @@ function varargout = subsref(sol, index)
 %   SOL.PROP returns the property PROP of SOL as defined by GET(SOL,
 %   'PROP').
 %
-% See also FEVAL, GET.
+%   See also FEVAL, GET.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 idx = index(1).subs;
 switch index(1).type

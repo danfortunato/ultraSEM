@@ -1,5 +1,7 @@
 function p = build(T, p)
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % TODO: Document.
 
 if ( length(T) == 1 || numel(p) == 1 )

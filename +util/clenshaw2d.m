@@ -1,7 +1,9 @@
 function v = clenshaw2d(C, x, y)
 %CLENSHAW2D   Evaluate a 2D Chebyshev expansion at the given points.
 %
-% See also CLENSHAW.
+%   See also CLENSHAW.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 v = 0*x;
 Cy = util.clenshaw(C, y).';

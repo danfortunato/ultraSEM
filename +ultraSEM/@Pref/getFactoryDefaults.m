@@ -7,7 +7,9 @@ function pref = getFactoryDefaults()
 %   the factory defaults when other user-set defaults are currently in
 %   force.
 %
-% See also SETDEFAULTS.
+%   See also SETDEFAULTS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 fd = ultraSEM.Pref.factoryDefaultPrefs();
 pref = ultraSEM.Pref(fd);

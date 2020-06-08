@@ -9,7 +9,9 @@ function varargout = surf(sol, varargin)
 %
 %   H = SURF(...) returns a handle to a surface plot object.
 %
-% See also PLOT, CONTOUR, MESH, PCOLOR.
+%   See also PLOT, CONTOUR, MESH, PCOLOR.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 holdState = ishold();
 

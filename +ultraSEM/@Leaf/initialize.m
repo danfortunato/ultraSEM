@@ -20,7 +20,7 @@ function L = initialize(dom, op, varargin)
 %   in the ULTRASEM.PREF object PREF. (See ULTRASEM.PREF for details on the
 %   various preference options and their defaults.)
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% PARSE INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

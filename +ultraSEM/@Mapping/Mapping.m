@@ -1,6 +1,8 @@
 classdef Mapping < matlab.mixin.Heterogeneous
 %ULTRASEM.MAPPING   Abstract mapping object from the ULTRASEM system.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

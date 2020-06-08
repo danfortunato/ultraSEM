@@ -4,7 +4,9 @@ function L = lap(f)
 %
 %   This is shorthand for LAPLACIAN(F).
 %
-% See also LAPLACIAN.
+%   See also LAPLACIAN.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 L = laplacian(f);
 

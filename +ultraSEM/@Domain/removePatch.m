@@ -4,6 +4,8 @@ function T = removePatch(T, k)
 %   ULTRASEM.DOMAIN T and updates the first level mergeIdx appropriately
 %   (by introducing NaNs). K may be a vector.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Sort for convenience:
 k = unique(sort(k(:)));
 % Remove specified patches:

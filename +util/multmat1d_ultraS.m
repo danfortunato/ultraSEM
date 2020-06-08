@@ -2,8 +2,8 @@ function M = multmat1d_ultraS(n, a, Mx, lambda)
 %MULTMAT1D_ULTRAS   Compute the 1D N x N multiplication matrix for the function
 %
 %   f(x,y) = sum_j a(j) C^{(lambda)}_j(x)
-%
-%  Alex Townsend, June 2019.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 na = numel(a);
 

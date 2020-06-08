@@ -3,6 +3,8 @@ function out = prolong(sol, n)
 %   PROLONG(SOL, N) returns an ULTRASEM.SOL representing the same function
 %   as SOL, but using an N x N discretization on each element.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( nargin == 1 )
     out = sol;
     return

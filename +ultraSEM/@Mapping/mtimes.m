@@ -2,7 +2,9 @@ function T = mtimes(T, c)
 %*   Scale a mapping.
 %   T*C scales the ULTRASEM.MAPPING T by the scalar C.
 %
-% See also PLUS, MINUS.
+%   See also PLUS, MINUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isnumeric(T) ), [T, c] = deal(c, T); end
 if ( ~isnumeric(c) )

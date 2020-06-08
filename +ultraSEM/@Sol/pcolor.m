@@ -5,7 +5,9 @@ function varargout = pcolor(sol, varargin)
 %
 %   H = PCOLOR(...) returns a handle to a SURFACE object.
 %
-% See also PLOT, SURF, CONTOUR.
+%   See also PLOT, SURF, CONTOUR.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 holdState = ishold();
 

@@ -5,7 +5,7 @@ function c = merge(a, b)
 %   eliminated by enforcing continuity and continuity of the derivative
 %   across the boundary.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Parse inputs:
 if ( nargin == 0 )

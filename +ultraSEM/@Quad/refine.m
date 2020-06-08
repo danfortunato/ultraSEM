@@ -1,7 +1,9 @@
 function [Q, mergeIdx] = refine(Q, m)
 %REFINE   Refine an ULTRASEM.QUAD.
 %
-% See also REFINECORNER, REFINEPOINT.
+%   See also REFINECORNER, REFINEPOINT.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Parse inputs:
 mergeIdx = {}; 

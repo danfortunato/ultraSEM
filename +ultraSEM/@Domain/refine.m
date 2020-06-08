@@ -6,7 +6,9 @@ function T = refine(T, m, varargin)
 %
 %   REFINE(T, M) will refine M times.
 %
-% See also REFINEPOINT.
+%   See also REFINEPOINT.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin < 2 )
     m = 1;

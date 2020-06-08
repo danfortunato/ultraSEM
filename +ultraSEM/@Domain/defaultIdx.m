@@ -13,6 +13,8 @@ function mergeIdx = defaultIdx(dom)
 %
 %   MERGEIDX = DEFAULTIDX(N) is equivalent.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Parse input:
 if ( isa(dom, 'scalar') )
     np = dom;             % Number of patches.

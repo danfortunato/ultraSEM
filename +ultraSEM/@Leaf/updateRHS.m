@@ -8,9 +8,9 @@ function P = updateRHS(P, rhs)
 %   (rather than O(p) in the original initialization) this can lead to
 %   considerable performance gains when solving for multiple RHSs.
 %
-% See also ULTRASEM.LEAF.INITIALIZE.
+%   See also ULTRASEM.LEAF.INITIALIZE.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Developer note: At user levels this is typically called with 
 %  >> P.rhs = F

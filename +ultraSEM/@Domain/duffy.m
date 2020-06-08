@@ -1,5 +1,7 @@
 function T = duffy(varargin)
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( nargin == 0 )
     vertices = [0 0; 1 0; 0 1];
 else

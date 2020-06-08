@@ -1,6 +1,8 @@
 function out = quad2rect(varargin)
 %QUAD2RECT   Convert from a 4x2 to 1x4 representation of a rectangle.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Deal with cell input:
 if ( nargin == 1 )
     v = varargin{1};

@@ -1,7 +1,9 @@
 function v = clenshaw(C, x)
 %CLENSHAW   Evaluate a 1D Chebyshev expansion at the given points.
 %
-% See also CLENSHAW2D.
+%   See also CLENSHAW2D.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 v = chebtech_clenshaw(x, C); % TODO: Remove chebfun
 

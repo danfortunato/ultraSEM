@@ -6,6 +6,8 @@ function T = trimesh(p, t)
 %   T = ULTRASEM.TRIMESH(P, T) returns an ULTRASEM.DOMAIN mesh T made up of
 %   triangles specified by vertices P and connectivity list T.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
     if ( nargin == 1 && isa(p, 'triangulation') )
         tri = p;
         t = p.ConnectivityList;

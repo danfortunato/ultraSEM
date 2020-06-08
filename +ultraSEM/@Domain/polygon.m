@@ -11,6 +11,8 @@ function T = polygon(v)
 %   It is important to note that each side of the polygon will be formed
 %   from two adjacent grids.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
     if ( isscalar(v) )
         % Construct a v-sided regular polygon.
         poly = nsidedpoly(v);

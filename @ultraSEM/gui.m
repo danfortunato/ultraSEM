@@ -1,5 +1,7 @@
 function varargout = gui()
-% Solve PDO in a domain drawn on a figure.
+%GUI   Solve PDO in a domain drawn on a figure.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin == 0 )
     PDO = {{1, 0, 1}, {0, 0}, 0};

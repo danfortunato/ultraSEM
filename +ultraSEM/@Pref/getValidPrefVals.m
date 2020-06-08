@@ -3,6 +3,8 @@ function prefVals = getValidPrefVals(prefName)
 %   PREFVALS = ULTRASEM.PREF.GETVALIDPREFVALS(PREFNAME) returns a cell
 %   array containing all known valid values of the preference PREFNAME.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 switch prefName
     case 'solver'
         prefVals = {'\', 'woodbury', 'LU'};

@@ -2,6 +2,8 @@ function varargout = mesh(T, varargin)
 %MESH   Plot an ULTRASEM.DOMAIN as a mesh.
 %   MESH(T) plots the ULTRASEM.DOMAIN T.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( numel(T) > 1 ) 
     holdState = ishold();
     for k = 1:numel(T)

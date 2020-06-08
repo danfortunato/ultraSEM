@@ -16,6 +16,8 @@ function varargout = manageDefaultPrefs(varargin)
 %   sets the default values for PREF1, PREF2, ..., etc. to VAL1, VAL2, ...,
 %   etc.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 persistent defaultPrefs;
 
 if ( isempty(defaultPrefs) )

@@ -1,6 +1,8 @@
 function v = assertIsRect( v )
 %ASSERTISRECT   Check we have valid vertices for an ULTRASEM.RECT.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( ~isnumeric(v) )
     error('Input should be numeric.');
 end

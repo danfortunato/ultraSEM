@@ -1,6 +1,8 @@
 function out = rect2quad(v)
 %RECT2QUAD   Convert from a 1x4 to 4x2 representation of a rectangle.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( isempty(v) )
     out = [];
     return

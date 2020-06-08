@@ -13,6 +13,8 @@ function varargout = plot(T, varargin)
 %   H = PLOT(T, ...) returns a figure handle of the form returned by
 %   H = FILL(...), where FILL() is the built-in MATLAB method.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( numel(T) > 1 ) 
     holdState = ishold();
     for k = 1:numel(T)

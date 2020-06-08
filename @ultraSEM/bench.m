@@ -1,6 +1,8 @@
 function bench()
 %BENCH   Run the benchmark suite.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Locate the bench directory:
 ultraSEMDir = ultraSEMroot();
 testDir = fullfile(ultraSEMDir, 'bench');

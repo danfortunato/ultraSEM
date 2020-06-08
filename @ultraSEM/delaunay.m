@@ -9,7 +9,9 @@ function T = delaunay(v, P)
 %   X_BDY is an M x 2 matrix, creates a constrained Delaunay triangulation,
 %   equivalent to delaunayTriangulation(X_BDY, X_INT).
 %
-% See also TRIANGLE, QUAD.
+%   See also TRIANGLE, QUAD.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Compute triangulation:
 if ( nargin < 2 )

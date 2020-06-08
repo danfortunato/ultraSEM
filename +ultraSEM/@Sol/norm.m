@@ -18,6 +18,8 @@ function normSol = norm(sol, varargin)
 %   NORM(SOL, 'all') and NORM(SOL, P, 'all') return an array of norms on
 %   each patch of SOL.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Parse arguments.
 p = 2;
 reduce = true;

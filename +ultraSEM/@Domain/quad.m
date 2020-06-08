@@ -1,5 +1,7 @@
 function T = quad(varargin)
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 vertices = varargin{1};
 
 if ( ultraSEM.Domain.isClockwise(vertices) )

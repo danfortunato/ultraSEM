@@ -6,7 +6,9 @@ function f = diffx(f, n)
 %   DIFFX(F, N) returns an ULTRASEM.SOL representing the N-th derivative of
 %   the ULTRASEM.SOL F in its first argument.
 %
-% See also DIFFY, DIFF.
+%   See also DIFFY, DIFF.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Default to first derivative:
 if ( nargin == 1 )

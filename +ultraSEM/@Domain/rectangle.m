@@ -1,6 +1,8 @@
 function T = rectangle(dom, m, n)
 %RECTANGLE   Return a rectangular domain.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( nargin == 2 && strcmp(m, 'makeObj') )
     n = size(dom, 1);
     T(n,1) = rectangle(dom(n,:));

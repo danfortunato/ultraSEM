@@ -1,6 +1,8 @@
 function n = normals(Q)
 %NORMALS   Outward pointing normal vectors to the edges of a mapping.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 v = [ Q.x([-1 1 1 -1],[-1 -1 1 1]) ;
       Q.y([-1 1 1 -1],[-1 -1 1 1]) ].';
 v = [ v ; v(1,:) ];

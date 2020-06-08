@@ -2,6 +2,8 @@ function vals = feval(sol, x, y)
 %FEVAL   Evaluate an ULTRASEM.SOL at one or more points.
 %   FEVAL(SOL, X, Y) evaluates SOL at the point(s) (X, Y).
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( ~isnumeric(sol.domain) )
     vals = fevalMapped(sol, x, y);
     return

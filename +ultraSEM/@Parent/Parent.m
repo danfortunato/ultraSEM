@@ -4,7 +4,7 @@ classdef Parent < ultraSEM.Patch
 %   creates an ULTRASEM.PARENT object P and assigns each of the inputs to
 %   their associated properties in P.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:

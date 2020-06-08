@@ -1,6 +1,8 @@
 function obj = parametrize(obj)
 %PARAMETRIZE   Compute the parametrization of an ULTRASEM.QUAD.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Compute the change of variables:
 M = [1 -1 -1  1;  % (-1,  1)
      1  1 -1 -1;  % ( 1, -1)

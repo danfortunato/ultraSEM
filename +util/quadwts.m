@@ -3,7 +3,9 @@ function w = quadwts(n)
 %   QUADWTS(N) returns the N weights for Clenshaw-Curtis quadrature on
 %   2nd-kind Chebyshev points.
 %
-% See also UTIL.CHEBPTS.
+%   See also CHEBPTS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( n == 0 )
     w = [];

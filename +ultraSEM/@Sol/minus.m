@@ -4,7 +4,9 @@ function h = minus(f, g)
 %   G must have the same domains and discretization sizes. F and G may also
 %   be scalars.
 %
-% See also PLUS.
+%   See also PLUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 h = plus( f, (-g) );
 

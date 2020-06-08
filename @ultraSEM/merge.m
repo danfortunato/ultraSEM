@@ -3,7 +3,9 @@ function h = merge(f, g)
 %   H = MERGE(F, G) will merge the two ULTRASEM objects F and G. If F and G
 %   have already been initialized and built, then H will be also.
 %
-% See also INITIALIZE, BUILD.
+%   See also INITIALIZE, BUILD.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Merge the domains:
 h = ultraSEM();

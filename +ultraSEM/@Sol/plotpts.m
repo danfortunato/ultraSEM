@@ -5,6 +5,8 @@ function [x, y] = plotpts(sol, kk)
 %
 %   [X, Y] = PLOTPTS(SOL, KK) returns plot points for the KK-th patches.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 d = sol.domain;
 coeffs = sol.coeffs;
 

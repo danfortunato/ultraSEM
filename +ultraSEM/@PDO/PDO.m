@@ -15,7 +15,7 @@ classdef PDO
 %   Calls of the form ULTRASEM.PDO({{dxx, dxy, dxyy}, {dx, dy}, b}) are
 %   also supported.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:

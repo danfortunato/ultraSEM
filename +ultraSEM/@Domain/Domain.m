@@ -7,7 +7,7 @@ classdef Domain
 %   The merge information is contained in the .mergeIdx property (which is
 %   documented in more detail below).
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS PROPERTIES:

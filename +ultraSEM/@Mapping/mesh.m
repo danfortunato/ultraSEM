@@ -2,6 +2,8 @@ function varargout = mesh(T, varargin)
 %MESH   Plot an ULTRASEM.MAPPING as a mesh.
 %   MESH(T) plots the ULTRASEM.MAPPING T as a mesh.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 holdState = ishold();
 
 hold on

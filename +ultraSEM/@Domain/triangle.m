@@ -8,6 +8,8 @@ function T = triangle(v)
 %   It is important to note that each side of the triangle will be formed
 %   from two adjacent grids.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
     if ( nargin == 0 )
         v = [0 0 ; 1 0 ; .5 sqrt(3)/2];
     end

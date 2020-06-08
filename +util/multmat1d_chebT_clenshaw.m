@@ -2,8 +2,8 @@ function M = multmat1d_chebT_clenshaw( n, a, Mx )
 %MULTMAT1D_CHEBT_CLENSHAW   Compute the 1D N x N multiplication matrix for the function
 %
 %   f(x) = sum_j a(j) T_j(x)
-%
-%  Alex Townsend, April 2020.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 na = numel(a);
 

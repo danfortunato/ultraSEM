@@ -8,7 +8,9 @@ function val = get(sol, prop)
 %      'U'
 %      'NPLOTPTS'
 %
-% See also SUBSREF.
+%   See also SUBSREF.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Get the properties.
 switch ( prop )

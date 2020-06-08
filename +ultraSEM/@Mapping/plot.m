@@ -1,6 +1,8 @@
 function varargout = plot(T, varargin)
 %PLOT   Plot the mapped domain and grid.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Choose a color:
 if ( nargin > 1 && ischar(varargin{1}) && ...
         ~isempty(regexp( varargin{1}, '[bgrcmykw]', 'match')) )

@@ -4,6 +4,8 @@ function n = length(S)
 %   If S is an array of objects, then LENGTH(S) is the number of objects in
 %   the array.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 numObj = builtin('length', S);
 if ( numObj > 1 )
     % This is an array of objects. Don't overload.

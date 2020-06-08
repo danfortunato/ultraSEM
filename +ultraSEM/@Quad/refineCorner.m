@@ -1,7 +1,9 @@
 function [Q, idx] = refineCorner(Q, k)
 %REFINECORNER   Refine an ULTRASEM.QUAD into a corner.
 %
-% See also REFINE, REFINEPOINT.
+%   See also REFINE, REFINEPOINT.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % TODO: Transpose everythng.
 v = vertices(Q)';

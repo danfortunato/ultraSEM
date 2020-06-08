@@ -18,7 +18,9 @@ function initialize(S, varargin)
 %      build(S)   % (optional)
 %      sol = S\bc % or sol = solve(S, bc)
 %
-% See also BUILD, SOLVE.
+%   See also BUILD, SOLVE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Initialize all leaf patches:
 D = S.domain;

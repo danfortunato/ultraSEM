@@ -5,6 +5,8 @@ function out = isClockwise( v )
 %   of the polygon. If the polygon is degenerate (i.e., the area is zero)
 %   then NaN is returned.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Given a polygon with vertices (x(1),y(1)),...,(x(n),y(n)), the signed
 % area is 1/2 (sum (x(i)*y(i+1) - x(i+1)*y(i) )
 v1 = v(:,1); v2 = v(:,2);

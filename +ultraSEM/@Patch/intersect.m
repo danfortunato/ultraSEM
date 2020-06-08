@@ -23,7 +23,7 @@ function [i1, i2, i4a, i4b, l2g1, l2g2, scl1, scl2, sclAB, dom, edgesAB] = inter
 %   [I1, I2, I4A, I4B, L2G1, L2G2, SCL1, SCL2, SCLAB, DOM, EDGESAB] = INTERSECT(A, B)
 %   returns also the domain and the edges of the intersection.
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DEVELOPER NOTES:

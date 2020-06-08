@@ -7,6 +7,8 @@ function pref = subsasgn(pref, ind, val)
 %   ULTRASEM.PREF does not support any other subscripted assignment types,
 %   including '()' and '{}'.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 switch ( ind(1).type )
     case '.'
         if ( isfield(pref.prefList, ind(1).subs) )

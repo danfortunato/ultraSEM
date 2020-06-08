@@ -34,35 +34,35 @@ classdef ultraSEM < handle
 %       S = ultraSEM(DOM, OP, RHS)
 %       sol = S\bc % or sol = solve(S, bc)
 %
-% Example:
+%   Example:
 %
-%   S = ultraSEM.alphabet('S') + 2i;      % Form an 'S' domain.
-%   U = ultraSEM.alphabet('U') + 2;       % Form a 'U' domain.
-%   SU = S & U;                           % Combine the two.
-%   SU = refine(SU, 1);                   % Refine the grid.
-%   op = ultraSEM.PDO(1, 0, @(x,y) 50*y); % Construct a PDO: lap(u) + 50*y*u.
-%   rhs = -1;                             % RHS (scalar or function handle).
-%   bc = 0;                               % Boundary condition (as above).
-%   L = ultraSEM(SU, op, rhs);            % Construct the ULTRASEM object.
-%   sol = L\bc;                           % Solve.
-%   plot(sol)                             % Plot.
+%       S = ultraSEM.alphabet('S') + 2i;      % Form an 'S' domain.
+%       U = ultraSEM.alphabet('U') + 2;       % Form a 'U' domain.
+%       SU = S & U;                           % Combine the two.
+%       SU = refine(SU, 1);                   % Refine the grid.
+%       op = ultraSEM.PDO(1, 0, @(x,y) 50*y); % Construct a PDO: lap(u) + 50*y*u.
+%       rhs = -1;                             % RHS (scalar or function handle).
+%       bc = 0;                               % Boundary condition (as above).
+%       L = ultraSEM(SU, op, rhs);            % Construct the ULTRASEM object.
+%       sol = L\bc;                           % Solve.
+%       plot(sol)                             % Plot.
 %
-% The typical user workflow may presented as:
+%   The typical user workflow may presented as:
 %
-%  [Specify domain    ]               [Specify PDO    ]
-%  [as ULTRASEM.DOMAIN]               [as ULTRASEM.PDO]
-%          \                             /
-%           \                           /
-%             -> [Construct ULTRASEM]<-
-%                         |
-%                      (build)       <-- optional
-%                         |
-%                       solve
-%                         |
-%                         v
-%                   [ULTRASEM.SOL]
+%    [Specify domain    ]               [Specify PDO    ]
+%    [as ULTRASEM.DOMAIN]               [as ULTRASEM.PDO]
+%            \                             /
+%             \                           /
+%               -> [Construct ULTRASEM]<-
+%                           |
+%                        (build)       <-- optional
+%                           |
+%                         solve
+%                           |
+%                           v
+%                     [ULTRASEM.SOL]
 
-% Copyright 2018 by Nick Hale and Dan Fortunato.
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DEVELOPER NOTES:

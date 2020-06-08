@@ -3,7 +3,9 @@ function varargout = mesh(sol, varargin)
 %   MESH(SOL) plots the tensor product Chebyshev grids for the patches of
 %   SOL, colored according to the values of SOL.
 %
-% See also PLOT, SURF, CONTOUR, GETGRID.
+%   See also PLOT, SURF, CONTOUR, GETGRID.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 holdState = ishold();
 

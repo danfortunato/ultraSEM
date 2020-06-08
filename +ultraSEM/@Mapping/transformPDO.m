@@ -2,6 +2,8 @@ function [op_rs, rhs_rs] = transformPDO( dom, op_xy, rhs_xy )
 %TRANSFORMPDO   Perform change of variables to convert PDO on mapped
 %(x,y)-domain to equivalent PDO on reference (r,s)-domain [-1,1]^2.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Change of variables:
 %
 % d/dx = ds/dx d/ds + dt/dx d/dt

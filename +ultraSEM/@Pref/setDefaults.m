@@ -14,7 +14,9 @@ function setDefaults(varargin)
 %   ULTRASEM.PREF.SETDEFAULTS('factory') resets the default preferences to
 %   their factory values.
 %
-% See also GETFACTORYDEFAULTS.
+%   See also GETFACTORYDEFAULTS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin == 0 )
     ultraSEM.Pref.setDefaults('factory');

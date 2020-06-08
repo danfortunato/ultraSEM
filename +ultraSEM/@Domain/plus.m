@@ -3,7 +3,9 @@ function T = plus(T, c)
 %   T + C will shift the ULTRASEM.DOMAIN to the right by real(c) and
 %   upwards by imag(C). C must be a scalar.
 %
-% See also MINUS.
+%   See also MINUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( ~isa(T, 'ultraSEM.Domain') )
     % Ensure T is the ULTRASEM.DOMAIN:

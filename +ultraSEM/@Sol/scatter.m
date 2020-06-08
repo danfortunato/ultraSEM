@@ -7,6 +7,8 @@ function varargout = scatter(sol, varargin)
 %
 %   See also PLOT, MESH.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 numPatches = size(sol.domain, 1);
 holdState = ishold();
 

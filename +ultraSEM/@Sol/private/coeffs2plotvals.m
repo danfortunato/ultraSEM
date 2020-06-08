@@ -1,6 +1,8 @@
 function V = coeffs2plotvals(C)
 %COEFFS2PLOTVALS   Convert 2D Chebyshev coefficients to values at plot points.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 persistent Eval
 nplotpts = ultraSEM.Sol.nplotpts;
 pmax = 100; % Maximum p to precompute

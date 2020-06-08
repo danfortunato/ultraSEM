@@ -1,5 +1,9 @@
 function [T, newIdx] = refinePoint(T, z, m)
 %REFINEPOINT   Refine an ULTRASEM.DOMAIN around a point.
+%
+%   See also REFINE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 newIdx = {};
 if ( nargin < 3 ), m = 1; end

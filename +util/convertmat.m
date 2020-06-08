@@ -6,6 +6,8 @@ function S = convertmat(n, k1, k2)
 %   C^{(K2 + 1)} basis, where C^{(K)} denotes ultraspherical polynomial
 %   basis with parameter K. If K2 < K1, S is the N-by-N identity matrix.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 persistent storeS
 if ( isempty(storeS) )
     storeS = cell(2,2);

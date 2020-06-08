@@ -1,6 +1,8 @@
 function test()
 %TEST   Run the test suite.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Locate the test directory:
 ultraSEMDir = ultraSEMroot();
 testDir = fullfile(ultraSEMDir, 'tests');

@@ -1,7 +1,9 @@
 function H = oldMerge(F, G, varargin)
 %OLDMERGE   Merge two or more ULTRASEM.DOMAINs (old-style merge).
 %
-% See also MERGE.
+%   See also MERGE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin == 1 )
     H = F;

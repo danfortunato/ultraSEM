@@ -3,7 +3,9 @@ function T = plus(T, c)
 %   T + C will shift the ULTRASEM.MAPPING T to the right by real(C) and
 %   upwards by imag(C). C must be a scalar.
 %
-% See also MINUS, MTIMES.
+%   See also MINUS, MTIMES.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( ~isnumeric(c) )
     error('ULTRASEM:MAPPING:PLUS:unknown', ...

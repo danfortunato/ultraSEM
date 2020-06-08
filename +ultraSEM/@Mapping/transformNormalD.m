@@ -1,6 +1,8 @@
 function normal_d = transformNormalD(T, n)
 %TRANSFORMNORMALD   Normal derivative operator for mapped domains.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Chebyshev differentiation matrices in (s,t), i.e. mapped [-1,1]^2 space
 I = speye( n );
 D = util.diffmat( n, 1 );

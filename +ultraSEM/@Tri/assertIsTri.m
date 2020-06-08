@@ -1,6 +1,8 @@
 function v = assertIsTri(v)
 %ASSERTISTRI   Check we have valid vertices for an ULTRASEM.TRI.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( ~isnumeric(v) )
     error('Input should be numeric.');
 end

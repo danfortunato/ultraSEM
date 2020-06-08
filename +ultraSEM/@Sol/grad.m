@@ -7,7 +7,9 @@ function [fx, fy] = grad(f)
 %
 %   This is shorthand for GRADIENT(F).
 %
-% See also GRADIENT.
+%   See also GRADIENT.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 [fx, fy] = gradient(f);
 

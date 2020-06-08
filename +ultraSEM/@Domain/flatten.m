@@ -1,6 +1,8 @@
 function T = flatten(T)
 %FLATTEN   Try to flatten merges (for efficiency).
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( numel(T) > 1 )
     for k = 1:numel(T)
         T(k) = flatten(T(k));

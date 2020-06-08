@@ -6,7 +6,9 @@ function T = minus(T, c)
 %   T - S, where S and T are both ULTRASEM.DOMAINs, will remove common
 %   patches of S and T from T.
 %
-% See also PLUS.
+%   See also PLUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isnumeric(T) )
     T = plus(c, (-T));

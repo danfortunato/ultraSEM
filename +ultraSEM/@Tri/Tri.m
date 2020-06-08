@@ -1,6 +1,8 @@
 classdef Tri < Mapping
 %ULTRASEM.TRI   Triangle mapping object from the ULTRASEM system.
-% For now this just maps [-1,1]^2 -> right-angled triangle.
+%   For now this just maps [-1,1]^2 -> right-angled triangle.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS CONSTRUCTOR:

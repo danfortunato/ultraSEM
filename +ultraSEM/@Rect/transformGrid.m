@@ -1,6 +1,8 @@
 function [X, Y, XY] = transformGrid(T, x, y)
 %TRANSFORMGRID   Map points in [-1 1]^2 to the domain of an ULTRASEM.RECT.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 rect = rectVertices(T);
 domx = rect(1:2);    domy = rect(3:4); 
 sclx = 2/diff(domx); scly = 2/diff(domy);

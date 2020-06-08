@@ -15,7 +15,9 @@ function varargout = contour(sol, varargin)
 %   contour object. These can be used as inputs to CLABEL. The structure of
 %   a contour matrix is described in the help for CONTOURC.
 %
-% See also PLOT, SURF, PCOLOR.
+%   See also PLOT, SURF, PCOLOR.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 holdState = ishold();
 N = 10;

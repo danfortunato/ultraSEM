@@ -1,6 +1,8 @@
 function normal_d = transformNormalD(T, p)
 %TRANSFORMNORMALD   Normal derivative operator for rectangular domains.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 persistent bcrows_d % Store for efficiency.
 if ( size(bcrows_d, 2) ~= p )
     % Construct normal derivatives along the four edges:

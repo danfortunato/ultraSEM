@@ -5,6 +5,8 @@ function D = diffmat(n, m)
 %   represent the derivative of the Chebyshev series. Here, C^{(K)} is the
 %   ultraspherical polynomial basis with parameter K.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( nargin == 1 )
     m = 1;
 end

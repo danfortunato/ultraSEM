@@ -7,6 +7,8 @@ function [u, d] = solve(P, bc)
 %   solution coefficients U and a vector D containing the domain of the
 %   patch.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Extract the domain from the patch:
 d = P.domain;
 

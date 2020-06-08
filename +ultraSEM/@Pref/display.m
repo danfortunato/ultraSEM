@@ -3,6 +3,8 @@ function display(pref) %#ok<DISPLAY>
 %   DISPLAY(PREF) prints out a list of the preferences stored in the
 %   ULTRASEM.PREF object PREF.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Compute the screen column in which pref values start.
 col = 20;
 ind = '    ';

@@ -11,7 +11,9 @@ function [xx, yy] = chebpts2(nx, ny, dom)
 %   DOM = [a b c d]. If DOM is an ULTRASEM.MAPPING, then the points are
 %   mapped from [-1,1]^2 according to DOM.
 %
-% See also CHEBPTS.
+%   See also CHEBPTS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( nargin == 1 )
     ny = nx;

@@ -4,6 +4,8 @@ function chebpolyfill(sol)
 %   underlying the representation of the ULTRASEM.SOL SOL on a semilog
 %   scale using filled polygons.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 holdState = ishold();
 n = size(sol.coeffs{1}, 1);
 

@@ -6,7 +6,9 @@ function build(S)
 %
 %   If S has not yet been initialized, then an error is thrown.
 %
-% See also INITIALIZE, SOLVE.
+%   See also INITIALIZE, SOLVE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isa(S.patches, 'ultraSEM') )
     % Recurse down and build lower level patches

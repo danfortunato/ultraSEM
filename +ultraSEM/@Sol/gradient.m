@@ -5,7 +5,9 @@ function [fx, fy] = gradient(f)
 %   FY is the derivative of F in the y direction. Both derivatives are
 %   returned as ULTRASEM.SOL objects.
 %
-% See also GRAD.
+%   See also GRAD.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 fx = diff(f, 1, 2);
 fy = diff(f, 1, 1);

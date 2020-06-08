@@ -4,6 +4,8 @@ function pref = factoryDefaultPrefs()
 %   for storing in the prefList property of an ULTRASEM.PREF object that
 %   contains all of the factory default values of the ULTRASEM preferences.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 pref.solver = 'woodbury';
 pref.interfaceDegree = @max;
 pref.splitTriangles = true;

@@ -3,7 +3,9 @@ function h = plus(f, g)
 %   F + G adds the ULTRASEM.SOL objects F and G. F and G must have the same
 %   domains and discretization sizes. F and G may also be scalars.
 %
-% See also MINUS.
+%   See also MINUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isnumeric( f ) )
     h = plus(g, f);

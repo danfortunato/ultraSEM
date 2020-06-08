@@ -1,7 +1,9 @@
 function values = coeffs2vals(coeffs)
 %COEFFS2VALS   Convert Chebyshev coefficients to values at Chebyshev points.
 %
-% See also VALS2COEFFS.
+%   See also VALS2COEFFS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Store the coeffs2vals matrices for sizes < cutoff
 persistent F

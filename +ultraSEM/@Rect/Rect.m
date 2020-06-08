@@ -1,6 +1,8 @@
 classdef Rect < ultraSEM.Quad
 %ULTRASEM.RECT   Rectangular mapping object from the ULTRASEM system.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASS CONSTRUCTOR:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

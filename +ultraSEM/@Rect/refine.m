@@ -1,5 +1,9 @@
 function [R, mergeIdx] = refine(R, m)
 %REFINE   Refine ULTRASEM.RECT objects.    
+%
+%   See also REFINEX, REFINEY.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 mergeIdx = {};
 % Parse inputs:

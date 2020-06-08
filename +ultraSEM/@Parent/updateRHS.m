@@ -5,6 +5,8 @@ function P = updateRHS(P, rhs)
 %   constant, a function handle, an ULTRASEM.SOL object defined on P, or a
 %   cell array containing bivariate Chebyshev coefficients for each patch.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( isa(rhs, 'ultraSEM.Sol') )
     rhs = rhs.coeffs;
 end

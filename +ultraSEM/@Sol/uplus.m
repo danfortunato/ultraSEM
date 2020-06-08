@@ -4,6 +4,8 @@ function f = uplus(f)
 %
 %   G = uplus(F) is called for the syntax '+F'.
 %
-% See also UMINUS.
+%   See also UMINUS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 end

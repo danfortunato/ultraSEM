@@ -1,5 +1,7 @@
 function plottree(T)
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 %TODO: Experimental
 dom = T.domain;
 idx = T.mergeIdx;

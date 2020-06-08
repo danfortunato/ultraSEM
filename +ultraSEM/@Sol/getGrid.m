@@ -6,6 +6,8 @@ function [x, y] = getGrid(sol, kk)
 %   [X, Y] = GETGRID(SOL, KK) returns the tensor product Chebyshev grids
 %   for the KK-th patches of SOL.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 d = sol.domain;
 coeffs = sol.coeffs;
 

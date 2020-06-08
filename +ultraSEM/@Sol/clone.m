@@ -5,6 +5,8 @@ function solf = clone(f, sol)
 %   represent the function F, which may be a constant, a function handle,
 %   or another ULTRASEM.SOL.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 if ( ~isa(sol, 'ultraSEM.Sol') )
     error('ULTRASEM:SOL:clone:invalid', ...
         'Second argument must be an ULTRASEM.SOL.');

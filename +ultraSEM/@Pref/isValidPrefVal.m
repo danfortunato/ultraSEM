@@ -4,6 +4,8 @@ function isValid = isValidPrefVal(prefName, prefVal)
 %   PREFVALUE is a valid setting for the preference PREFNAME, and false
 %   otherwise.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 stringPrefs = {'solver', 'discretization'};
 functionPrefs = {'interfaceDegree'};
 logicalPrefs = {'splitTriangles'};

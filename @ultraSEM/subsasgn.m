@@ -6,7 +6,9 @@ function S = subsasgn(S, index, val)
 %
 %   S() and S{} are not supported.
 %
-% See also UPDATERHS.
+%   See also UPDATERHS.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 switch index(1).type
     case '.'

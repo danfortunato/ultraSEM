@@ -7,6 +7,8 @@ function [u, d] = solve(P, bc)
 %   solution coefficients U and a vector D containing the domains of the
 %   subpatches.
 
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
+
 % Evaluate the solution operator for the parent:
 u = P.S * [bc ; 1]; % The 1 accounts for the particular part.
 

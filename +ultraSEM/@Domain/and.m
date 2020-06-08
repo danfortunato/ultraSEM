@@ -3,7 +3,9 @@ function C = and(A, B)
 %   C = A & B will merge the two ULTRASEM.DOMAINs A and B. See MERGE() for
 %   further details.
 %
-% See also MERGE().
+%   See also MERGE.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 if ( isempty(A) )
     C = B;
