@@ -17,7 +17,7 @@ S = ultraSEM(dom, L, f, p);
 u = S \ bc;
 ```
 
-The `ultraSEM` object `S` is a direct solver for the PDE `Lu = f`, which may be invoked for the given boundary conditions via the `\` command. The solution is returned as an `ultraSEM.Sol` object, which overloads a host of functions for plotting (e.g., `plot`, `contour`) and evaluation (e.g., `feval`,`norm`).
+The `ultraSEM` object `S` is a direct solver for the PDE `Lu = f`, which may be invoked for the given boundary conditions via the `\` command. The solution is returned as an `ultraSEM.Sol` object, which overloads a host of functions for plotting (e.g., `plot`, `contour`) and evaluation (e.g., `feval`, `norm`).
 
 ### Constructing a domain
 
