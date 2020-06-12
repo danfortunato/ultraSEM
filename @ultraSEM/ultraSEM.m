@@ -37,7 +37,7 @@ classdef ultraSEM < handle
 %   Example:
 %
 %       S = ultraSEM.alphabet('S') + 2i;      % Form an 'S' domain.
-%       U = ultraSEM.alphabet('U') + 2;       % Form a 'U' domain.
+%       U = ultraSEM.alphabet('U') + 3;       % Form a 'U' domain.
 %       SU = S & U;                           % Combine the two.
 %       SU = refine(SU, 1);                   % Refine the grid.
 %       op = ultraSEM.PDO(1, 0, @(x,y) 50*y); % Construct a PDO: lap(u) + 50*y*u.
