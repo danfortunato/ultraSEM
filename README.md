@@ -76,4 +76,4 @@ plot(u)
 
 ## References
 
-[1] Daniel Fortunato, Nicholas Hale, and Alex Townsend, *The ultraspherical spectral element method* (2020).
+[1] Daniel Fortunato, Nicholas Hale, and Alex Townsend, *The ultraspherical spectral element method*, https://arxiv.org/abs/2006.08756 (2020).
