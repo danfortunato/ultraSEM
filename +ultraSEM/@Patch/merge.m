@@ -41,10 +41,27 @@ z = [ scl2*l2g1*D2Na(s1,i1), ...
       scl2*l2g1*D2Na(s1,end) + scl1*l2g2*D2Nb(s2,end) ];
 %    |---------------------- rhs --------------------|
 
-% Store the decomposition from lsqminnorm() for reuse in updateRHS().
+% Select tolerance for least squares minimum norm solver: 
 tol = min(max(size(A))*eps(norm(A)), 1e-8);
-dA = matlab.internal.decomposition.DenseCOD(A, tol);
-S = solve(dA, z, false);
+
+if ( verLessThan('matlab', '9.3') )
+% lsqminnorm() was introduced in MATLAB 2017b. Add code here to make
+% ultraSEM *mostly* run on MATLAB 2017a and earlier. 
+    dA = A; 
+    [U, Sigma, V] = svd( A ); 
+    idx = find(diag(Sigma)>tol, 1, 'last');
+    ii_remove = idx+1:size(A,2); 
+    U(:, ii_remove ) = []; 
+    Sigma( ii_remove, : ) = [];
+    Sigma( :, ii_remove ) = [];
+    V(:, ii_remove) = [];
+    S = V * ( Sigma \ ( U'*z ) );
+else
+% On MATLAB 2017b or later, we can use lsqminnorm. 
+% Store the decomposition from lsqminnorm() for reuse in updateRHS().
+    dA = matlab.internal.decomposition.DenseCOD(A, tol);
+    S = solve(dA, z, false);
+end
 
 % Compute new D2N maps:
 % - Again, make sure to map local DOFs to shared DOFs on the interface.
