@@ -1,29 +1,25 @@
-function T = mtimes(T, c)
+function f = mtimes(f, c)
 %*   Scale an ULTRASEM.SOL.
-%   C*T will scale the ULTRASEM.SOL by C. C must be a scalar.
+%   c*F or F*c multiplies an ULTRASEM.SOL F by a scalar c.
 %
 %   See also TIMES.
 
 %   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
-if ( ~isa(T, 'ultraSEM.Sol') )
-    % Ensure T is the ULTRASEM.SOL:
-    T = mtimes(c, T);
+if ( ~isa(f, 'ultraSEM.Sol') )
+    % Ensure F is the ULTRASEM.SOL:
+    f = mtimes(c, f);
     return
 elseif ( isa(c, 'ultraSEM.Sol' ) )
-    % We can't multiply two ULTRASEM.SOLs:
+    % MTIMES should not be used to multiply two ULTRASEM.SOLs:
     error('ULTRASEM:SOL:mtimes:twosols', ...
-        'Cannot multiply (* or .*) two ultraSEM.Sols.\n')
-elseif ( ~isnumeric(c) )
-    error('ULTRASEM:SOL:mtimes:unknown', ...
-        'Cannot multiply an object of type %s by an ultraSEM.Sol.', ...
-        class(c));
-elseif ( ~isscalar(c) )
-    error('ULTRASEM:SOL:mtimes:scalar', ...
-        'C must be a scalar.')
+        ['Cannot multiply two ultraSEM.Sols with ''*''. ', ...
+         'Did you mean ''.*''?\n'])
+elseif ( isnumeric(c) && isscalar(c) )
+    % Multiply ULTRASEM.SOL F by scalar c:
+    f.coeffs = cellfun(@(coeffs) c*coeffs, f.coeffs, 'UniformOutput', false);
+else
+    error('ULTRASEM:SOL:mtimes:invalid', 'c must be a scalar.')
 end
-
-% Scale the solution:
-T.coeffs = cellfun(@(coeffs) c*coeffs, T.coeffs, 'UniformOutput', false);
 
 end
