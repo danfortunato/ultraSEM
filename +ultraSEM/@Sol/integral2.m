@@ -6,12 +6,16 @@ function I = integral2(f, varargin)
 %   I = INTEGRAL2(F, 'all') returns an array of double integrals over each
 %   patch of F.
 %
-% See also SUM2.
+%   See also SUM2.
+
+%   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
 % Parse arguments.
 reduce = true;
-if ( nargin == 2 && strcmp(varargin{1}, 'all') )
-    reduce = false;
+if ( nargin == 2 )
+    if ( strcmp(varargin{1}, 'all') )
+        reduce = false;
+    end
 end
 
 % Empty check:
