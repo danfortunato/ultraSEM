@@ -1,4 +1,4 @@
-function I = sum2(f)
+function I = sum2(f, varargin)
 %SUM2   Double integral of an ULTRASEM.SOL.
 %   I = SUM2(F) returns the double integral of the ULTRASEM.SOL F over its
 %   domain.
@@ -8,6 +8,6 @@ function I = sum2(f)
 %
 % See also INTEGRAL2.
 
-I = integral2(f);
+I = integral2(f, varargin);
 
 end
