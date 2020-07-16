@@ -1,6 +1,6 @@
 function f = sqrt(f)
 %SQRT   Square root of an ULTRASEM.SOL.
-%   SQRT(F) returns the square root of an ULTRASEM.SOL F.
+%   SQRT(F) returns the square root of the ULTRASEM.SOL F.
 %
 %   See also POWER, COMPOSE.
 
