@@ -78,6 +78,7 @@ classdef ultraSEM < handle
 
         domain  = [] % Domain of the ultraSEM object. (An ultraSEM.Domain)
         patches = {} % Cell array of ultraSEM.Patches.
+        op           % Differential operator. (An ultraSEM.PDO)
 
     end
 
@@ -101,6 +102,12 @@ classdef ultraSEM < handle
                 'ULTRASEM must be an ULTRASEM.DOMAIN object.']);
             obj.domain = dom;
 
+            % Assign the operator:
+            if ( ~isa(op, 'ultraSEM.PDO') )
+                op = ultraSEM.PDO(op);
+            end
+            obj.op = op;
+
             % Parse inputs:
             [rhs, n, pref] = parseInputs(varargin{:});
             
@@ -108,7 +115,26 @@ classdef ultraSEM < handle
             obj.initialize(op, rhs, n, pref);
 
         end
-        
+
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% METHODS:
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    methods
+
+        function n = numArgumentsFromSubscript(obj,s,indexingContext)
+        %NUMARGUMENTSFROMSUBSCRIPT   Number of arguments for customized indexing methods.
+        %   Overloading NUMEL() gives the wrong NARGOUT for SUBSREF().
+        %   Defining this function fixes it.
+        %
+        % See also NUMEL, NARGOUT, SUBSREF.
+
+            n = 1;
+
+        end
+
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
