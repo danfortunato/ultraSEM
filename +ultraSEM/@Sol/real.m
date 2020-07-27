@@ -5,6 +5,6 @@ function sol = real(sol)
 
 %   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
-sol = compose(sol, @real);
+sol = compose(@real, sol);
 
 end

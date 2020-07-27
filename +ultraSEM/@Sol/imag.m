@@ -5,6 +5,6 @@ function sol = imag(sol)
 
 %   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
 
-sol = compose(sol, @imag);
+sol = compose(@imag, sol);
 
 end
