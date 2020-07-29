@@ -21,7 +21,7 @@ for s = fieldnames(L).'
 
     if ( isa(L.(s), 'function_handle') )
         uniformOp = false;
-        coeff = regexprep(func2str(L.(s)), '@\(.{1,4}\)', '');
+        coeff = regexprep(func2str(L.(s)), '@\(.+?\)', '');
         fh = [fh ' + (' coeff ').*' term]; %#ok<AGROW>
     elseif ( L.(s) ~= 0 )
         coeff = num2str(L.(s));
