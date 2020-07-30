@@ -73,7 +73,7 @@ classdef PDO
                 end
                 obj.dxx = op{1};
                 obj.dyy = op{1};
-            elseif ( isa(op{1}, 'function_handle') )
+            elseif ( isa(op{1}, 'function_handle') || isa(op{1}, 'ultraSEM.Sol') )
                 obj.dxx = op{1};
                 obj.dyy = op{1};
             end
@@ -83,21 +83,24 @@ classdef PDO
                 if ( numel(op{2}) == 2 )
                     obj.dx = op{2}{1};
                     obj.dy = op{2}{2};
-                elseif ( numel(op{1}) == 1)
+                elseif ( numel(op{1}) == 1 )
                     % TODO: Do we want this?
                     obj.dx = op{2}{1};
                     obj.dy = op{2}{1};
                 end
             elseif ( isnumeric(op{2}) )
-               if ( isempty(op{2}) )
+                if ( isempty(op{2}) )
                    op{2} = 0;
-               elseif ( ~isscalar(op{2}) )
+                elseif ( ~isscalar(op{2}) )
                     error('ULTRASEM:PDO:nonScalar', ...
-                       'Numeric input must be a scalar.');
-               end
-               % TODO: Do we want this?
-               obj.dx = op{2};
-               obj.dy = op{2};
+                        'Numeric input must be a scalar.');
+                end
+                % TODO: Do we want this?
+                obj.dx = op{2};
+                obj.dy = op{2};
+            elseif ( isa(op{2}, 'function_handle') || isa(op{2}, 'ultraSEM.Sol') )
+                obj.dx = op{2};
+                obj.dy = op{2};
             end
 
             % Constant (reaction) terms:

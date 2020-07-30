@@ -39,7 +39,7 @@ dy   = op_xy.dy;
 b_xy = op_xy.b;
 
 % d/dxx term
-if ( isa( dxx, 'function_handle') )
+if ( isa(dxx, 'function_handle') || isa(dxx, 'ultraSEM.Sol') )
     dxx = 'op_xy.dxx(dom.x(r,s), dom.y(r,s))';
 else
     dxx = num2str(dxx);
@@ -51,7 +51,7 @@ dr  = ['@(r,s) ' dxx '.*' drdxx ''];
 ds  = ['@(r,s) ' dxx '.*' dsdxx ''];
 
 % d/dxy term
-if ( isa( dxy, 'function_handle') )
+if ( isa(dxy, 'function_handle') || isa(dxy, 'ultraSEM.Sol') )
     dxy = 'op_xy.dxy(dom.x(r,s), dom.y(r,s))';
 else
     dxy = num2str(dxy);
@@ -63,7 +63,7 @@ dr  = [dr  ' + ' dxy '.*' drdxy ''];
 ds  = [ds  ' + ' dxy ' .*' dsdxy ''];
 
 % d/dyy term
-if ( isa( dyy, 'function_handle') )
+if ( isa(dyy, 'function_handle') || isa(dyy, 'ultraSEM.Sol') )
     dyy = 'op_xy.dyy(dom.x(r,s), dom.y(r,s))';
 else
     dyy = num2str(dyy);
@@ -75,7 +75,7 @@ dr  = [dr  ' + ' dyy '.*' drdyy ''];
 ds  = [ds  ' + ' dyy '.*' dsdyy ''];
 
 % d/dx term
-if ( isa( dx, 'function_handle') )
+if ( isa(dx, 'function_handle') || isa(dx, 'ultraSEM.Sol') )
     dx = 'op_xy.dx(dom.x(r,s), dom.y(r,s))';
 else
     dx = num2str(dx);
@@ -84,7 +84,7 @@ dr = [dr ' + ' dx '.*' det '.^2.*' drdx ''];
 ds = [ds ' + ' dx '.*' det '.^2.*' dsdx ''];
 
 % d/dy term
-if ( isa( dy, 'function_handle') )
+if ( isa(dy, 'function_handle') || isa(dy, 'ultraSEM.Sol') )
     dy = 'op_xy.dy(dom.x(r,s), dom.y(r,s))';
 else
     dy = num2str(dy);
@@ -108,21 +108,21 @@ if ( isa(dom, 'ultraSEM.Tri') )
     e = simplify( sing(r,s) .* ds(r,s) );  ds  = @(r,s) eval(e);
 
     % Zeroth term
-    if ( isa(b_xy, 'function_handle') )
+    if ( isa(b_xy, 'function_handle') || isa(b_xy, 'ultraSEM.Sol') )
         b_rs = @(r,s) sing(r,s) .* dom.scl(r,s) .* b_xy(dom.x(r,s), dom.y(r,s));
     else
         b_rs = @(r,s) sing(r,s) .* dom.scl(r,s) .* b_xy;
     end
 
     % Righthand side
-    if ( isa(rhs_xy, 'function_handle') )
+    if ( isa(rhs_xy, 'function_handle') || isa(rhs_xy, 'ultraSEM.Sol') )
         rhs_rs = @(r,s) sing(r,s) .* dom.scl(r,s) .* rhs_xy(dom.x(r,s), dom.y(r,s));
     else
         rhs_rs = @(r,s) sing(r,s) .* dom.scl(r,s) .* rhs_xy;
     end
 else
     % Zeroth term
-    if ( isa(b_xy, 'function_handle') )
+    if ( isa(b_xy, 'function_handle') || isa(b_xy, 'ultraSEM.Sol') )
         b_rs = @(r,s) dom.scl(r,s) .* b_xy(dom.x(r,s), dom.y(r,s));
     else
         b_rs = @(r,s) dom.scl(r,s) .* b_xy;
@@ -130,7 +130,7 @@ else
 
     % Righthand side
     if ( nargin > 2 )
-        if ( isa(rhs_xy, 'function_handle') )
+        if ( isa(rhs_xy, 'function_handle') || isa(rhs_xy, 'ultraSEM.Sol') )
             rhs_rs = @(r,s) dom.scl(r,s) .* rhs_xy(dom.x(r,s), dom.y(r,s));
         else
             rhs_rs = @(r,s) dom.scl(r,s) .* rhs_xy;
