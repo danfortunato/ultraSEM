@@ -16,7 +16,7 @@ classdef BC < matlab.mixin.Heterogeneous
         dir
         neu
         val
-
+        
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,30 +25,15 @@ classdef BC < matlab.mixin.Heterogeneous
 
     methods
 
-        function obj = BC(val, scl)
+        function obj = BC(val, Dir, neu)
 
             if ( nargin == 0 )
+                % Return an empty object:
                 return
             end
 
-            if ( nargin == 1 )
-                % Default to Dirichlet boundary conditions:
-                scl = [1 0];
-            end
-
-            if ( isnumeric(scl) && (isscalar(scl) || (isvector(scl) && length(scl)==2) ) )
-                if ( isscalar(scl) )
-                    obj.dir = scl;
-                    obj.neu = scl;
-                else
-                    obj.dir = scl(1);
-                    obj.neu = scl(2);
-                end
-            else
-                error('ULTRASEM:BC:bc:invalid', ...
-                    'Invalid constants in boundary condition.');
-            end
-
+            obj.dir = Dir;
+            obj.neu = neu;
             obj.val = val;
 
         end
@@ -65,25 +50,71 @@ classdef BC < matlab.mixin.Heterogeneous
         %DIRICHLET   Construct Dirichlet boundary conditions.
         %   ULTRASEM.BC.DIRICHLET(VAL) constructs an ULTRASEM.BC
         %   representing a Dirichlet boundary condition with boundary data
-        %   VAL.
-            bc = ultraSEM.BC(val, [1 0]);
+        %   VAL. VAL may be a constant or a function handle of two
+        %   variables (i.e. VAL = @(x,y) ...).
+        %
+        %   ULTRASEM.BC.DIRICHLET() assumes VAL = 0.
+        
+            % Assume zero if not specified:
+            if ( nargin == 0 ), val = 0; end
+            
+            bc = ultraSEM.BC(val, 1, 0);
         end
 
         function bc = neumann(val)
         %NEUMANN   Construct Neumann boundary conditions.
         %   ULTRASEM.BC.NEUMANN(VAL) constructs an ULTRASEM.BC representing
-        %   a Neumann boundary condition with boundary data VAL.
-            bc = ultraSEM.BC(val, [0 1]);
+        %   a Neumann boundary condition with boundary data VAL. VAL may be
+        %   a constant or a function handle of two variables (i.e., VAL =
+        %   @(x,y) ...).
+        %
+        %   ULTRASEM.BC.NEUMANN() assumes VAL = 0.
+        
+            % Assume zero if not specified:
+            if ( nargin == 0 ), val = 0; end
+        
+            bc = ultraSEM.BC(val, 0, 1);
         end
 
         function bc = robin(val, a, b)
         %ROBIN   Construct Robin boundary conditions.
         %   ULTRASEM.BC.ROBIN(VAL, A, B) constructs an ULTRASEM.BC
         %   representing the Robin boundary condition A + B*d/dn with
-        %   boundary data VAL and constants A and B.
-            bc = ultraSEM.BC(val, [a b]);
+        %   boundary data VAL and constants A and B. VAL, A, and B may be a
+        %   constants or a function handles of two variables (i.e., VAL =
+        %   @(x,y) ...).
+        
+            bc = ultraSEM.BC(val, a, b);
         end
 
     end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% METHODS:
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    methods
+        
+        function out = validBC(bc)
+            %VALIDBC  Check a BC is contains all the necessary information.
+            
+            if ( numel(bc) > 1 )
+                out = zeros(size(bc));
+                for k = 1:numel(bc)
+                    out(k) = validBC(bc(k));
+                end
+                return
+            end
+            
+            out =  ( ~isempty(bc.dir) && ~isempty(bc.neu) && ...
+                ~isempty(bc.val) && (bc.dir ~= 0 || bc.neu ~= 0) );
+            
+        end
+        
+    end
+
+    
+
+    
 
 end

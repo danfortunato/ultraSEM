@@ -162,7 +162,7 @@ classdef ultraSEM < handle
         %   ULTRASEM.ALPHABET(STR), where STR is a single string character,
         %   returns an ULTRASEM.DOMAIN object in the shape of STR.
             [varargout{1:nargout}] = ultraSEM.Domain.alphabet(varargin{:});
-        end
+        end         
 
         function varargout = rectangle(varargin)
         %RECTANGLE   Construct a rectangular ULTRASEM.DOMAIN.
