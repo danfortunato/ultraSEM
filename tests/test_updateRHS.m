@@ -14,7 +14,6 @@ p = 21;
 
 tic
 S = ultraSEM(T, op, rhs, p);
-S.build;
 sol = S\bc;
 t1 = toc;
 % Obtained from CHEBOP2

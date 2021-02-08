@@ -134,6 +134,24 @@ classdef ultraSEM < handle
             n = 1;
 
         end
+        
+        function plot(obj)
+            %TODO: This is just for testing. Need to improve.
+            edges = obj.patches{1}.edges;
+            numEdges = size(edges,1);
+            ish = ishold();
+            for k = 1:numEdges
+                h1 = plot(edges(k,[1 3]), edges(k,[2 4]), 'LineWidth', 3); 
+                midptx = sum(edges(k,[1 3]))/2;
+                midpty = sum(edges(k,[2 4]))/2;
+                h2 = text(midptx, midpty, int2str(k), ...
+                    'backgroundcolor', 'w', 'color', get(h1, 'color'));
+                hold on
+            end
+            if ( ~ish )
+                hold off
+            end
+        end
 
     end
 
@@ -162,7 +180,7 @@ classdef ultraSEM < handle
         %   ULTRASEM.ALPHABET(STR), where STR is a single string character,
         %   returns an ULTRASEM.DOMAIN object in the shape of STR.
             [varargout{1:nargout}] = ultraSEM.Domain.alphabet(varargin{:});
-        end
+        end         
 
         function varargout = rectangle(varargin)
         %RECTANGLE   Construct a rectangular ULTRASEM.DOMAIN.
