@@ -5,8 +5,8 @@ tol = 1e-10;
 % Merges an O-shape and a square to form a larger square.
 
 o = ultraSEM.alphabet('o');
-s = ultraSEM.rectangle([0 1 0 1]);
-D = o & s;
+s = ultraSEM.rectangle([1 2 1 2]);
+D = (o & s) - (1+1i);
 op = ultraSEM(D, {1, 0, 1}, -1, 21);
 sol = op\0;
 
