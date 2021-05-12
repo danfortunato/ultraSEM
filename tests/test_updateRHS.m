@@ -14,7 +14,7 @@ p = 21;
 
 tic
 S = ultraSEM(T, op, rhs, p);
-S.build;
+build(S)
 sol = S\bc;
 t1 = toc;
 % Obtained from CHEBOP2
@@ -45,6 +45,6 @@ sol1 = S\bc;
 S2 = ultraSEM(T, op, rhs, p);
 sol2 = S2\bc;
 
-pass(4) =abs(sol1(.5,.5) - sol2(.5,.5)) < tol;
+pass(4) = abs(sol1(.5,.5) - sol2(.5,.5)) < tol;
 
 end

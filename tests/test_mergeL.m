@@ -5,7 +5,7 @@ tol = 1e-10;
 % Merges an L-shape and a square to form a square.
 
 l = ultraSEM.alphabet('l');
-s = ultraSEM.rectangle([0 1 0 1], 1);
+s = ultraSEM.rectangle([1 2 1 2], 1);
 D = l & s;
 op = ultraSEM(D, {1, 0, 1}, -1, 21);
 sol = op\0;
