@@ -19,7 +19,7 @@ if ( ~isnumeric(bc) )
         % Create grid on this edge:
         a = edges(k,1)+edges(k,2)*1i;
         b = edges(k,3)+edges(k,4)*1i;
-        t = chebpts(edges(k,5));
+        t = util.chebpts(edges(k,5));
         x = real(b-a)/2*t+real(b+a)/2;
         y = imag(b-a)/2*t+imag(b+a)/2;
         % Evaluate at grid:
