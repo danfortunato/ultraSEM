@@ -1,6 +1,7 @@
 # ultraSEM
 
-![GitHub](https://img.shields.io/github/license/danfortunato/ultraSEM?)
+[![Test status](https://img.shields.io/github/workflow/status/danfortunato/ultraSEM/ultraSEM%20Tests?label=tests)](https://github.com/danfortunato/ultraSEM/actions/workflows/matlab.yml)
+[![License: MIT](https://img.shields.io/github/license/danfortunato/ultraSEM)](https://github.com/danfortunato/ultraSEM/blob/master/LICENSE)
 
 ultraSEM is a software system for solving second-order linear partial differential equations (PDEs) on unstructured meshes in two dimension. The software is an implementation of the ultraspherical spectral element method [1], which allows hp-adaptivity to be efficiently performed in the high-p regime (where h is the mesh size and p is the polynomial order).
 
