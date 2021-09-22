@@ -86,6 +86,18 @@ classdef BC < matlab.mixin.Heterogeneous
         
             bc = ultraSEM.BC(val, a, b);
         end
+        
+        function bc = getBCsFromPlot(h)
+            bc = ultraSEM.BC;
+            for k = 1:numel(h)
+                data = get(h(k), 'UserData');
+                data2 = cellfun(@str2double, data, 'uniformoutput', false);
+                if ( isnan(data2{3}) )
+                    data2{3} = str2func(['@(x,y) ' vectorize(data{3})]);
+                end
+                bc(k) = ultraSEM.BC(data2{3}, data2{1}, data2{2});
+            end
+        end
 
     end
     

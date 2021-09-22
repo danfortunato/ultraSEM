@@ -75,7 +75,7 @@ bc = 0;
 %%% Merge an O-shape and a square to form a larger square
 
 o = ultraSEM.alphabet('o');
-s = ultraSEM.rectangle([0 1 0 1]);
+s = ultraSEM.rectangle([1 2 1 2]);
 dom = o & s;
 
 subplot(321)
@@ -89,7 +89,7 @@ subplot(322), plot(sol), axis square tight
 %%% Merge an L-shape and a square to form a larger square
 
 l = ultraSEM.alphabet('l');
-s = ultraSEM.rectangle([0 1 0 1], 1);
+s = ultraSEM.rectangle([1 2 1 2], 1);
 dom = l & s;
 
 subplot(323)

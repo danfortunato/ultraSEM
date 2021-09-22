@@ -23,7 +23,6 @@ pass(2) = abs(dudx(2,0)) < tol;
 %%
 
 % Compare [     ] with [ ] and [    / using Neumann BCs.
-
 %         [     ]      [ ]     [  /
 %         [     ]              |/
 
