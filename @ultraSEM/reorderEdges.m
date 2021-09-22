@@ -31,7 +31,10 @@ for k = 2:n
 end
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 p
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 S.patches{1}.edges = edges(p,:);
