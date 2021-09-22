@@ -30,13 +30,6 @@ for k = 2:n
     unassignedEdges(edgeList(loc_k)) = false;
 end
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-p
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 S.patches{1}.edges = edges(p,:);
 
 end
