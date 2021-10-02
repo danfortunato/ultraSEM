@@ -98,7 +98,8 @@ numIntDOF = (p-2)^2;
 if ( isnumeric(rhs) )
     if ( isscalar(rhs) )
         % Constant RHS.
-        rhs_eval = [ rhs; zeros(numIntDOF-1,1) ];
+        rhs_eval = zeros(numIntDOF, numPatches);
+        rhs_eval(1,:) = rhs;
         constantRHS = true;
     else
         % The user gave us coeffs. (This situation is probably rare.)
@@ -202,11 +203,11 @@ end
             
             % Evaluate non-constant RHSs if required:
             if ( ~isnumeric(rhs_k) )
-                rhs_eval = evaluateRHS(rhs_k, X, Y, p, numIntDOF);
+                rhs_eval(:,k) = evaluateRHS(rhs_k, X, Y, p, numIntDOF);
             end
             
             % Solution operator:
-            [S, Ainv] = buildSolOp(op_k, domk, rhs_eval, p, pref);
+            [S, Ainv] = buildSolOp(op_k, domk, rhs_eval(:,k), p, pref);
 
             
             % Dirichlet-to-Neumann map:
