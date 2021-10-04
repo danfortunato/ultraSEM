@@ -42,7 +42,7 @@ classdef ultraSEM < handle
 %       SU = refine(SU, 1);                   % Refine the grid.
 %       op = ultraSEM.PDO(1, 0, @(x,y) 50*y); % Construct a PDO: lap(u) + 50*y*u.
 %       rhs = -1;                             % RHS (scalar or function handle).
-%       bc = 0;                               % Boundary condition (as above).
+%       bc = 0;                    git reset --hard HEAD           % Boundary condition (as above).
 %       L = ultraSEM(SU, op, rhs);            % Construct the ULTRASEM object.
 %       sol = L\bc;                           % Solve.
 %       plot(sol)                             % Plot.
@@ -135,22 +135,27 @@ classdef ultraSEM < handle
 
         end
         
-        function plot(obj)
+        function h = plot(obj)
             %TODO: This is just for testing. Need to improve.
+            build(obj);
             edges = obj.patches{1}.edges;
             numEdges = size(edges,1);
             ish = ishold();
+            h = matlab.graphics.primitive.Text;
+            h1 = matlab.graphics.primitive.Line;
             for k = 1:numEdges
-                h1 = plot(edges(k,[1 3]), edges(k,[2 4]), 'LineWidth', 3); 
+                h1(k) = plot(edges(k,[1 3]), edges(k,[2 4]), 'LineWidth', 3);
                 midptx = sum(edges(k,[1 3]))/2;
                 midpty = sum(edges(k,[2 4]))/2;
-                h2 = text(midptx, midpty, int2str(k), ...
-                    'backgroundcolor', 'w', 'color', get(h1, 'color'));
+                h(k) = text(midptx, midpty, int2str(k), ...
+                    'backgroundcolor', 'w', 'color', get(h1(k), 'color'), ...
+                    'UserData', {'1', '0', '0', h1(k)});             
                 hold on
             end
             if ( ~ish )
                 hold off
             end
+            
         end
 
     end
@@ -227,7 +232,7 @@ classdef ultraSEM < handle
         end
 
         function varargout = trimesh(varargin)
-        %TRIMESH   Construct an ULTRASEM.DOMAIN triangulated mesh.
+        %TRIMESH   Construct an ULTRASgit reset --hard HEADEM.DOMAIN triangulated mesh.
         %   ULTRASEM.TRIMESH(P, T) constructs a triangulated mesh.
             [varargout{1:nargout}] = ultraSEM.Domain.trimesh(varargin{:});
         end
