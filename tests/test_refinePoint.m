@@ -49,5 +49,51 @@ S3 = ultraSEM(T3, pdo, rhs, 5);
 sol3 = S3\0;
 pass(10) = abs(sol1(.25,.25) - sol3(.25,.25)) < tol;
 
-end
+% Refining interior points:
 
+D = ultraSEM.quad([-1 -1 ; 1 -1 ; 1 1 ; -1 1]);
+S1 = ultraSEM(D, pdo, rhs, n);
+sol1 = S1\0;
+D2 = refinePoint(D, [0 0]);
+S2 = ultraSEM(D2, pdo, rhs, n);
+sol2 = S2\0;
+pass(11) = abs(sol1(.5,-.5) - sol2(.5,-.5)) < tol;
+
+D = ultraSEM.rectangle([-1 1 -1 1]);
+S1 = ultraSEM(D, pdo, rhs, n);
+sol1 = S1\0;
+D2 = refinePoint(D, [0 0]);
+S2 = ultraSEM(D2, pdo, rhs, n);
+sol2 = S2\0;
+pass(12) = abs(sol1(.5,-.5) - sol2(.5,-.5)) < tol;
+
+D = ultraSEM.quad([-1 -1 ; 1 -1 ; 1 1 ; -1 1]);
+S1 = ultraSEM(D, pdo, rhs, n);
+sol1 = S1\0;
+D2 = refinePoint(refine(D), [.5 .5]);
+S2 = ultraSEM(D2, pdo, rhs, n);
+sol2 = S2\0;
+pass(13) = abs(sol1(.5,-.5) - sol2(.5,-.5)) < tol;
+
+D = ultraSEM.rectangle([-1 1 -1 1]);
+S1 = ultraSEM(D, pdo, rhs, n);
+sol1 = S1\0;
+D2 = refine(D);
+D2 = refinePoint(D2, [.5 .5 ; -.5 -.5]);
+S2 = ultraSEM(D2, pdo, rhs, n);
+sol2 = S2\0;
+pass(14) = abs(sol1(.5,-.5) - sol2(.5,-.5)) < tol;
+
+T = ultraSEM.triangle();
+S1 = ultraSEM(T, pdo, rhs, n);
+sol1 = S1\0;
+T2 = refinePoint(T, [.5 .5]);
+S2 = ultraSEM(T2, pdo, rhs, n);
+sol2 = S2\0;
+pass(15) = abs(sol1(.25,.25) - sol2(.25,.25)) < tol;
+T3 = refinePoint(T2, [1 0]);
+S3 = ultraSEM(T3, pdo, rhs, n);
+sol3 = S3\0;
+pass(15) = abs(sol1(.25,.25) - sol2(.25,.25)) < tol;
+
+end

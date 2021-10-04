@@ -10,7 +10,7 @@ if ( nargin < 3 ), m = 1; end
 if ( m == 0 ), return, end
 
 if ( numel(T) > 1 )
-    for k = 1:numel(T)
+    for k = numel(T):-1:1
         T(k) = refinePoint(T(k), z, m);
     end
     return 
@@ -18,17 +18,41 @@ end
 n = numel(T.domain);
 newDom = cell(n,1);
 idx = cell(n,1);
-s = [0, 0];
+s = [0, 0, 0];
+
 for k = 1:n
     [newDom{k}, newIdx] = refinePoint(T.domain(k), z);
-    if ( numel( newIdx ) == 1 )
-        newIdx = {[1, NaN], [1, NaN]};
+    
+    if ( numel( newDom{k} ) == 1 )
+          newIdx = {[1, NaN], [1, NaN], [1, NaN]};  
     end
-    idx{k,1} = newIdx{1} + s(1);
-    idx{k,2} = newIdx{2} + s(2);
-    s = [max(idx{k,1}(:)), max(idx{k,2}(:))];
+    
+    if ( numel(newIdx) == 2 )
+        newIdx = [newIdx, {[1, NaN]}];
+    end
+    
+    % Append new merge indices (with appropriate shifts):
+    for j = 1:numel(newIdx)
+        idx{k,j} = newIdx{j} + s(j);
+        s(j) = max(idx{k,j}(:));
+    end
+    
 end
-idx = {vertcat(idx{:,1}), vertcat(idx{:,2})};
+
+% TODO: Lazy. Need to do this for general number of levels.
+if ( size(idx, 2) == 1 )
+    idx = {};
+elseif ( size(idx, 2) == 2 )
+    idx = {vertcat(idx{:,1}), vertcat(idx{:,2})};
+else
+    idx = {vertcat(idx{:,1}), vertcat(idx{:,2}), vertcat(idx{:,3})};
+end
+
+for k = numel(idx):-1:1
+    if (all(isnan(idx{k}(:,2))))
+        idx(k) = [];
+    end
+end
 
 T.domain = vertcat(newDom{:});
 T.mergeIdx = [idx, T.mergeIdx];
