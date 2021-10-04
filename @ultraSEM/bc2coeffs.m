@@ -161,6 +161,4 @@ function bc = bcObject2vector(S, bc, numEdges)
     % Map the given mixed boundary data to pure Dirichlet data:
     bc = A \ bcval;
     
-    spy(A)
-    
 end
