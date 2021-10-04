@@ -24,7 +24,7 @@ for k = kk
     if ( isnumeric(d(k,:)) )
         [x{i,1}, y{i,1}] = util.chebpts2(nk, nk, d(k,:));
     else
-        [xk, yk] = chebpts2(nk);
+        [xk, yk] = util.chebpts2(nk);
         [x{i,1}, y{i,1}] = transformGrid(d(k,:), xk, yk);
     end
     i = i+1;

@@ -6,11 +6,11 @@ tol = 1e-10;
 
 o = ultraSEM.alphabet('o');
 s = ultraSEM.rectangle([1 2 1 2]);
-D = (o & s) - (1+1i);
+D = o & s;
 op = ultraSEM(D, {1, 0, 1}, -1, 21);
 sol = op\0;
 
-S = ultraSEM.rectangle([-1 2 -1 2], 3, 3);
+S = ultraSEM.rectangle([0 3 0 3], 3, 3);
 op = ultraSEM(S, {1, 0, 1}, -1, 21);
 sol2 = op\0;
 

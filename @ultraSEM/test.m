@@ -1,4 +1,4 @@
-function test()
+function varargout = test()
 %TEST   Run the test suite.
 
 %   Copyright 2020 Dan Fortunato, Nick Hale, and Alex Townsend.
@@ -22,6 +22,7 @@ maxLength = max(cellfun(@length, testFiles));
 numFiles  = numel(testFiles);
 durations = zeros(numFiles, 1);
 errorMessages = {'FAILED', 'CRASHED'};
+allResults = cell(0, 2);
 
 % Attempt to run all of the tests:
 try
@@ -33,6 +34,7 @@ try
 
         printTestInfo(testDir, testFile, k, maxLength);
         durations(k) = runTest(testFile);
+        allResults = [allResults ; {testFile durations(k)}]; %#ok<AGROW>
         if ( durations(k) > 0 )
             % Success message.
             message = sprintf('passed in %.4fs', durations(k));
@@ -64,6 +66,10 @@ end
 
 % Restore the current working directory and return:
 cd(currDir);
+
+if ( nargout > 0 )
+    varargout{1} = allResults;
+end
 
 end
 

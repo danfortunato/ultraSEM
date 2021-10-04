@@ -26,7 +26,8 @@ t2 = toc;
 % Obtained from CHEBOP2
 pass(2) = abs(-0.017310261817778 - feval(sol,0.2,0.3)) < tol; 
 
-pass(3) = t2 < t1/2;
+% Check that updateRHS gave a speed-up
+pass(3) = 1.5*t2 < t1;
 
 %%
 
@@ -44,6 +45,6 @@ sol1 = S\bc;
 S2 = ultraSEM(T, op, rhs, p);
 sol2 = S2\bc;
 
-pass(4) =abs(sol1(.5,.5) - sol2(.5,.5)) < tol;
+pass(4) = abs(sol1(.5,.5) - sol2(.5,.5)) < tol;
 
 end
