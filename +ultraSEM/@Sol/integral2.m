@@ -35,7 +35,9 @@ for k = 1:length(f)
     V = util.coeffs2vals( util.coeffs2vals(U).' ).';
     wx = util.quadwts(qx); wx = wx(:);
     wy = util.quadwts(qy); wy = wy(:);
-    I(k) = sum(sum(V .* wy .* wx.'));
+    [rr, ss] = util.chebpts2(qx, qy);
+    jac = f.domain(k).det(rr, ss);
+    I(k) = sum(sum(V .* wy .* wx.' .* jac));
 end
 
 % Combine norms on each element.
