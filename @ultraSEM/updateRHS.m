@@ -31,13 +31,18 @@ assert(isInitialized(S), 'ultraSEM object has not been initialized.')
 if ( isa(f, 'ultraSEM.Sol') )
     f = f.coeffs;
 end
-% Duplicate f if it is a scalar or function handle:
-if ( ~iscell(f) )
-    f = repmat({f}, numel(S.patches), 1);
-end
-% Update RHS of each patch:
-for k = 1:numel(S.patches)
-    S.patches{k} = updateRHS(S.patches{k}, f{k});
+
+if ( isBuilt(S) )
+    S.patches{1} = updateRHS(S.patches{1}, f);
+else
+    % Duplicate f if it is a scalar or function handle:
+    if ( ~iscell(f) )
+        f = repmat({f}, numel(S.patches), 1);
+    end
+    % Update RHS of each patch:
+    for k = 1:numel(S.patches)
+        S.patches{k} = updateRHS(S.patches{k}, f{k});
+    end
 end
 
 end
