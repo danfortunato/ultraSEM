@@ -70,6 +70,9 @@ classdef Domain
         % Make a default (naive) merge index for a domain.
         mergeIdx = defaultIdx(dom);
 
+        % Construct class L-shaped domain in [-1 1]:
+        T = L(varargin);
+
         % Construct rectangular domains:
         T = rectangle(varargin);
 
